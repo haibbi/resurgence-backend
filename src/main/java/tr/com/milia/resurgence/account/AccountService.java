@@ -7,14 +7,14 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-	private final Repository repository;
+	private final AccountRepository accountRepository;
 
-	public AccountService(Repository repository) {
-		this.repository = repository;
+	public AccountService(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
 	}
 
 	public Optional<Account> findByEmail(String email) {
-		return repository.findAccountByEmail(email);
+		return accountRepository.findAccountByEmail(email);
 	}
 
 	public Account create(Account account) throws EmailAlreadyExistException {
@@ -22,6 +22,6 @@ public class AccountService {
 
 		if (optionalAccount.isPresent()) throw new EmailAlreadyExistException(account.getEmail());
 
-		return repository.save(account);
+		return accountRepository.save(account);
 	}
 }

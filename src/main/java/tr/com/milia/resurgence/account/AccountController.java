@@ -10,11 +10,11 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/account")
-public class AccountResource {
+public class AccountController {
 
 	private final AccountService accountService;
 
-	public AccountResource(AccountService accountService) {
+	public AccountController(AccountService accountService) {
 		this.accountService = accountService;
 	}
 
