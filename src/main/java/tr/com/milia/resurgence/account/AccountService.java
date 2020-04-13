@@ -16,4 +16,12 @@ public class AccountService {
 	public Optional<Account> findByEmail(String email) {
 		return repository.findAccountByEmail(email);
 	}
+
+	public Account create(Account account) throws EmailAlreadyExistException {
+		Optional<Account> optionalAccount = findByEmail(account.getEmail());
+
+		if (optionalAccount.isPresent()) throw new EmailAlreadyExistException(account.getEmail());
+
+		return repository.save(account);
+	}
 }
