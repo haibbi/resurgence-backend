@@ -2,6 +2,8 @@ package tr.com.milia.resurgence.account;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,15 +22,16 @@ public class Account {
 	private String password;
 
 	@Column(nullable = false)
-	private boolean enabled;
+	@Enumerated(value = EnumType.STRING)
+	private Status status;
 
 	public Account() {
 	}
 
-	public Account(String email, String password, boolean enabled) {
+	public Account(String email, String password, Status status) {
 		this.email = email;
 		this.password = password;
-		this.enabled = enabled;
+		this.status = status;
 	}
 
 	public Long getId() {
@@ -43,7 +46,7 @@ public class Account {
 		return password;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
+	public Status getStatus() {
+		return status;
 	}
 }
