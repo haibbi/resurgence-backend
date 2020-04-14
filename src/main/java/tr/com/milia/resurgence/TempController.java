@@ -31,4 +31,9 @@ public class TempController {
 	public Mono<String> denied() {
 		return Mono.just("You shall not pass!");
 	}
+
+
+	@GetMapping("/login")
+	public void login() {
+	}
 }
