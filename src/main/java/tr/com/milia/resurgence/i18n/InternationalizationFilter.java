@@ -28,7 +28,7 @@ public class InternationalizationFilter implements WebFilter {
 			// Invalid Accept-Language header: treat as empty for matching purposes
 		}
 		LocaleContextHolder.setLocaleContext(new SimpleLocaleContext(resolveSupportedLocale(requestLocales)));
-		return chain.filter(exchange);
+		return chain.filter(exchange).doOnTerminate(LocaleContextHolder::resetLocaleContext);
 	}
 
 	public List<Locale> getSupportedLocales() {
