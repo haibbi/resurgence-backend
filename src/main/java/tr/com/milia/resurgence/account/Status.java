@@ -1,6 +1,8 @@
 package tr.com.milia.resurgence.account;
 
-public enum Status {
+import tr.com.milia.resurgence.i18n.LocaleEnum;
+
+public enum Status implements LocaleEnum {
 	UNVERIFIED,
 	VERIFIED,
 	BANNED,
