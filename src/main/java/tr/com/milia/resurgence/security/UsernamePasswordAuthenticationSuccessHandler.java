@@ -22,8 +22,8 @@ public class UsernamePasswordAuthenticationSuccessHandler implements ServerAuthe
 
 	@Override
 	public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
-		var accessToken = tokenGenerator.generateToken(authentication);
-		var response = new SuccessfulAuthenticationResponse(accessToken, null);
+		var token = tokenGenerator.generateToken(authentication);
+		var response = new SuccessfulAuthenticationResponse(token.accessToken, token.refreshToken);
 
 		return writeResponseBody(webFilterExchange, response);
 	}
