@@ -1,11 +1,10 @@
 package tr.com.milia.resurgence.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -17,21 +16,24 @@ import reactor.core.publisher.Mono;
 import tr.com.milia.resurgence.account.AccountService;
 
 @Configuration
-@EnableWebFluxSecurity
-@EnableReactiveMethodSecurity
 public class SecurityConfiguration {
 
 	private final TokenGenerator tokenGenerator;
 	private final AccountService accountService;
+	private final ObjectMapper objectMapper;
 
-	public SecurityConfiguration(TokenGenerator tokenGenerator, AccountService accountService) {
+	public SecurityConfiguration(TokenGenerator tokenGenerator,
+								 AccountService accountService,
+								 ObjectMapper objectMapper) {
 		this.tokenGenerator = tokenGenerator;
 		this.accountService = accountService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Bean
 	public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
 		return http
+			.csrf().disable()
 			.exceptionHandling()
 			.authenticationEntryPoint(new CustomServerAuthenticationEntryPoint())
 			.and()
@@ -61,8 +63,9 @@ public class SecurityConfiguration {
 
 		authenticationManager.setPasswordEncoder(passwordEncoder());
 		authenticationWebFilter.setServerAuthenticationConverter(new UsernamePasswordAuthenticationConverter());
-		authenticationWebFilter.setAuthenticationSuccessHandler(
-			new UsernamePasswordAuthenticationSuccessHandler(tokenGenerator));
+		authenticationWebFilter.setAuthenticationSuccessHandler(new UsernamePasswordAuthenticationSuccessHandler(
+			tokenGenerator, objectMapper
+		));
 
 		return authenticationWebFilter;
 	}

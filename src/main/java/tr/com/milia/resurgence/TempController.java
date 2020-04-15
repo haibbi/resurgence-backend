@@ -32,8 +32,4 @@ public class TempController {
 		return Mono.just("You shall not pass!");
 	}
 
-
-	@GetMapping("/login")
-	public void login() {
-	}
 }
