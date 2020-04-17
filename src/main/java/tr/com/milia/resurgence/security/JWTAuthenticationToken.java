@@ -36,7 +36,7 @@ public class JWTAuthenticationToken extends AbstractAuthenticationToken {
 
 	@Override
 	public boolean isAuthenticated() {
-		return jwt.getExpiresAt().before(new Date());
+		return jwt.getExpiresAt().after(new Date());
 	}
 
 	@Override

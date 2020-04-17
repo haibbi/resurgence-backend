@@ -8,8 +8,8 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @EnableWebFlux
 public class ResurgenceApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ResurgenceApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(ResurgenceApplication.class, args);
+	}
 
 }
