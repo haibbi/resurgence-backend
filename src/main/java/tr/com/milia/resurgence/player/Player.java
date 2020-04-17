@@ -1,23 +1,28 @@
 package tr.com.milia.resurgence.player;
 
+import org.springframework.data.domain.AbstractAggregateRoot;
 import tr.com.milia.resurgence.account.Account;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Set;
 
 @Entity
-public class Player {
+public class Player extends AbstractAggregateRoot<Player> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private Account account;
 
 	@Column(unique = true, nullable = false, updatable = false)
@@ -34,6 +39,9 @@ public class Player {
 	@Column(nullable = false)
 	private int honor;
 
+	@OneToMany(mappedBy = "player")
+	private Set<PlayerSkill> skills;
+
 	public Player() {
 	}
 
@@ -43,6 +51,10 @@ public class Player {
 		this.balance = balance;
 		this.health = health;
 		this.honor = honor;
+	}
+
+	void created() {
+		registerEvent(new PlayerCreatedEvent(this));
 	}
 
 	public BigDecimal increaseBalance(BigDecimal value) {
@@ -95,5 +107,9 @@ public class Player {
 
 	public int getHonor() {
 		return honor;
+	}
+
+	public Set<PlayerSkill> getSkills() {
+		return Collections.unmodifiableSet(skills);
 	}
 }

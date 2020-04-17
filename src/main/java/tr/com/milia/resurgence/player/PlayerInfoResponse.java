@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 class PlayerInfoResponse {
 	private final String nickname;
-	private final String username;
 	private final String image;
 	private final BigDecimal balance;
 	private final int health;
@@ -12,7 +11,6 @@ class PlayerInfoResponse {
 
 	public PlayerInfoResponse(Player player) {
 		nickname = player.getName();
-		username = player.getAccount().getEmail();
 		image = player.getImage();
 		balance = player.getBalance();
 		health = player.getHealth();
@@ -21,10 +19,6 @@ class PlayerInfoResponse {
 
 	public String getNickname() {
 		return nickname;
-	}
-
-	public String getUsername() {
-		return username;
 	}
 
 	public String getImage() {
