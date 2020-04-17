@@ -20,6 +20,10 @@ public class LocalizedException extends RuntimeException implements MessageSourc
 		this(codes, arguments, null, null);
 	}
 
+	public LocalizedException(String code, Object argument) {
+		this(new String[]{code}, new Object[]{argument}, null, null);
+	}
+
 	public LocalizedException(String[] codes, Object[] arguments, Throwable cause) {
 		this(codes, arguments, null, cause);
 	}

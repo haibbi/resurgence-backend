@@ -28,6 +28,10 @@ public class Account {
 	public Account() {
 	}
 
+	public Account(String email) {
+		this.email = email;
+	}
+
 	public Account(String email, String password, Status status) {
 		this.email = email;
 		this.password = password;
