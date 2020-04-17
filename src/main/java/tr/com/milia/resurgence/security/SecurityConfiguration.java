@@ -3,6 +3,7 @@ package tr.com.milia.resurgence.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -39,6 +40,7 @@ public class SecurityConfiguration {
 			.and()
 			.authorizeExchange()
 			.pathMatchers("/", "/login").permitAll() // todo consider
+			.pathMatchers(HttpMethod.POST, "/account").permitAll()
 			.anyExchange().authenticated()
 			.and()
 			.addFilterAt(authenticationFilter(), SecurityWebFiltersOrder.FORM_LOGIN)
