@@ -2,11 +2,12 @@ package tr.com.milia.resurgence.i18n;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Locale;
 
 @RestControllerAdvice
 public class InternationalizationExceptionAdvice {
@@ -17,11 +18,11 @@ public class InternationalizationExceptionAdvice {
 	}
 
 	@ExceptionHandler(LocalizedException.class)
-	public ResponseEntity<LocalizedResponse> onLocalizedException(LocalizedException e) {
-		String message = messageSource.getMessage(e, LocaleContextHolder.getLocale());
+	public ResponseEntity<LocalizedResponse> onLocalizedException(LocalizedException e, Locale locale) {
+		String message = messageSource.getMessage(e, locale);
 
 		return ResponseEntity
-			.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.status(HttpStatus.BAD_REQUEST)
 			.body(new LocalizedResponse(message));
 	}
 
