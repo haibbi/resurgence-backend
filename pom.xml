@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>14</java.version>
+        <java-jwt.version>3.10.2</java-jwt.version>
     </properties>
 
     <dependencies>
@@ -47,6 +48,23 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- /Security -->
 
         <dependency>
             <groupId>com.h2database</groupId>
