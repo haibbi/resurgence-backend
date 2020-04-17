@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.player;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,11 +22,12 @@ public class PlayerController {
 	}
 
 	@GetMapping
-	public Mono<PlayerInfoResponse> info(Principal principal) {
+	public Mono<ResponseEntity<PlayerInfoResponse>> info(Principal principal) {
 		return service.findByUsername(principal.getName())
 			.map(PlayerInfoResponse::new)
+			.map(ResponseEntity::ok)
 			.map(Mono::just)
-			.orElseGet(Mono::empty);
+			.orElseGet(() -> Mono.just(ResponseEntity.notFound().build()));
 	}
 
 	@PostMapping

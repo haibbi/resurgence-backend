@@ -22,28 +22,28 @@ import org.springframework.context.MessageSourceResolvable;
 @JsonSerialize(using = LocaleEnumJsonSerializer.class)
 @JsonDeserialize(using = LocaleEnumJsonDeserializer.class)
 public interface LocaleEnum extends MessageSourceResolvable {
-    String NAME_PROPERTY = "key";
-    String I18_PROPERTY = "value";
+	String NAME_PROPERTY = "key";
+	String I18_PROPERTY = "value";
 
-    @JsonIgnore
-    @Override
-    default String[] getCodes() {
-        return new String[]{getClass().getCanonicalName() + "#" + name()};
-    }
+	@JsonIgnore
+	@Override
+	default String[] getCodes() {
+		return new String[]{getClass().getCanonicalName() + "#" + name()};
+	}
 
-    @JsonIgnore
-    @Override
-    default Object[] getArguments() {
-        return new Object[]{};
-    }
+	@JsonIgnore
+	@Override
+	default Object[] getArguments() {
+		return new Object[]{};
+	}
 
-    @JsonIgnore
-    @Override
-    default String getDefaultMessage() {
-        return name();
-    }
+	@JsonIgnore
+	@Override
+	default String getDefaultMessage() {
+		return name();
+	}
 
-    @JsonProperty(NAME_PROPERTY)
-    String name();
+	@JsonProperty(NAME_PROPERTY)
+	String name();
 
 }

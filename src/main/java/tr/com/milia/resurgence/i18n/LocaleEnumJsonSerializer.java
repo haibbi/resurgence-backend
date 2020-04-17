@@ -23,27 +23,27 @@ import static tr.com.milia.resurgence.i18n.LocaleEnum.I18_PROPERTY;
  * bilgisine göre çevirisi yapılmış bilgisini barındıdır.
  */
 public class LocaleEnumJsonSerializer extends JsonSerializer<LocaleEnum> {
-    private final ResourceBundleMessageSource messageSource;
+	private final ResourceBundleMessageSource messageSource;
 
-    public LocaleEnumJsonSerializer() {
-        messageSource = new ResourceBundleMessageSource();
-        messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setBasename("enum/messages");
-    }
+	public LocaleEnumJsonSerializer() {
+		messageSource = new ResourceBundleMessageSource();
+		messageSource.setDefaultEncoding("UTF-8");
+		messageSource.setBasename("enum/messages");
+	}
 
-    @Override
-    public void serialize(LocaleEnum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeStartObject();
-        JavaType javaType = serializers.constructType(value.getClass());
-        BeanDescription beanDesc = serializers.getConfig().introspect(javaType);
-        JsonSerializer<Object> serializer = BeanSerializerFactory.instance.findBeanSerializer(serializers,
-                javaType,
-                beanDesc);
-        serializer.unwrappingSerializer(null).serialize(value, gen, serializers);
+	@Override
+	public void serialize(LocaleEnum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+		gen.writeStartObject();
+		JavaType javaType = serializers.constructType(value.getClass());
+		BeanDescription beanDesc = serializers.getConfig().introspect(javaType);
+		JsonSerializer<Object> serializer = BeanSerializerFactory.instance.findBeanSerializer(serializers,
+			javaType,
+			beanDesc);
+		serializer.unwrappingSerializer(null).serialize(value, gen, serializers);
 
-        String message = messageSource.getMessage(value, LocaleContextHolder.getLocale());
+		String message = messageSource.getMessage(value, LocaleContextHolder.getLocale());
 
-        gen.writeObjectField(I18_PROPERTY, message);
-        gen.writeEndObject();
-    }
+		gen.writeObjectField(I18_PROPERTY, message);
+		gen.writeEndObject();
+	}
 }
