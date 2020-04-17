@@ -1,7 +1,7 @@
 package tr.com.milia.resurgence.security;
 
-import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -14,14 +14,14 @@ public class JWTAuthenticationToken extends AbstractAuthenticationToken {
 
 	private final DecodedJWT jwt;
 
-	public JWTAuthenticationToken(String token) {
-		super(Optional.ofNullable(JWT.decode(token).getClaim("roles"))
+	public JWTAuthenticationToken(@NonNull DecodedJWT jwt) {
+		super(Optional.ofNullable(jwt.getClaim("roles"))
 			.map(c -> c.asList(String.class))
 			.stream()
 			.flatMap(Collection::stream)
 			.map(SimpleGrantedAuthority::new)
 			.collect(Collectors.toList()));
-		this.jwt = JWT.decode(token);
+		this.jwt = jwt;
 	}
 
 	@Override

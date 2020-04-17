@@ -30,6 +30,6 @@ public class TokenAuthenticationConverter implements ServerAuthenticationConvert
 		var accessToken = authorizationHeader.substring(BEARER_TOKEN_PREFIX.length());
 		verifier.verify(accessToken);
 
-		return Mono.just(new JWTAuthenticationToken(accessToken));
+		return Mono.just(new JWTAuthenticationToken(JWT.decode(accessToken)));
 	}
 }
