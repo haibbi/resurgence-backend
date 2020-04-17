@@ -4,10 +4,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.server.WebFilter;
 
 @Configuration
 public class InternationalizationConfiguration {
+
 	@Bean
 	MessageSource defaultMessageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -18,8 +18,4 @@ public class InternationalizationConfiguration {
 		return messageSource;
 	}
 
-	@Bean
-	WebFilter internationalizationFilter() {
-		return new InternationalizationFilter();
-	}
 }
