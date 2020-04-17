@@ -6,13 +6,13 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JWTAuthenticationToken extends AbstractAuthenticationToken {
 
-	private final String principal;
-	private final DecodedJWT credentials;
+	private final DecodedJWT jwt;
 
 	public JWTAuthenticationToken(String token) {
 		super(Optional.ofNullable(JWT.decode(token).getClaim("roles"))
@@ -21,27 +21,27 @@ public class JWTAuthenticationToken extends AbstractAuthenticationToken {
 			.flatMap(Collection::stream)
 			.map(SimpleGrantedAuthority::new)
 			.collect(Collectors.toList()));
-
-		DecodedJWT jwt = JWT.decode(token);
-		principal = jwt.getSubject();
-		credentials = jwt;
-		setAuthenticated(true);
+		this.jwt = JWT.decode(token);
 	}
 
 	@Override
 	public Object getCredentials() {
-		return credentials;
+		return jwt;
 	}
 
 	@Override
 	public Object getPrincipal() {
-		return principal;
+		return jwt.getSubject();
 	}
-
 
 	@Override
 	public boolean isAuthenticated() {
-		// todo consider
-		return credentials != null;
+		return jwt.getExpiresAt().before(new Date());
 	}
+
+	@Override
+	public String getName() {
+		return jwt.getSubject();
+	}
+
 }
