@@ -13,14 +13,19 @@ public class TaskService {
 
 	private final double PH = .10;
 	private final PlayerService playerService;
+	private final TaskLogRepository repository;
 
-	public TaskService(PlayerService playerService) {
+	public TaskService(PlayerService playerService, TaskLogRepository repository) {
 		this.playerService = playerService;
+		this.repository = repository;
 	}
 
 	@Transactional
 	public TaskResult perform(Task task, String username) {
 		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
+		repository.findFirstByTaskAndCreatedByOrderByCreatedDateDesc(task, player).ifPresent(taskLog -> {
+			if (!taskLog.isExpired()) throw new TaskCoolDownException(taskLog.durationToLeft());
+		});
 
 		var playerSkills = player.getSkills();
 
@@ -35,7 +40,10 @@ public class TaskService {
 
 		double random = RandomUtils.random();
 
-		if (random > success) return new TaskFailedResult();
+		if (random > success) {
+			repository.save(new TaskLog(task, player)); // todo event bazlı yapabilmemiz lazım
+			return new TaskFailedResult();
+		}
 
 		double gainRatio = random / success;
 
@@ -45,6 +53,7 @@ public class TaskService {
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());
 
+		repository.save(new TaskLog(task, player)); // todo event bazlı yapabilmemiz lazım
 		return new TaskSucceedResult(experienceGain, moneyGain, gainedSkills);
 	}
 

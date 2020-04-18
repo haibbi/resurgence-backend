@@ -22,11 +22,13 @@ class TaskServiceTest {
 	static final String USERNAME = "john_doe";
 	TaskService taskService;
 	PlayerService playerService;
+	TaskLogRepository repository;
 
 	@BeforeEach
 	void setUp() {
 		playerService = Mockito.mock(PlayerService.class);
-		taskService = new TaskService(playerService);
+		repository = Mockito.mock(TaskLogRepository.class);
+		taskService = new TaskService(playerService, repository);
 	}
 
 	@Test
