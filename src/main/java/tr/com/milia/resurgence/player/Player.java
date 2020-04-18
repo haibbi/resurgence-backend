@@ -2,15 +2,9 @@ package tr.com.milia.resurgence.player;
 
 import org.springframework.data.domain.AbstractAggregateRoot;
 import tr.com.milia.resurgence.account.Account;
+import tr.com.milia.resurgence.item.PlayerItem;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
@@ -41,6 +35,9 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	@OneToMany(mappedBy = "player")
 	private Set<PlayerSkill> skills;
+
+	@OneToMany(mappedBy = "player")
+	private Set<PlayerItem> items;
 
 	public Player() {
 	}
@@ -110,6 +107,10 @@ public class Player extends AbstractAggregateRoot<Player> {
 	}
 
 	public Set<PlayerSkill> getSkills() {
-		return Collections.unmodifiableSet(skills);
+		return skills == null ? Collections.emptySet() : Collections.unmodifiableSet(skills);
+	}
+
+	public Set<PlayerItem> getItems() {
+		return items == null ? Collections.emptySet() : Collections.unmodifiableSet(items);
 	}
 }

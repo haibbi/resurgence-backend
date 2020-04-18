@@ -1,7 +1,9 @@
 package tr.com.milia.resurgence.task;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.RandomUtils;
+import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.player.PlayerService;
 
 import javax.transaction.Transactional;
@@ -13,36 +15,50 @@ public class TaskService {
 
 	private final double PH = .10;
 	private final PlayerService playerService;
-	private final TaskLogRepository repository;
+	private final TaskLogService taskLogService;
+	private final ApplicationEventPublisher eventPublisher;
 
-	public TaskService(PlayerService playerService, TaskLogRepository repository) {
+	public TaskService(PlayerService playerService,
+					   TaskLogService taskLogService,
+					   ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
-		this.repository = repository;
+		this.taskLogService = taskLogService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional
 	public TaskResult perform(Task task, String username) {
+		TaskResult taskResult = performInternal(task, username);
+		eventPublisher.publishEvent(taskResult);
+		return taskResult;
+	}
+
+	private TaskResult performInternal(Task task, String username) {
 		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
-		repository.findFirstByTaskAndCreatedByOrderByCreatedDateDesc(task, player).ifPresent(taskLog -> {
-			if (!taskLog.isExpired()) throw new TaskCoolDownException(taskLog.durationToLeft());
-		});
+		taskLogService.checkPerform(player, task);
 
 		var playerSkills = player.getSkills();
 
-		// todo item'lardan ve level'den geleni ekle
+		// todo level'den geleni ekle
+		// skill contribution
 		double sum = playerSkills.stream().mapToDouble(playerSkill -> {
 			double expertise = playerSkill.getExpertise();
 			double contribution = playerSkill.getSkill().contribution();
 			return (contribution * expertise) / 100;
 		}).sum();
 
+		// item contribution
+		sum += player.getItems().stream()
+			.map(PlayerItem::getItem)
+			.mapToInt(i -> i.getSkillsContribution(task.getAuxiliary()))
+			.sum();
+
 		double success = sum / task.getDifficulty();
 
 		double random = RandomUtils.random();
 
 		if (random > success) {
-			repository.save(new TaskLog(task, player)); // todo event bazlı yapabilmemiz lazım
-			return new TaskFailedResult();
+			return new TaskFailedResult(player, task);
 		}
 
 		double gainRatio = random / success;
@@ -52,9 +68,11 @@ public class TaskService {
 		var gainedSkills = task.getSkillGain().stream()
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());
+		var drop = task.getDrop().stream()
+			.filter(item -> RandomUtils.random() <= PH)
+			.collect(Collectors.toSet());
 
-		repository.save(new TaskLog(task, player)); // todo event bazlı yapabilmemiz lazım
-		return new TaskSucceedResult(experienceGain, moneyGain, gainedSkills);
+		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop);
 	}
 
 }

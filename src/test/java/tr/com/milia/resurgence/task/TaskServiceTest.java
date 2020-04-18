@@ -3,14 +3,18 @@ package tr.com.milia.resurgence.task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
+import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.player.Player;
+import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.player.PlayerSkill;
 import tr.com.milia.resurgence.player.Skill;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,13 +26,13 @@ class TaskServiceTest {
 	static final String USERNAME = "john_doe";
 	TaskService taskService;
 	PlayerService playerService;
-	TaskLogRepository repository;
+	TaskLogService taskLogService;
 
 	@BeforeEach
 	void setUp() {
 		playerService = Mockito.mock(PlayerService.class);
-		repository = Mockito.mock(TaskLogRepository.class);
-		taskService = new TaskService(playerService, repository);
+		taskLogService = Mockito.mock(TaskLogService.class);
+		taskService = new TaskService(playerService, taskLogService, Mockito.mock(ApplicationEventPublisher.class));
 	}
 
 	@Test
@@ -98,6 +102,38 @@ class TaskServiceTest {
 
 		// asserts
 		assertFailedTask(result);
+	}
+
+	@Test
+	void taskMustSucceedWithItem() {
+		// task
+		Task task = Task.BANK_RUBBERY;
+		Skill skill = Skill.SNEAK;
+		Item item = Item.KNIFE;
+
+		// difficulty must equals (contribution + item contribution)
+		// 'cause task must be performed successfully
+		ReflectionTestUtils.setField(task, "difficulty", 10);
+		ReflectionTestUtils.setField(skill, "contribution", 5);
+		ReflectionTestUtils.setField(item, "skills", Map.of(skill, 5));
+
+		// player
+		Player player = new Player();
+		// the player have maximum skill expertise
+		PlayerSkill sneakSkill = new PlayerSkill(player, skill, 100);
+		ReflectionTestUtils.setField(player, "skills", Set.of(sneakSkill));
+		// items
+		PlayerItem knifeItem = new PlayerItem(player, item, 1);
+		ReflectionTestUtils.setField(player, "items", Set.of(knifeItem));
+
+		// mock
+		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
+
+		// execution
+		TaskResult result = taskService.perform(task, USERNAME);
+
+		// asserts
+		assertSucceedTask(task, result);
 	}
 
 	private void assertSucceedTask(Task task, TaskResult result) {

@@ -1,5 +1,7 @@
 package tr.com.milia.resurgence.task;
 
+import tr.com.milia.resurgence.item.Item;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Skill;
 
 import java.math.BigDecimal;
@@ -10,19 +12,19 @@ public class TaskSucceedResult extends TaskResult {
 	private final int experienceGain;
 	private final BigDecimal moneyGain;
 	private final Set<Skill> skillGain;
+	private final Set<Item> drop;
 
-	public TaskSucceedResult(int experienceGain) {
-		this(experienceGain, BigDecimal.ZERO, Collections.emptySet());
-	}
-
-	public TaskSucceedResult(int experienceGain, BigDecimal moneyGain) {
-		this(experienceGain, moneyGain, Collections.emptySet());
-	}
-
-	public TaskSucceedResult(int experienceGain, BigDecimal moneyGain, Set<Skill> skillGain) {
+	public TaskSucceedResult(Player player,
+							 Task task,
+							 int experienceGain,
+							 BigDecimal moneyGain,
+							 Set<Skill> skillGain,
+							 Set<Item> drop) {
+		super(player, task);
 		this.experienceGain = experienceGain;
 		this.moneyGain = moneyGain;
 		this.skillGain = skillGain;
+		this.drop = drop;
 	}
 
 	public int getExperienceGain() {
@@ -34,6 +36,10 @@ public class TaskSucceedResult extends TaskResult {
 	}
 
 	public Set<Skill> getSkillGain() {
-		return Collections.unmodifiableSet(skillGain);
+		return skillGain == null ? Collections.emptySet() : Collections.unmodifiableSet(skillGain);
+	}
+
+	public Set<Item> getDrop() {
+		return drop == null ? Collections.emptySet() : Collections.unmodifiableSet(drop);
 	}
 }
