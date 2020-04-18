@@ -2,7 +2,7 @@ package tr.com.milia.resurgence.task;
 
 import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.item.Item;
-import tr.com.milia.resurgence.player.Skill;
+import tr.com.milia.resurgence.skill.Skill;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static java.time.Duration.ofMinutes;
-import static tr.com.milia.resurgence.player.Skill.SNEAK;
+import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
 public enum Task implements LocaleEnum {
 

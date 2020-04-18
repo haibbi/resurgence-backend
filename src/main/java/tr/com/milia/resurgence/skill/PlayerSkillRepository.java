@@ -1,6 +1,7 @@
-package tr.com.milia.resurgence.player;
+package tr.com.milia.resurgence.skill;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import tr.com.milia.resurgence.player.Player;
 
 import java.util.Optional;
 

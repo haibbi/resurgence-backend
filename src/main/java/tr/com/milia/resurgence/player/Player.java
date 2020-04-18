@@ -3,6 +3,7 @@ package tr.com.milia.resurgence.player;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import tr.com.milia.resurgence.account.Account;
 import tr.com.milia.resurgence.item.PlayerItem;
+import tr.com.milia.resurgence.skill.PlayerSkill;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

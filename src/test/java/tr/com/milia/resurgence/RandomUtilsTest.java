@@ -50,7 +50,7 @@ class RandomUtilsTest {
 	}
 
 	@Test
-	public void doubleRandomMarathonTest(){
+	public void doubleRandomMarathonTest() {
 		IntStream.range(0, 1_000_000).forEach(__ -> doubleRandom());
 	}
 

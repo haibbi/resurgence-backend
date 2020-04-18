@@ -1,6 +1,6 @@
 package tr.com.milia.resurgence.item;
 
-import tr.com.milia.resurgence.player.Skill;
+import tr.com.milia.resurgence.skill.Skill;
 
 import java.math.BigDecimal;
 import java.util.Map;

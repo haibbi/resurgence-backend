@@ -1,4 +1,4 @@
-package tr.com.milia.resurgence.player;
+package tr.com.milia.resurgence.skill;
 
 import tr.com.milia.resurgence.i18n.LocaleEnum;
 

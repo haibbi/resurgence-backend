@@ -1,7 +1,8 @@
-package tr.com.milia.resurgence.player;
+package tr.com.milia.resurgence.skill;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import tr.com.milia.resurgence.player.PlayerCreatedEvent;
 
 @Service
 public class SkillService {

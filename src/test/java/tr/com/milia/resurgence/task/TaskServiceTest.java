@@ -6,11 +6,11 @@ import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 import tr.com.milia.resurgence.item.Item;
-import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.item.PlayerItem;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.player.PlayerSkill;
-import tr.com.milia.resurgence.player.Skill;
+import tr.com.milia.resurgence.skill.PlayerSkill;
+import tr.com.milia.resurgence.skill.Skill;
 
 import java.math.BigDecimal;
 import java.util.Collections;
