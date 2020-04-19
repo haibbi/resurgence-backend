@@ -32,6 +32,8 @@ public class PlayerService {
 		var account = accountService.findByEmail(username).orElseThrow(AccountNotFound::new);
 
 		var player = new Player(account, name, BigDecimal.valueOf(500L), 100, 0);
+
+		player.created();
 		return repository.save(player);
 	}
 
