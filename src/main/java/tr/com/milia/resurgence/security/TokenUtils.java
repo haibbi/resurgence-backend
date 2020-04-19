@@ -15,9 +15,19 @@ public class TokenUtils {
 	public static final String HTTP_PARAMETER = "access_token";
 
 	/**
+	 * Accept refresh token from http parameter
+	 */
+	public static final String REFRESH_TOKEN_HTTP_PARAMETER = "refresh_token";
+
+	/**
 	 * Token type-prefix...
 	 */
 	public static final String TOKEN_TYPE = "Bearer";
+
+	/**
+	 * Refresh Token Header
+	 */
+	public static final String REFRESH_TOKEN_HEADER = "Refresh-Token";
 
 	public static DecodedJWT decode(String token) {
 		return JWT.decode(token);
@@ -32,5 +42,13 @@ public class TokenUtils {
 		String accessTokenParameter = request.getParameter(HTTP_PARAMETER);
 
 		return Optional.ofNullable(accessTokenParameter);
+	}
+
+	public static Optional<String> extractRefreshToken(HttpServletRequest request) {
+		String refreshTokenHeader = request.getHeader(REFRESH_TOKEN_HEADER);
+		if (refreshTokenHeader != null && !refreshTokenHeader.isBlank()) {
+			return Optional.of(refreshTokenHeader);
+		}
+		return Optional.ofNullable(request.getParameter(REFRESH_TOKEN_HTTP_PARAMETER));
 	}
 }

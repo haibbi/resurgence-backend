@@ -115,7 +115,7 @@ public class TokenService {
 		return builder.sign(Algorithm.HMAC512(properties.getSecret()));
 	}
 
-	private DecodedJWT verifyRefreshToken(String token) {
+	DecodedJWT verifyRefreshToken(String token) {
 		return refreshTokenVerifier.verify(token);
 	}
 

@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,6 +26,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		var tokenFilter = new JwtTokenAuthenticationFilter(tokenService);
 		var loginProcessingFilter = new LoginProcessingFilter(authenticationManager(), mapper, tokenService);
+		var characterEncodingFilter = new CharacterEncodingFilter("UTF-8", true);
 
 		http.csrf().disable()
 			.logout().disable()
@@ -35,8 +37,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED)).and()
 			.addFilterAfter(loginProcessingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
-			.authorizeRequests().antMatchers("/login").permitAll().and()
+			.addFilterBefore(characterEncodingFilter, LoginProcessingFilter.class)
+			.authorizeRequests().antMatchers(HttpMethod.POST, "/login").permitAll().and()
 			.authorizeRequests().antMatchers(HttpMethod.POST, "/account").permitAll().and()
+			.authorizeRequests().antMatchers(HttpMethod.POST, "/security/refresh").permitAll().and()
 			.authorizeRequests().anyRequest().authenticated();
 	}
 }

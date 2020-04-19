@@ -16,7 +16,7 @@ public class TokenAuthentication extends AbstractAuthenticationToken {
 	private final DecodedJWT jwt;
 
 	public TokenAuthentication(@NonNull DecodedJWT jwt) {
-		super(Optional.ofNullable(jwt.getClaim("roles"))
+		super(Optional.ofNullable(jwt.getClaim(Claims.ROLE))
 			.map(c -> c.asList(String.class))
 			.stream()
 			.flatMap(Collection::stream)
