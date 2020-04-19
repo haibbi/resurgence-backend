@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface PlayerSkillRepository extends JpaRepository<PlayerSkill, Player> {
 
-	Optional<PlayerSkill> findByPlayer_Name(String playerName);
+	Optional<PlayerSkill> findByPlayerAndSkill(Player player, Skill skill);
 
 }

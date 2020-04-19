@@ -1,7 +1,9 @@
 package tr.com.milia.resurgence.player;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.account.AccountService;
+import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -35,6 +37,13 @@ public class PlayerService {
 
 		player.created();
 		return repository.save(player);
+	}
+
+	@EventListener(TaskSucceedResult.class)
+	public void onTaskSucceedResult(TaskSucceedResult result) {
+		var player = result.getPlayer();
+		player.increaseBalance(result.getMoneyGain());
+		player.gainEXP(result.getExperienceGain());
 	}
 
 }

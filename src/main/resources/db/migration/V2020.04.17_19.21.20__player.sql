@@ -5,6 +5,7 @@ create table player
     balance    numeric(19, 2)  not null,
     health     integer         not null,
     honor      integer         not null,
+    experience integer         not null,
     image      varchar,
     name       varchar unique  not null,
     account_id bigserial

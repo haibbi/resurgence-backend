@@ -6,6 +6,7 @@ import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.skill.PlayerSkill;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
@@ -26,13 +27,19 @@ public class Player extends AbstractAggregateRoot<Player> {
 	private String image;
 
 	@Column(nullable = false)
+	@Min(0)
 	private BigDecimal balance;
 
 	@Column(nullable = false)
+	@Min(0)
 	private int health;
 
 	@Column(nullable = false)
 	private int honor;
+
+	@Column(nullable = false)
+	@Min(0)
+	private int experience;
 
 	@OneToMany(mappedBy = "player")
 	private Set<PlayerSkill> skills;
@@ -57,22 +64,26 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public BigDecimal increaseBalance(BigDecimal value) {
 		if (value.signum() < 0) throw new IllegalStateException();
-		return balance.add(value);
+		return balance = balance.add(value);
 	}
 
 	public BigDecimal decreaseBalance(BigDecimal value) {
 		if (value.signum() < 0 || value.compareTo(balance) > 0) throw new IllegalStateException();
-		return balance.subtract(value);
+		return balance = balance.subtract(value);
 	}
 
 	public int increaseHonor(int value) {
 		if (value < 0) throw new IllegalStateException();
-		return honor + value;
+		return honor += value;
 	}
 
 	public int decreaseHonor(int value) {
-		if (value < 0 || value > honor) throw new IllegalStateException();
-		return honor - value;
+		if (value < 0) throw new IllegalStateException();
+		return honor -= value;
+	}
+
+	public void gainEXP(int value) {
+		experience += value;
 	}
 
 	public Long getId() {

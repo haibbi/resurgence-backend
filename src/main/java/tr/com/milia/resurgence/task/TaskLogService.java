@@ -22,6 +22,6 @@ public class TaskLogService {
 
 	@EventListener(TaskResult.class)
 	public void onTaskResult(TaskResult result) {
-		repository.save(new TaskLog(result.getTask(), result.getPlayer()));
+		repository.save(new TaskLog(result.getTask(), result.getPlayer(), result.isSucceed()));
 	}
 }
