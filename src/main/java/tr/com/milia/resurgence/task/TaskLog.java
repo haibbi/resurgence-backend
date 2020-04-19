@@ -23,13 +23,17 @@ public class TaskLog {
 	@Column(nullable = false)
 	private Instant createdDate;
 
+	@Column(nullable = false)
+	private boolean succeed;
+
 	public TaskLog() {
 	}
 
-	public TaskLog(Task task, Player player) {
+	public TaskLog(Task task, Player player, boolean succeed) {
 		this.task = task;
-		createdBy = player;
-		createdDate = Instant.now();
+		this.createdBy = player;
+		this.succeed = succeed;
+		this.createdDate = Instant.now();
 	}
 
 	@Transient

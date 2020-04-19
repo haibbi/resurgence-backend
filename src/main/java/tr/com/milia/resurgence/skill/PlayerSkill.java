@@ -5,6 +5,7 @@ import tr.com.milia.resurgence.player.Player;
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 public class PlayerSkill implements Serializable {
@@ -22,7 +23,7 @@ public class PlayerSkill implements Serializable {
 
 	@Column(nullable = false)
 	@Max(100)
-	private double expertise;
+	private BigDecimal expertise;
 
 	public PlayerSkill() {
 	}
@@ -30,11 +31,13 @@ public class PlayerSkill implements Serializable {
 	public PlayerSkill(Player player, Skill skill, double expertise) {
 		this.player = player;
 		this.skill = skill;
-		this.expertise = expertise;
+		this.expertise = BigDecimal.valueOf(expertise);
 	}
 
-	private void learn(double value) {
-		expertise += value;
+	void learn(double value) {
+		BigDecimal result = expertise.add(BigDecimal.valueOf(value));
+		if (result.compareTo(BigDecimal.valueOf(100)) > 0) return;
+		expertise = result;
 	}
 
 	public Player getPlayer() {
@@ -45,7 +48,7 @@ public class PlayerSkill implements Serializable {
 		return skill;
 	}
 
-	public double getExpertise() {
+	public BigDecimal getExpertise() {
 		return expertise;
 	}
 
