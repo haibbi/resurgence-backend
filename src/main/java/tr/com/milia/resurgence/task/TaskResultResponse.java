@@ -17,7 +17,8 @@ public class TaskResultResponse {
 
 	public TaskResultResponse(TaskResult result) {
 		this.succeed = result.isSucceed();
-		if (result instanceof TaskSucceedResult succeedResult) {
+		if (result instanceof TaskSucceedResult) {
+			var succeedResult = (TaskSucceedResult) result;
 			experienceGain = succeedResult.getExperienceGain();
 			moneyGain = succeedResult.getMoneyGain();
 			skillGain = succeedResult.getSkillGain();
