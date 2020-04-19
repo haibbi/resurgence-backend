@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 
@@ -22,18 +21,17 @@ public class PlayerController {
 	}
 
 	@GetMapping
-	public Mono<ResponseEntity<PlayerInfoResponse>> info(Principal principal) {
+	public ResponseEntity<PlayerInfoResponse> info(Principal principal) {
 		return service.findByUsername(principal.getName())
 			.map(PlayerInfoResponse::new)
 			.map(ResponseEntity::ok)
-			.map(Mono::just)
-			.orElseGet(() -> Mono.just(ResponseEntity.notFound().build()));
+			.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
-	public Mono<PlayerInfoResponse> create(@RequestBody @Validated CreatePlayerRequest request,
-										   Principal principal) {
+	public PlayerInfoResponse create(@RequestBody @Validated CreatePlayerRequest request,
+									 Principal principal) {
 		var player = service.create(request.name, principal.getName());
-		return Mono.just(new PlayerInfoResponse(player));
+		return new PlayerInfoResponse(player);
 	}
 }

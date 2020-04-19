@@ -17,7 +17,7 @@ import org.springframework.context.MessageSourceResolvable;
  * </p>
  * Eğer çeviri girilmemiş ise {@link #getDefaultMessage()} devreye girer.<br>
  */
-@JsonIgnoreProperties({"declaringClass"})
+@JsonIgnoreProperties({"declaring_class"})
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonSerialize(using = LocaleEnumJsonSerializer.class)
 @JsonDeserialize(using = LocaleEnumJsonDeserializer.class)
