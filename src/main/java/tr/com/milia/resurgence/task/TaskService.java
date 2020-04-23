@@ -28,8 +28,8 @@ public class TaskService {
 	}
 
 	@Transactional
-	public TaskResult perform(Task task, String username, @Nullable Map<Item, Integer> selectedItems) {
-		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
+	public TaskResult perform(Task task, String playerName, @Nullable Map<Item, Integer> selectedItems) {
+		var player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 
 		selectedItems = selectedItems == null ? Collections.emptyMap() : selectedItems;
 
