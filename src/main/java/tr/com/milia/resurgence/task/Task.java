@@ -20,7 +20,8 @@ public enum Task implements LocaleEnum {
 		Set.of(SNEAK),
 		BigDecimal.valueOf(50_000),
 		1_000,
-		ofMinutes(1),
+		ofMinutes(0),
+		Map.of(Item.KNIFE, 1),
 		Map.of(Item.KNIFE, 1));
 
 	private final int difficulty;
@@ -31,13 +32,19 @@ public enum Task implements LocaleEnum {
 	private final Duration duration;
 	private final Map<Item, Integer> drop;
 
+	/**
+	 * Value değerleri sıfır olamaz! O halde required değildir.
+	 */
+	private final Map<Item, Integer> required;
+
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
 		 Set<Skill> skillGain,
 		 BigDecimal moneyGain,
 		 int experienceGain,
 		 Duration duration,
-		 Map<Item, Integer> drop) {
+		 Map<Item, Integer> drop,
+		 Map<Item, Integer> required) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
 		this.skillGain = skillGain;
@@ -45,6 +52,10 @@ public enum Task implements LocaleEnum {
 		this.experienceGain = experienceGain;
 		this.duration = duration;
 		this.drop = drop;
+		if (required.values().stream().anyMatch(i -> i <= 0)) {
+			throw new IllegalStateException("Required item count should positive");
+		}
+		this.required = required;
 	}
 
 	public int getDifficulty() {
@@ -73,5 +84,9 @@ public enum Task implements LocaleEnum {
 
 	public Map<Item, Integer> getDrop() {
 		return Collections.unmodifiableMap(drop);
+	}
+
+	public Map<Item, Integer> getRequired() {
+		return Collections.unmodifiableMap(required);
 	}
 }

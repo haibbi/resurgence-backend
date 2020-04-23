@@ -26,13 +26,11 @@ class TaskServiceTest {
 	static final String USERNAME = "john_doe";
 	TaskService taskService;
 	PlayerService playerService;
-	TaskLogService taskLogService;
 
 	@BeforeEach
 	void setUp() {
 		playerService = Mockito.mock(PlayerService.class);
-		taskLogService = Mockito.mock(TaskLogService.class);
-		taskService = new TaskService(playerService, taskLogService, Mockito.mock(ApplicationEventPublisher.class));
+		taskService = new TaskService(playerService, Mockito.mock(ApplicationEventPublisher.class));
 	}
 
 	@Test

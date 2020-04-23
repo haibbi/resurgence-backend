@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.RandomUtils;
 import tr.com.milia.resurgence.item.PlayerItem;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 
 import javax.transaction.Transactional;
@@ -17,28 +18,25 @@ public class TaskService {
 
 	private final double PH = .10;
 	private final PlayerService playerService;
-	private final TaskLogService taskLogService;
 	private final ApplicationEventPublisher eventPublisher;
 
-	public TaskService(PlayerService playerService,
-					   TaskLogService taskLogService,
-					   ApplicationEventPublisher eventPublisher) {
+	public TaskService(PlayerService playerService, ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
-		this.taskLogService = taskLogService;
 		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional
 	public TaskResult perform(Task task, String username) {
-		TaskResult taskResult = performInternal(task, username);
+		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
+
+		eventPublisher.publishEvent(new TaskStartedEvent(player, task));
+		TaskResult taskResult = performInternal(task, player);
 		eventPublisher.publishEvent(taskResult);
+
 		return taskResult;
 	}
 
-	private TaskResult performInternal(Task task, String username) {
-		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
-		taskLogService.checkPerform(player, task);
-
+	private TaskResult performInternal(Task task, Player player) {
 		var playerSkills = player.getSkills();
 
 		// todo level'den geleni ekle
