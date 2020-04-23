@@ -7,6 +7,7 @@ import tr.com.milia.resurgence.skill.Skill;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import static java.time.Duration.ofMinutes;
@@ -20,8 +21,7 @@ public enum Task implements LocaleEnum {
 		BigDecimal.valueOf(50_000),
 		1_000,
 		ofMinutes(1),
-		Set.of(Item.KNIFE));
-	// todo add drop item
+		Map.of(Item.KNIFE, 1));
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
@@ -29,14 +29,15 @@ public enum Task implements LocaleEnum {
 	private final BigDecimal moneyGain;
 	private final int experienceGain;
 	private final Duration duration;
-	private final Set<Item> drop;
+	private final Map<Item, Integer> drop;
 
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
 		 Set<Skill> skillGain,
 		 BigDecimal moneyGain,
 		 int experienceGain,
-		 Duration duration, Set<Item> drop) {
+		 Duration duration,
+		 Map<Item, Integer> drop) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
 		this.skillGain = skillGain;
@@ -70,7 +71,7 @@ public enum Task implements LocaleEnum {
 		return duration;
 	}
 
-	public Set<Item> getDrop() {
-		return Collections.unmodifiableSet(drop);
+	public Map<Item, Integer> getDrop() {
+		return Collections.unmodifiableMap(drop);
 	}
 }

@@ -36,9 +36,10 @@ public class LocaleEnumJsonSerializer extends JsonSerializer<LocaleEnum> {
 		gen.writeStartObject();
 		JavaType javaType = serializers.constructType(value.getClass());
 		BeanDescription beanDesc = serializers.getConfig().introspect(javaType);
-		JsonSerializer<Object> serializer = BeanSerializerFactory.instance.findBeanSerializer(serializers,
+		JsonSerializer<Object> serializer = BeanSerializerFactory.instance.findBeanOrAddOnSerializer(serializers,
 			javaType,
-			beanDesc);
+			beanDesc,
+			true);
 		serializer.unwrappingSerializer(null).serialize(value, gen, serializers);
 
 		String message = messageSource.getMessage(value, LocaleContextHolder.getLocale());

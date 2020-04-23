@@ -18,10 +18,12 @@ public class PlayerItemService {
 		var drop = result.getDrop();
 		var player = result.getPlayer();
 
-		for (Item item : drop) {
+		for (var entry : drop.entrySet()) {
+			Item item = entry.getKey();
+			int quantity = entry.getValue();
 			repository.findByPlayerAndItem(player, item).ifPresentOrElse(
-				playerItem -> playerItem.add(1), // todo sayı bilgisi task'tan gelmeli
-				() -> repository.save(new PlayerItem(player, item, 1))
+				playerItem -> playerItem.add(quantity),
+				() -> repository.save(new PlayerItem(player, item, quantity))
 			);
 		}
 

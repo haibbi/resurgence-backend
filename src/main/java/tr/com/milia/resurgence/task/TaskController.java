@@ -17,8 +17,9 @@ public class TaskController {
 	}
 
 	@PostMapping
-	public void perform(Principal principal) {
-		service.perform(Task.BANK_RUBBERY, principal.getName());
+	public TaskResultResponse perform(Principal principal) {
+		TaskResult result = service.perform(Task.BANK_RUBBERY, principal.getName());
+		return new TaskResultResponse(result);
 	}
 
 }

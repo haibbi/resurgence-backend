@@ -6,20 +6,21 @@ import tr.com.milia.resurgence.skill.Skill;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 public class TaskSucceedResult extends TaskResult {
 	private final int experienceGain;
 	private final BigDecimal moneyGain;
 	private final Set<Skill> skillGain;
-	private final Set<Item> drop;
+	private final Map<Item, Integer> drop;
 
 	public TaskSucceedResult(Player player,
 							 Task task,
 							 int experienceGain,
 							 BigDecimal moneyGain,
 							 Set<Skill> skillGain,
-							 Set<Item> drop) {
+							 Map<Item, Integer> drop) {
 		super(player, task);
 		this.experienceGain = experienceGain;
 		this.moneyGain = moneyGain;
@@ -39,7 +40,7 @@ public class TaskSucceedResult extends TaskResult {
 		return skillGain == null ? Collections.emptySet() : Collections.unmodifiableSet(skillGain);
 	}
 
-	public Set<Item> getDrop() {
-		return drop == null ? Collections.emptySet() : Collections.unmodifiableSet(drop);
+	public Map<Item, Integer> getDrop() {
+		return drop == null ? Collections.emptyMap() : Collections.unmodifiableMap(drop);
 	}
 }

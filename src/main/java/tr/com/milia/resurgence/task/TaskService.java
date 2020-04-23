@@ -9,6 +9,7 @@ import tr.com.milia.resurgence.player.PlayerService;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,9 +72,9 @@ public class TaskService {
 		var gainedSkills = task.getSkillGain().stream()
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());
-		var drop = task.getDrop().stream()
+		var drop = task.getDrop().entrySet().stream()
 			.filter(item -> RandomUtils.random() <= PH)
-			.collect(Collectors.toSet());
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop);
 	}
