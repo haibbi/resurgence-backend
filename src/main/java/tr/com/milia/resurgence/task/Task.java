@@ -22,7 +22,7 @@ public enum Task implements LocaleEnum {
 		1_000,
 		ofMinutes(0),
 		Map.of(Item.KNIFE, 1),
-		Map.of(Item.KNIFE, 1));
+		Map.of(Item.Category.WEAPON, 1));
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
@@ -35,7 +35,7 @@ public enum Task implements LocaleEnum {
 	/**
 	 * Value değerleri sıfır olamaz! O halde required değildir.
 	 */
-	private final Map<Item, Integer> required;
+	private final Map<Item.Category, Integer> requiredItemCategory;
 
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
@@ -44,7 +44,7 @@ public enum Task implements LocaleEnum {
 		 int experienceGain,
 		 Duration duration,
 		 Map<Item, Integer> drop,
-		 Map<Item, Integer> required) {
+		 Map<Item.Category, Integer> requiredItemCategory) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
 		this.skillGain = skillGain;
@@ -52,10 +52,10 @@ public enum Task implements LocaleEnum {
 		this.experienceGain = experienceGain;
 		this.duration = duration;
 		this.drop = drop;
-		if (required.values().stream().anyMatch(i -> i <= 0)) {
+		if (requiredItemCategory.values().stream().anyMatch(i -> i <= 0)) {
 			throw new IllegalStateException("Required item count should positive");
 		}
-		this.required = required;
+		this.requiredItemCategory = requiredItemCategory;
 	}
 
 	public int getDifficulty() {
@@ -86,7 +86,7 @@ public enum Task implements LocaleEnum {
 		return Collections.unmodifiableMap(drop);
 	}
 
-	public Map<Item, Integer> getRequired() {
-		return Collections.unmodifiableMap(required);
+	public Map<Item.Category, Integer> getRequiredItemCategory() {
+		return Collections.unmodifiableMap(requiredItemCategory);
 	}
 }

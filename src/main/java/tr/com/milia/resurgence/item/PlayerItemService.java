@@ -34,13 +34,17 @@ public class PlayerItemService {
 	@EventListener(TaskStartedEvent.class)
 	public void onTaskStartedEvent(TaskStartedEvent event) {
 		var player = event.getPlayer();
-		var requiredItems = event.getTask().getRequired();
+		var requiredItemCategory = event.getTask().getRequiredItemCategory();
+		var selectedItems = event.getSelectedItems();
 
-		requiredItems.forEach((item, count) -> {
-			int quantity = repository.findByPlayerAndItem(player, item)
-				.map(PlayerItem::getQuantity)
-				.orElse(0);
-			if (quantity < count) throw new RequiredItemException(item.name());
+		requiredItemCategory.forEach((category, count) -> {
+			int quantity = selectedItems.keySet().stream()
+				.filter(item -> item.getCategory().contains(category))
+				.mapToInt(item -> repository.findByPlayerAndItem(player, item)
+					.map(PlayerItem::getQuantity)
+					.orElse(0))
+				.sum();
+			if (quantity < count) throw new RequiredItemException(category.name());
 		});
 	}
 
@@ -48,9 +52,9 @@ public class PlayerItemService {
 	public void onTaskResult(TaskResult event) {
 		// task başarılı veya başarısız olmasına bakmaksızın required itemlar silinir.
 		var player = event.getPlayer();
-		var requiredItems = event.getTask().getRequired();
+		var usedItems = event.getUsedItems();
 
-		requiredItems.forEach((item, count) -> repository.findByPlayerAndItem(player, item)
+		usedItems.forEach((item, count) -> repository.findByPlayerAndItem(player, item)
 			.orElseThrow(() -> {
 				throw new RequiredItemException(item.name());
 			}).remove(count));

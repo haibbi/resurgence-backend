@@ -52,7 +52,7 @@ class TaskServiceTest {
 		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
-		TaskResult result = taskService.perform(task, USERNAME);
+		TaskResult result = taskService.perform(task, USERNAME, null);
 
 		// asserts
 		assertSucceedTask(task, result);
@@ -76,7 +76,7 @@ class TaskServiceTest {
 		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
-		TaskResult result = taskService.perform(task, USERNAME);
+		TaskResult result = taskService.perform(task, USERNAME, null);
 
 		// asserts
 		assertFailedTask(result);
@@ -96,7 +96,7 @@ class TaskServiceTest {
 		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
-		TaskResult result = taskService.perform(task, USERNAME);
+		TaskResult result = taskService.perform(task, USERNAME, null);
 
 		// asserts
 		assertFailedTask(result);
@@ -120,15 +120,12 @@ class TaskServiceTest {
 		// the player have maximum skill expertise
 		PlayerSkill sneakSkill = new PlayerSkill(player, skill, 100);
 		ReflectionTestUtils.setField(player, "skills", Set.of(sneakSkill));
-		// items
-		PlayerItem knifeItem = new PlayerItem(player, item, 1);
-		ReflectionTestUtils.setField(player, "items", Set.of(knifeItem));
 
 		// mock
 		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
-		TaskResult result = taskService.perform(task, USERNAME);
+		TaskResult result = taskService.perform(task, USERNAME, Map.of(item, 1));
 
 		// asserts
 		assertSucceedTask(task, result);
