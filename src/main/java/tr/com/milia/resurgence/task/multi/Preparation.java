@@ -6,12 +6,12 @@ import java.util.Map;
 
 class Preparation {
 	final String leader;
-	final MultiPlayerTask.Category category;
+	final MultiPlayerTask.Position position;
 	final Map<Item, Integer> selectedItems;
 
-	Preparation(String leader, MultiPlayerTask.Category category, Map<Item, Integer> selectedItems) {
+	Preparation(String leader, MultiPlayerTask.Position position, Map<Item, Integer> selectedItems) {
 		this.leader = leader;
-		this.category = category;
+		this.position = position;
 		this.selectedItems = selectedItems;
 	}
 
@@ -19,8 +19,8 @@ class Preparation {
 		return leader;
 	}
 
-	public MultiPlayerTask.Category getCategory() {
-		return category;
+	public MultiPlayerTask.Position getPosition() {
+		return position;
 	}
 
 	public Map<Item, Integer> getSelectedItems() {

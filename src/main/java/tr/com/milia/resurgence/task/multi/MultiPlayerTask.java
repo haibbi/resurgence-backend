@@ -8,8 +8,8 @@ import java.util.Map;
 import static java.util.Map.of;
 import static tr.com.milia.resurgence.task.Task.HEIST_DRIVER;
 import static tr.com.milia.resurgence.task.Task.HEIST_LEADER;
-import static tr.com.milia.resurgence.task.multi.MultiPlayerTask.Category.DRIVER;
-import static tr.com.milia.resurgence.task.multi.MultiPlayerTask.Category.LEADER;
+import static tr.com.milia.resurgence.task.multi.MultiPlayerTask.Position.DRIVER;
+import static tr.com.milia.resurgence.task.multi.MultiPlayerTask.Position.LEADER;
 
 public enum MultiPlayerTask {
 
@@ -18,25 +18,24 @@ public enum MultiPlayerTask {
 		DRIVER, HEIST_DRIVER
 	), of(LEADER, 1, DRIVER, 1));
 
-	private final Map<Category, Task> tasks;
-	private final Map<Category, Integer> requiredCategory;
+	private final Map<Position, Task> tasks;
+	private final Map<Position, Integer> quorum;
 
-	MultiPlayerTask(Map<Category, Task> tasks, Map<Category, Integer> requiredCategory) {
+	MultiPlayerTask(Map<Position, Task> tasks, Map<Position, Integer> quorum) {
 		this.tasks = tasks;
-		this.requiredCategory = requiredCategory;
+		this.quorum = quorum;
 	}
 
 
-	public Map<Category, Task> getTasks() {
+	public Map<Position, Task> getTasks() {
 		return Collections.unmodifiableMap(tasks);
 	}
 
-	public Map<Category, Integer> getRequiredCategory() {
-		return Collections.unmodifiableMap(requiredCategory);
+	public Map<Position, Integer> getQuorum() {
+		return Collections.unmodifiableMap(quorum);
 	}
 
-	// todo rename as Position
-	public enum Category {
+	public enum Position {
 		LEADER,
 
 		DRIVER,

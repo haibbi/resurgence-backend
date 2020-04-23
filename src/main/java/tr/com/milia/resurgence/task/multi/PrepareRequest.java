@@ -7,12 +7,12 @@ import java.util.Map;
 
 class PrepareRequest {
 	@NotNull
-	MultiPlayerTask.Category category;
+	MultiPlayerTask.Position position;
 
 	Map<Item, Integer> selectedItems;
 
-	public void setCategory(MultiPlayerTask.Category category) {
-		this.category = category;
+	public void setPosition(MultiPlayerTask.Position position) {
+		this.position = position;
 	}
 
 	public void setSelectedItems(Map<Item, Integer> selectedItems) {

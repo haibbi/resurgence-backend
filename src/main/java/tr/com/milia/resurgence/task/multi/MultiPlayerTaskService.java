@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static tr.com.milia.resurgence.task.multi.MultiPlayerTask.Category.LEADER;
+import static tr.com.milia.resurgence.task.multi.MultiPlayerTask.Position.LEADER;
 
 @Service
 public class MultiPlayerTaskService {
@@ -32,16 +32,16 @@ public class MultiPlayerTaskService {
 		this.playerService = playerService;
 	}
 
-	public void invite(String leader, String playerName, MultiPlayerTask.Category category) {
+	public void invite(String leader, String playerName, MultiPlayerTask.Position position) {
 		if (INVITATION.containsKey(playerName))
 			throw new RuntimeException("Player already invited another multiple task");
 		if (!PREPARATION.containsKey(leader))
 			throw new RuntimeException("Leader does not ready to invite other people");
-		if (category == LEADER)
+		if (position == LEADER)
 			throw new RuntimeException("Multiple task must have only one leader");
 		if (playerService.findByName(playerName).isEmpty()) throw new PlayerNotFound();
 
-		INVITATION.put(playerName, new Invitation(leader, category));
+		INVITATION.put(playerName, new Invitation(leader, position));
 	}
 
 	public Map<String, Status> status(String playerName) {
@@ -57,7 +57,7 @@ public class MultiPlayerTaskService {
 			.forEach(e -> {
 				String player = e.getKey();
 				Invitation invitation = e.getValue();
-				result.put(player, new Status(invitation.category, null, true, false));
+				result.put(player, new Status(invitation.position, null, true, false));
 			});
 
 		PREPARATION.entrySet().stream()
@@ -66,12 +66,12 @@ public class MultiPlayerTaskService {
 				String player = e.getKey();
 				Preparation preparation = e.getValue();
 				if (result.containsKey(player)) {
-					result.put(player, new Status(preparation.category,
+					result.put(player, new Status(preparation.position,
 						preparation.selectedItems,
 						true,
 						true));
 				} else {
-					result.put(player, new Status(preparation.category,
+					result.put(player, new Status(preparation.position,
 						preparation.selectedItems,
 						false,
 						true));
@@ -90,18 +90,18 @@ public class MultiPlayerTaskService {
 
 	public void exit(String playerName) {
 		Invitation invitation = INVITATION.remove(playerName);
-		if (invitation != null && invitation.category == LEADER) {
+		if (invitation != null && invitation.position == LEADER) {
 			INVITATION.entrySet().removeIf(e -> playerName.equals(e.getValue().leader));
 		}
 		Preparation preparation = PREPARATION.remove(playerName);
-		if (preparation != null && preparation.category == LEADER) {
+		if (preparation != null && preparation.position == LEADER) {
 			PREPARATION.entrySet().removeIf(e -> playerName.equals(e.getValue().leader));
 		}
 	}
 
-	public void prepare(String playerName, MultiPlayerTask.Category category, Map<Item, Integer> selectedItems) {
+	public void prepare(String playerName, MultiPlayerTask.Position position, Map<Item, Integer> selectedItems) {
 		final String leader;
-		if (category != LEADER) {
+		if (position != LEADER) {
 			Invitation invitation = INVITATION.get(playerName);
 			if (invitation == null) throw new RuntimeException("You are not invite any multiple task");
 			leader = invitation.leader;
@@ -110,10 +110,10 @@ public class MultiPlayerTaskService {
 				throw new RuntimeException("You are already invited a multiplayer task. You cannot leader!");
 			leader = playerName;
 		}
-		if (PREPARATION.containsKey(playerName) && PREPARATION.get(playerName).category != category) {
+		if (PREPARATION.containsKey(playerName) && PREPARATION.get(playerName).position != position) {
 			throw new RuntimeException("You cannot change your position");
 		}
-		PREPARATION.put(playerName, new Preparation(leader, category, selectedItems));
+		PREPARATION.put(playerName, new Preparation(leader, position, selectedItems));
 	}
 
 	@Transactional
@@ -135,19 +135,19 @@ public class MultiPlayerTaskService {
 				throw new RuntimeException("Members does not prepared for multiplayer task");
 		});
 
-		task.getRequiredCategory().forEach((category, count) -> {
+		task.getQuorum().forEach((position, count) -> {
 			var categories = members.stream()
 				.map(PREPARATION::get)
-				.map(Preparation::getCategory)
+				.map(Preparation::getPosition)
 				.collect(Collectors.toList());
 
-			if (count != Collections.frequency(categories, category))
+			if (count != Collections.frequency(categories, position))
 				throw new RuntimeException("ekibini düzgün topla gel");
 		});
 
 		Map<String, TaskResult> results = members.stream().map(player -> {
 			Preparation preparation = PREPARATION.get(player);
-			Task singleTask = task.getTasks().get(preparation.category);
+			Task singleTask = task.getTasks().get(preparation.position);
 			TaskResult result = taskService.perform(singleTask, player, preparation.selectedItems);
 			return Map.entry(player, result);
 		}).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

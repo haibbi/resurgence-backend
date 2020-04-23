@@ -19,12 +19,12 @@ public class MultiPlayerTaskController {
 		this.service = service;
 	}
 
-	@PostMapping("/invite/{category}/{playerName}")
+	@PostMapping("/invite/{position}/{playerName}")
 	public void invite(TokenAuthentication authentication,
-					   @PathVariable("category") MultiPlayerTask.Category category,
+					   @PathVariable("position") MultiPlayerTask.Position position,
 					   @PathVariable("playerName") String playerName) {
 		String leader = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
-		service.invite(leader, playerName, category);
+		service.invite(leader, playerName, position);
 	}
 
 	@DeleteMapping("/remove/{playerName}")
@@ -42,7 +42,7 @@ public class MultiPlayerTaskController {
 	@PostMapping("/prepare")
 	public void prepare(TokenAuthentication authentication, @RequestBody @Validated PrepareRequest request) {
 		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
-		service.prepare(playerName, request.category, request.selectedItems);
+		service.prepare(playerName, request.position, request.selectedItems);
 	}
 
 	@PostMapping("/perform/{task}")

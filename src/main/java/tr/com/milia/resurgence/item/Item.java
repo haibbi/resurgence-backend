@@ -42,7 +42,6 @@ public enum Item {
 		return category;
 	}
 
-	// todo rename item type
 	public enum Category {
 
 		WEAPON,

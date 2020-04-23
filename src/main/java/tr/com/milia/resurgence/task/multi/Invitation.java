@@ -2,18 +2,18 @@ package tr.com.milia.resurgence.task.multi;
 
 class Invitation {
 	final String leader;
-	final MultiPlayerTask.Category category;
+	final MultiPlayerTask.Position position;
 
-	public Invitation(String leader, MultiPlayerTask.Category category) {
+	public Invitation(String leader, MultiPlayerTask.Position position) {
 		this.leader = leader;
-		this.category = category;
+		this.position = position;
 	}
 
 	public String getLeader() {
 		return leader;
 	}
 
-	public MultiPlayerTask.Category getCategory() {
-		return category;
+	public MultiPlayerTask.Position getPosition() {
+		return position;
 	}
 }
