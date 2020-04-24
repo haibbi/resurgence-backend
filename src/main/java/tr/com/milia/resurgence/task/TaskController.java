@@ -21,7 +21,8 @@ public class TaskController {
 	public TaskResultResponse perform(TokenAuthentication authentication,
 									  @PathVariable("task") Task task,
 									  @RequestBody TaskRequest request) {
-		// todo player cant perform multiplayer task from directly from here
+		if (!task.isPerformSolo()) throw new SoloTaskException();
+
 		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
 		TaskResult result = service.perform(task, playerName, request.selectedItems);
 		return new TaskResultResponse(result);

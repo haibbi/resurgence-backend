@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.time.Duration.ofDays;
-import static java.time.Duration.ofMinutes;
+import static java.time.Duration.ofSeconds;
 import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
 public enum Task implements LocaleEnum {
@@ -21,9 +21,10 @@ public enum Task implements LocaleEnum {
 		Set.of(SNEAK),
 		BigDecimal.valueOf(50_000),
 		1_000,
-		ofMinutes(0),
+		ofSeconds(1),
 		Set.of(Drop.of(Item.KNIFE, 1, .10)),
-		Map.of(Item.Category.WEAPON, 1)),
+		Map.of(Item.Category.WEAPON, 1),
+		true),
 
 	HEIST_LEADER(100,
 		Set.of(SNEAK),
@@ -32,7 +33,8 @@ public enum Task implements LocaleEnum {
 		10_000,
 		ofDays(1),
 		Set.of(Drop.of(Item.GLOCK, 1, .10)),
-		Map.of(Item.Category.WEAPON, 1)),
+		Map.of(Item.Category.WEAPON, 1),
+		false),
 
 	HEIST_DRIVER(50,
 		Set.of(SNEAK),
@@ -41,7 +43,8 @@ public enum Task implements LocaleEnum {
 		10_000,
 		ofDays(1),
 		Set.of(Drop.of(Item.FORD_FIESTA, 1, .10)),
-		Map.of(Item.Category.VEHICLE, 1));
+		Map.of(Item.Category.VEHICLE, 1),
+		false);
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
@@ -56,6 +59,8 @@ public enum Task implements LocaleEnum {
 	 */
 	private final Map<Item.Category, Integer> requiredItemCategory;
 
+	private final boolean performSolo;
+
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
 		 Set<Skill> skillGain,
@@ -63,7 +68,8 @@ public enum Task implements LocaleEnum {
 		 int experienceGain,
 		 Duration duration,
 		 Set<Drop> drop,
-		 Map<Item.Category, Integer> requiredItemCategory) {
+		 Map<Item.Category, Integer> requiredItemCategory,
+		 boolean performSolo) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
 		this.skillGain = skillGain;
@@ -71,6 +77,7 @@ public enum Task implements LocaleEnum {
 		this.experienceGain = experienceGain;
 		this.duration = duration;
 		this.drop = drop;
+		this.performSolo = performSolo;
 		if (requiredItemCategory.values().stream().anyMatch(i -> i <= 0)) {
 			throw new IllegalStateException("Required item count should positive");
 		}
@@ -107,5 +114,9 @@ public enum Task implements LocaleEnum {
 
 	public Map<Item.Category, Integer> getRequiredItemCategory() {
 		return Collections.unmodifiableMap(requiredItemCategory);
+	}
+
+	public boolean isPerformSolo() {
+		return performSolo;
 	}
 }
