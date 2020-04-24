@@ -13,14 +13,14 @@ public class TaskSucceedResult extends TaskResult {
 	private final int experienceGain;
 	private final BigDecimal moneyGain;
 	private final Set<Skill> skillGain;
-	private final Map<Item, Integer> drop;
+	private final Set<Drop> drop;
 
 	public TaskSucceedResult(Player player,
 							 Task task,
 							 int experienceGain,
 							 BigDecimal moneyGain,
 							 Set<Skill> skillGain,
-							 Map<Item, Integer> drop,
+							 Set<Drop> drop,
 							 Map<Item, Integer> usedItems) {
 		super(player, task, usedItems);
 		this.experienceGain = experienceGain;
@@ -41,7 +41,7 @@ public class TaskSucceedResult extends TaskResult {
 		return skillGain == null ? Collections.emptySet() : Collections.unmodifiableSet(skillGain);
 	}
 
-	public Map<Item, Integer> getDrop() {
-		return drop == null ? Collections.emptyMap() : Collections.unmodifiableMap(drop);
+	public Set<Drop> getDrop() {
+		return drop == null ? Collections.emptySet() : Collections.unmodifiableSet(drop);
 	}
 }

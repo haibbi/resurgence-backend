@@ -22,12 +22,26 @@ public enum Task implements LocaleEnum {
 		BigDecimal.valueOf(50_000),
 		1_000,
 		ofMinutes(0),
-		Map.of(Item.KNIFE, 1),
+		Set.of(Drop.of(Item.KNIFE, 1, .10)),
 		Map.of(Item.Category.WEAPON, 1)),
-	HEIST_LEADER(100, Set.of(SNEAK), Set.of(SNEAK), BigDecimal.valueOf(100_000), 10_000,
-		ofDays(1), Map.of(Item.GLOCK, 1), Map.of(Item.Category.WEAPON, 1)),
-	HEIST_DRIVER(50, Set.of(SNEAK), Set.of(SNEAK), BigDecimal.valueOf(100_000), 10_000,
-		ofDays(1), Map.of(Item.FORD_FIESTA, 1), Map.of(Item.Category.VEHICLE, 1));
+
+	HEIST_LEADER(100,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		BigDecimal.valueOf(100_000),
+		10_000,
+		ofDays(1),
+		Set.of(Drop.of(Item.GLOCK, 1, .10)),
+		Map.of(Item.Category.WEAPON, 1)),
+
+	HEIST_DRIVER(50,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		BigDecimal.valueOf(100_000),
+		10_000,
+		ofDays(1),
+		Set.of(Drop.of(Item.FORD_FIESTA, 1, .10)),
+		Map.of(Item.Category.VEHICLE, 1));
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
@@ -35,7 +49,7 @@ public enum Task implements LocaleEnum {
 	private final BigDecimal moneyGain;
 	private final int experienceGain;
 	private final Duration duration;
-	private final Map<Item, Integer> drop;
+	private final Set<Drop> drop;
 
 	/**
 	 * Value değerleri sıfır olamaz! O halde required değildir.
@@ -48,7 +62,7 @@ public enum Task implements LocaleEnum {
 		 BigDecimal moneyGain,
 		 int experienceGain,
 		 Duration duration,
-		 Map<Item, Integer> drop,
+		 Set<Drop> drop,
 		 Map<Item.Category, Integer> requiredItemCategory) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
@@ -87,8 +101,8 @@ public enum Task implements LocaleEnum {
 		return duration;
 	}
 
-	public Map<Item, Integer> getDrop() {
-		return Collections.unmodifiableMap(drop);
+	public Set<Drop> getDrop() {
+		return Collections.unmodifiableSet(drop);
 	}
 
 	public Map<Item.Category, Integer> getRequiredItemCategory() {

@@ -1,11 +1,10 @@
 package tr.com.milia.resurgence.task;
 
-import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.skill.Skill;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TaskResultResponse {
 
@@ -13,7 +12,7 @@ public class TaskResultResponse {
 	private int experienceGain;
 	private BigDecimal moneyGain;
 	private Set<Skill> skillGain;
-	private Map<Item, Integer> drop;
+	private Set<DropResponse> drop;
 
 	public TaskResultResponse(TaskResult result) {
 		this.succeed = result.isSucceed();
@@ -22,7 +21,7 @@ public class TaskResultResponse {
 			experienceGain = succeedResult.getExperienceGain();
 			moneyGain = succeedResult.getMoneyGain();
 			skillGain = succeedResult.getSkillGain();
-			drop = succeedResult.getDrop();
+			drop = succeedResult.getDrop().stream().map(DropResponse::new).collect(Collectors.toSet());
 		}
 	}
 
@@ -42,7 +41,7 @@ public class TaskResultResponse {
 		return skillGain;
 	}
 
-	public Map<Item, Integer> getDrop() {
+	public Set<DropResponse> getDrop() {
 		return drop;
 	}
 }
