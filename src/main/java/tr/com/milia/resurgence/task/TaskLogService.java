@@ -20,6 +20,11 @@ public class TaskLogService {
 		});
 	}
 
+	@EventListener(TaskStartedEvent.class)
+	public void onTaskStartedEvent(TaskStartedEvent event) {
+		checkPerform(event.getPlayer(), event.getTask());
+	}
+
 	@EventListener(TaskResult.class)
 	public void onTaskResult(TaskResult result) {
 		repository.save(new TaskLog(result.getTask(), result.getPlayer(), result.isSucceed()));

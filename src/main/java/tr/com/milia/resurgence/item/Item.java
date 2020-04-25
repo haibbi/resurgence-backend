@@ -8,16 +8,18 @@ import java.util.Set;
 
 public enum Item {
 
-	KNIFE(BigDecimal.ZERO, Map.of(Skill.SNEAK, 15), Quality.COMMON);
+	KNIFE(BigDecimal.ZERO, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON));
 
 	private final BigDecimal price;
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;
+	private final Set<Category> category;
 
-	Item(BigDecimal price, Map<Skill, Integer> skills, Quality quality) {
+	Item(BigDecimal price, Map<Skill, Integer> skills, Quality quality, Set<Category> category) {
 		this.price = price;
 		this.skills = skills;
 		this.quality = quality;
+		this.category = category;
 	}
 
 	public BigDecimal getPrice() {
@@ -32,4 +34,15 @@ public enum Item {
 			.sum();
 	}
 
+	public Set<Category> getCategory() {
+		return category;
+	}
+
+	public enum Category {
+
+		WEAPON,
+
+		VEHICLE,
+
+	}
 }

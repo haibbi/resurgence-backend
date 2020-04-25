@@ -43,6 +43,10 @@ public class PlayerItem {
 		quantity -= value;
 	}
 
+	public int getQuantity() {
+		return quantity;
+	}
+
 	public Item getItem() {
 		return item;
 	}

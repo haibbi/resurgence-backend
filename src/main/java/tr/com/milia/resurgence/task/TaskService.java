@@ -1,14 +1,17 @@
 package tr.com.milia.resurgence.task;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.RandomUtils;
-import tr.com.milia.resurgence.item.PlayerItem;
+import tr.com.milia.resurgence.item.Item;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,28 +20,27 @@ public class TaskService {
 
 	private final double PH = .10;
 	private final PlayerService playerService;
-	private final TaskLogService taskLogService;
 	private final ApplicationEventPublisher eventPublisher;
 
-	public TaskService(PlayerService playerService,
-					   TaskLogService taskLogService,
-					   ApplicationEventPublisher eventPublisher) {
+	public TaskService(PlayerService playerService, ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
-		this.taskLogService = taskLogService;
 		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional
-	public TaskResult perform(Task task, String username) {
-		TaskResult taskResult = performInternal(task, username);
+	public TaskResult perform(Task task, String username, @Nullable Map<Item, Integer> selectedItems) {
+		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
+
+		selectedItems = selectedItems == null ? Collections.emptyMap() : selectedItems;
+
+		eventPublisher.publishEvent(new TaskStartedEvent(player, task, selectedItems));
+		TaskResult taskResult = performInternal(task, player, selectedItems);
 		eventPublisher.publishEvent(taskResult);
+
 		return taskResult;
 	}
 
-	private TaskResult performInternal(Task task, String username) {
-		var player = playerService.findByUsername(username).orElseThrow(PlayerNotFound::new);
-		taskLogService.checkPerform(player, task);
-
+	private TaskResult performInternal(Task task, Player player, Map<Item, Integer> selectedItems) {
 		var playerSkills = player.getSkills();
 
 		// todo level'den geleni ekle
@@ -52,9 +54,8 @@ public class TaskService {
 		}).sum();
 
 		// item contribution
-		sum += player.getItems().stream()
-			.map(PlayerItem::getItem)
-			.mapToInt(i -> i.getSkillsContribution(task.getAuxiliary()))
+		sum += selectedItems.entrySet().stream()
+			.mapToInt(e -> e.getKey().getSkillsContribution(task.getAuxiliary()) * e.getValue())
 			.sum();
 
 		double success = sum / task.getDifficulty();
@@ -62,7 +63,7 @@ public class TaskService {
 		double random = RandomUtils.random();
 
 		if (random > success) {
-			return new TaskFailedResult(player, task);
+			return new TaskFailedResult(player, task, selectedItems);
 		}
 
 		double gainRatio = random / success;
@@ -76,7 +77,7 @@ public class TaskService {
 			.filter(item -> RandomUtils.random() <= PH)
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop);
+		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop, selectedItems);
 	}
 
 }

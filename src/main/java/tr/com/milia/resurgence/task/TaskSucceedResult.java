@@ -20,8 +20,9 @@ public class TaskSucceedResult extends TaskResult {
 							 int experienceGain,
 							 BigDecimal moneyGain,
 							 Set<Skill> skillGain,
-							 Map<Item, Integer> drop) {
-		super(player, task);
+							 Map<Item, Integer> drop,
+							 Map<Item, Integer> usedItems) {
+		super(player, task, usedItems);
 		this.experienceGain = experienceGain;
 		this.moneyGain = moneyGain;
 		this.skillGain = skillGain;
