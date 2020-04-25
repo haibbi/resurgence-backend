@@ -11,7 +11,6 @@ import tr.com.milia.resurgence.task.TaskResult;
 import tr.com.milia.resurgence.task.TaskService;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +41,12 @@ public class SmugglingService {
 
 		int requiredMoney = task.getRequiredItemCategory().get(Item.Category.MONEY) * repeat;
 
-		if (player.getBalance().compareTo(BigDecimal.valueOf(requiredMoney)) < 0) {
+		if (player.getBalance() < requiredMoney) {
 			throw new NotEnoughMoneyException();
 		}
 
 		playerItemService.addItem(player, Item.MONEY, requiredMoney);
-		player.decreaseBalance(BigDecimal.valueOf(requiredMoney));
+		player.decreaseBalance(requiredMoney);
 
 		List<TaskResult> results = new LinkedList<>();
 		for (int i = 0; i < repeat; i++) {

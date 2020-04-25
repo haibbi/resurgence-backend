@@ -69,7 +69,7 @@ public class TaskService {
 		double gainRatio = random / success;
 
 		int experienceGain = (int) (task.getExperienceGain() * gainRatio);
-		var moneyGain = task.getMoneyGain().multiply(BigDecimal.valueOf(gainRatio));
+		int moneyGain = (int) (task.getMoneyGain() * gainRatio);
 		var gainedSkills = task.getSkillGain().stream()
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());

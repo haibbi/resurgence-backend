@@ -52,6 +52,7 @@ public class PlayerItemService {
 					.map(PlayerItem::getQuantity)
 					.orElse(0))
 				.sum();
+			// todo control if player have selected item
 			if (quantity < count) throw new RequiredItemException(category.name());
 		});
 	}

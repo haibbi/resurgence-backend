@@ -2,7 +2,7 @@ create table player
 (
     id         bigserial       not null
         constraint player_pk primary key,
-    balance    numeric(19, 2)  not null,
+    balance    integer         not null,
     health     integer         not null,
     honor      integer         not null,
     experience integer         not null,

@@ -6,13 +6,11 @@ import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 import tr.com.milia.resurgence.item.Item;
-import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.skill.PlayerSkill;
 import tr.com.milia.resurgence.skill.Skill;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -136,7 +134,7 @@ class TaskServiceTest {
 		assert result instanceof TaskSucceedResult;
 		TaskSucceedResult succeedResult = (TaskSucceedResult) result;
 		assert succeedResult.getExperienceGain() > 0;
-		assert succeedResult.getMoneyGain().compareTo(BigDecimal.ZERO) > 0;
+		assert succeedResult.getMoneyGain() > 0;
 		assert succeedResult.getSkillGain() != null;
 
 		if (!succeedResult.getSkillGain().isEmpty()) {

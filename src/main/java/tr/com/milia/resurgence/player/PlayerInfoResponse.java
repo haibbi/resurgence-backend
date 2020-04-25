@@ -1,11 +1,9 @@
 package tr.com.milia.resurgence.player;
 
-import java.math.BigDecimal;
-
 class PlayerInfoResponse {
 	private final String nickname;
 	private final String image;
-	private final BigDecimal balance;
+	private final int balance;
 	private final int health;
 	private final int honor;
 
@@ -25,7 +23,7 @@ class PlayerInfoResponse {
 		return image;
 	}
 
-	public BigDecimal getBalance() {
+	public int getBalance() {
 		return balance;
 	}
 

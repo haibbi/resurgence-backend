@@ -2,7 +2,6 @@ package tr.com.milia.resurgence.task;
 
 import tr.com.milia.resurgence.skill.Skill;
 
-import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,7 +9,7 @@ public class TaskResultResponse {
 
 	private final boolean succeed;
 	private int experienceGain;
-	private BigDecimal moneyGain;
+	private int moneyGain;
 	private Set<Skill> skillGain;
 	private Set<DropResponse> drop;
 
@@ -33,7 +32,7 @@ public class TaskResultResponse {
 		return experienceGain;
 	}
 
-	public BigDecimal getMoneyGain() {
+	public int getMoneyGain() {
 		return moneyGain;
 	}
 
