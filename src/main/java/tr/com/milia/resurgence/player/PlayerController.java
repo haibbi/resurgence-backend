@@ -31,7 +31,7 @@ public class PlayerController {
 	@PostMapping
 	public PlayerInfoResponse create(@RequestBody @Validated CreatePlayerRequest request,
 									 Principal principal) {
-		var player = service.create(request.name, principal.getName());
+		var player = service.create(request.name, principal.getName(), request.race);
 		return new PlayerInfoResponse(player);
 	}
 }

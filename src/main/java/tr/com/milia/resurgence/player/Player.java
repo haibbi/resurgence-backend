@@ -46,12 +46,17 @@ public class Player extends AbstractAggregateRoot<Player> {
 	@OneToMany(mappedBy = "player")
 	private Set<PlayerItem> items;
 
+	@Enumerated(value = EnumType.STRING)
+	@Column(nullable = false, updatable = false)
+	private Race race;
+
 	public Player() {
 	}
 
-	public Player(Account account, String name, int balance, int health, int honor) {
+	public Player(Account account, String name, Race race, int balance, int health, int honor) {
 		this.account = account;
 		this.name = name;
+		this.race = race;
 		this.balance = balance;
 		this.health = health;
 		this.honor = honor;
@@ -123,5 +128,9 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public Set<PlayerItem> getItems() {
 		return items == null ? Collections.emptySet() : Collections.unmodifiableSet(items);
+	}
+
+	public Race getRace() {
+		return race;
 	}
 }

@@ -26,13 +26,13 @@ public class PlayerService {
 		return repository.findByAccount_Email(username);
 	}
 
-	public Player create(String name, String username) {
+	public Player create(String name, String username, Race race) {
 		if (findByName(name).isPresent()) throw new NameAlreadyExistsException(name);
 		if (findByUsername(username).isPresent()) throw new AccountAlreadyConnectedPlayer();
 
 		var account = accountService.findByEmail(username).orElseThrow(AccountNotFound::new);
 
-		var player = new Player(account, name, 500, 100, 0);
+		var player = new Player(account, name, race, 500, 100, 0);
 
 		player.created();
 		return repository.save(player);
