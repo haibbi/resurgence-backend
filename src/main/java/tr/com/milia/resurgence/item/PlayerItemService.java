@@ -2,6 +2,7 @@ package tr.com.milia.resurgence.item;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.task.TaskResult;
 import tr.com.milia.resurgence.task.TaskStartedEvent;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
@@ -13,6 +14,13 @@ public class PlayerItemService {
 
 	public PlayerItemService(PlayerItemRepository repository) {
 		this.repository = repository;
+	}
+
+	public void addItem(Player player, Item item, int quantity) {
+		repository.findByPlayerAndItem(player, item).ifPresentOrElse(
+			playerItem -> playerItem.add(quantity),
+			() -> repository.save(new PlayerItem(player, item, quantity))
+		);
 	}
 
 	@EventListener(TaskSucceedResult.class)

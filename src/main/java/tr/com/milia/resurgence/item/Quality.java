@@ -3,6 +3,11 @@ package tr.com.milia.resurgence.item;
 public enum Quality {
 
 	/**
+	 * Worthless item quality
+	 */
+	WORTHLESS(0),
+
+	/**
 	 * Common item quality
 	 */
 	COMMON(1),
