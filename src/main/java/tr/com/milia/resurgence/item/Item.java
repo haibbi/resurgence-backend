@@ -2,7 +2,6 @@ package tr.com.milia.resurgence.item;
 
 import tr.com.milia.resurgence.skill.Skill;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,26 +10,30 @@ import static java.util.Collections.emptySet;
 
 public enum Item {
 
-	KNIFE(BigDecimal.ZERO, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON)),
-	GLOCK(BigDecimal.valueOf(100), emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
-	MONEY(BigDecimal.ONE, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
-	BEER(BigDecimal.valueOf(500), emptyMap(), Quality.WORTHLESS, emptySet()),
-	FORD_FIESTA(BigDecimal.valueOf(10_000), emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE));
+	KNIFE(0, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON)),
+	GLOCK(100, emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
+	MONEY(1, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
+	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
+	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE));
 
-	private final BigDecimal price;
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;
 	private final Set<Category> category;
+	private int price;
 
-	Item(BigDecimal price, Map<Skill, Integer> skills, Quality quality, Set<Category> category) {
+	Item(int price, Map<Skill, Integer> skills, Quality quality, Set<Category> category) {
 		this.price = price;
 		this.skills = skills;
 		this.quality = quality;
 		this.category = category;
 	}
 
-	public BigDecimal getPrice() {
+	public int getPrice() {
 		return price;
+	}
+
+	void setPrice(int value) {
+		price = value;
 	}
 
 	public int getSkillsContribution(Set<Skill> useOnly) {

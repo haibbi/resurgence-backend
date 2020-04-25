@@ -4,7 +4,6 @@ import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.skill.Skill;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -20,7 +19,7 @@ public enum Task implements LocaleEnum {
 	BANK_RUBBERY(150,
 		Set.of(SNEAK),
 		Set.of(SNEAK),
-		BigDecimal.valueOf(50_000),
+		50_000,
 		1_000,
 		ofSeconds(1),
 		Set.of(Drop.of(Item.KNIFE, 1, .10)),
@@ -31,18 +30,23 @@ public enum Task implements LocaleEnum {
 		100,
 		Set.of(SNEAK),
 		emptySet(),
-		BigDecimal.ZERO,
+		0,
 		0,
 		Duration.ofMillis(0),
 		Set.of(Drop.of(Item.BEER, 1, 1)),
-		Map.of(Item.Category.MONEY, Item.BEER.getPrice().intValue()),
+		Map.of(Item.Category.MONEY, Item.BEER.getPrice()),
 		true
-	),
+	) {
+		@Override
+		public Map<Item.Category, Integer> getRequiredItemCategory() {
+			return Map.of(Item.Category.MONEY, Item.BEER.getPrice());
+		}
+	},
 
 	HEIST_LEADER(100,
 		Set.of(SNEAK),
 		Set.of(SNEAK),
-		BigDecimal.valueOf(100_000),
+		100_000,
 		10_000,
 		ofDays(1),
 		Set.of(Drop.of(Item.GLOCK, 1, .10)),
@@ -52,7 +56,7 @@ public enum Task implements LocaleEnum {
 	HEIST_DRIVER(50,
 		Set.of(SNEAK),
 		Set.of(SNEAK),
-		BigDecimal.valueOf(100_000),
+		100_000,
 		10_000,
 		ofDays(1),
 		Set.of(Drop.of(Item.FORD_FIESTA, 1, .10)),
@@ -62,7 +66,7 @@ public enum Task implements LocaleEnum {
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
 	private final Set<Skill> skillGain;
-	private final BigDecimal moneyGain;
+	private final int moneyGain;
 	private final int experienceGain;
 	private final Duration duration;
 	private final Set<Drop> drop;
@@ -77,7 +81,7 @@ public enum Task implements LocaleEnum {
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
 		 Set<Skill> skillGain,
-		 BigDecimal moneyGain,
+		 int moneyGain,
 		 int experienceGain,
 		 Duration duration,
 		 Set<Drop> drop,
@@ -109,7 +113,7 @@ public enum Task implements LocaleEnum {
 		return Collections.unmodifiableSet(skillGain);
 	}
 
-	public BigDecimal getMoneyGain() {
+	public int getMoneyGain() {
 		return moneyGain;
 	}
 

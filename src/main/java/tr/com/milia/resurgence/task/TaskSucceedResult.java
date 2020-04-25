@@ -4,21 +4,20 @@ import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.skill.Skill;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 public class TaskSucceedResult extends TaskResult {
 	private final int experienceGain;
-	private final BigDecimal moneyGain;
+	private final int moneyGain;
 	private final Set<Skill> skillGain;
 	private final Set<Drop> drop;
 
 	public TaskSucceedResult(Player player,
 							 Task task,
 							 int experienceGain,
-							 BigDecimal moneyGain,
+							 int moneyGain,
 							 Set<Skill> skillGain,
 							 Set<Drop> drop,
 							 Map<Item, Integer> usedItems) {
@@ -33,7 +32,7 @@ public class TaskSucceedResult extends TaskResult {
 		return experienceGain;
 	}
 
-	public BigDecimal getMoneyGain() {
+	public int getMoneyGain() {
 		return moneyGain;
 	}
 

@@ -7,7 +7,6 @@ import tr.com.milia.resurgence.skill.PlayerSkill;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	@Column(nullable = false)
 	@Min(0)
-	private BigDecimal balance;
+	private int balance;
 
 	@Column(nullable = false)
 	@Min(0)
@@ -50,7 +49,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 	public Player() {
 	}
 
-	public Player(Account account, String name, BigDecimal balance, int health, int honor) {
+	public Player(Account account, String name, int balance, int health, int honor) {
 		this.account = account;
 		this.name = name;
 		this.balance = balance;
@@ -62,14 +61,14 @@ public class Player extends AbstractAggregateRoot<Player> {
 		registerEvent(new PlayerCreatedEvent(this));
 	}
 
-	public BigDecimal increaseBalance(BigDecimal value) {
-		if (value.signum() < 0) throw new IllegalStateException();
-		return balance = balance.add(value);
+	public int increaseBalance(int value) {
+		if (value < 0) throw new IllegalStateException();
+		return balance += value;
 	}
 
-	public BigDecimal decreaseBalance(BigDecimal value) {
-		if (value.signum() < 0 || value.compareTo(balance) > 0) throw new IllegalStateException();
-		return balance = balance.subtract(value);
+	public int decreaseBalance(int value) {
+		if (value < 0 || value > balance) throw new IllegalStateException();
+		return balance -= value;
 	}
 
 	public int increaseHonor(int value) {
@@ -106,7 +105,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 		this.image = image;
 	}
 
-	public BigDecimal getBalance() {
+	public int getBalance() {
 		return balance;
 	}
 

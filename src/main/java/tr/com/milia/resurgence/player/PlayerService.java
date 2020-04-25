@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.account.AccountService;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -33,7 +32,7 @@ public class PlayerService {
 
 		var account = accountService.findByEmail(username).orElseThrow(AccountNotFound::new);
 
-		var player = new Player(account, name, BigDecimal.valueOf(500L), 100, 0);
+		var player = new Player(account, name, 500, 100, 0);
 
 		player.created();
 		return repository.save(player);
