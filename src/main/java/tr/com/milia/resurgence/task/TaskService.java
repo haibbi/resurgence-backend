@@ -73,9 +73,9 @@ public class TaskService {
 		var gainedSkills = task.getSkillGain().stream()
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());
-		var drop = task.getDrop().entrySet().stream()
-			.filter(item -> RandomUtils.random() <= PH)
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		var drop = task.getDrop().stream()
+			.filter(d -> RandomUtils.random() <= d.getRatio())
+			.collect(Collectors.toSet());
 
 		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop, selectedItems);
 	}

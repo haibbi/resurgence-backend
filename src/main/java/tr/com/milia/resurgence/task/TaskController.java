@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.task;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +17,13 @@ public class TaskController {
 		this.service = service;
 	}
 
-	@PostMapping
-	public TaskResultResponse perform(TokenAuthentication authentication, @RequestBody TaskRequest request) {
+	@PostMapping("/{task}")
+	public TaskResultResponse perform(TokenAuthentication authentication,
+									  @PathVariable("task") Task task,
+									  @RequestBody TaskRequest request) {
+		// todo player cant perform multiplayer task from directly from here
 		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
-		TaskResult result = service.perform(Task.BANK_RUBBERY, playerName, request.selectedItems);
+		TaskResult result = service.perform(task, playerName, request.selectedItems);
 		return new TaskResultResponse(result);
 	}
 

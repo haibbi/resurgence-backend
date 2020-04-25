@@ -20,9 +20,9 @@ public class PlayerItemService {
 		var drop = result.getDrop();
 		var player = result.getPlayer();
 
-		for (var entry : drop.entrySet()) {
-			Item item = entry.getKey();
-			int quantity = entry.getValue();
+		for (var entry : drop) {
+			Item item = entry.getItem();
+			int quantity = entry.getQuantity();
 			repository.findByPlayerAndItem(player, item).ifPresentOrElse(
 				playerItem -> playerItem.add(quantity),
 				() -> repository.save(new PlayerItem(player, item, quantity))
