@@ -12,6 +12,7 @@ import java.util.Set;
 
 import static java.time.Duration.ofDays;
 import static java.time.Duration.ofSeconds;
+import static java.util.Collections.emptySet;
 import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
 public enum Task implements LocaleEnum {
@@ -25,6 +26,18 @@ public enum Task implements LocaleEnum {
 		Set.of(Drop.of(Item.KNIFE, 1, .10)),
 		Map.of(Item.Category.WEAPON, 1),
 		true),
+
+	BEER_SMUGGLING(
+		100,
+		Set.of(SNEAK),
+		emptySet(),
+		BigDecimal.ZERO,
+		0,
+		Duration.ofMillis(0),
+		Set.of(Drop.of(Item.BEER, 1, 1)),
+		Map.of(Item.Category.MONEY, Item.BEER.getPrice().intValue()),
+		true
+	),
 
 	HEIST_LEADER(100,
 		Set.of(SNEAK),

@@ -7,11 +7,14 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 
 public enum Item {
 
 	KNIFE(BigDecimal.ZERO, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON)),
 	GLOCK(BigDecimal.valueOf(100), emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
+	MONEY(BigDecimal.ONE, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
+	BEER(BigDecimal.valueOf(500), emptyMap(), Quality.WORTHLESS, emptySet()),
 	FORD_FIESTA(BigDecimal.valueOf(10_000), emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE));
 
 	private final BigDecimal price;
@@ -47,6 +50,8 @@ public enum Item {
 		WEAPON,
 
 		VEHICLE,
+
+		MONEY,
 
 	}
 }
