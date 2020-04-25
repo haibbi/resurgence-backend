@@ -4,8 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.security.Principal;
+import tr.com.milia.resurgence.security.TokenAuthentication;
 
 @RestController
 @RequestMapping("/task")
@@ -18,8 +17,9 @@ public class TaskController {
 	}
 
 	@PostMapping
-	public TaskResultResponse perform(Principal principal, @RequestBody TaskRequest request) {
-		TaskResult result = service.perform(Task.BANK_RUBBERY, principal.getName(), request.selectedItems);
+	public TaskResultResponse perform(TokenAuthentication authentication, @RequestBody TaskRequest request) {
+		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		TaskResult result = service.perform(Task.BANK_RUBBERY, playerName, request.selectedItems);
 		return new TaskResultResponse(result);
 	}
 

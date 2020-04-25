@@ -49,7 +49,7 @@ class TaskServiceTest {
 		ReflectionTestUtils.setField(player, "skills", Set.of(sneakSkill));
 
 		// mock
-		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
+		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
 		TaskResult result = taskService.perform(task, USERNAME, null);
@@ -73,7 +73,7 @@ class TaskServiceTest {
 		ReflectionTestUtils.setField(player, "skills", Set.of(sneakSkill));
 
 		// mock
-		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
+		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
 		TaskResult result = taskService.perform(task, USERNAME, null);
@@ -93,7 +93,7 @@ class TaskServiceTest {
 		ReflectionTestUtils.setField(player, "skills", Collections.emptySet());
 
 		// mock
-		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
+		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
 		TaskResult result = taskService.perform(task, USERNAME, null);
@@ -122,7 +122,7 @@ class TaskServiceTest {
 		ReflectionTestUtils.setField(player, "skills", Set.of(sneakSkill));
 
 		// mock
-		Mockito.when(playerService.findByUsername(eq(USERNAME))).thenReturn(Optional.of(player));
+		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
 		TaskResult result = taskService.perform(task, USERNAME, Map.of(item, 1));

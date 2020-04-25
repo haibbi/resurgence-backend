@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import static java.time.Duration.ofDays;
 import static java.time.Duration.ofMinutes;
 import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
@@ -22,7 +23,11 @@ public enum Task implements LocaleEnum {
 		1_000,
 		ofMinutes(0),
 		Map.of(Item.KNIFE, 1),
-		Map.of(Item.Category.WEAPON, 1));
+		Map.of(Item.Category.WEAPON, 1)),
+	HEIST_LEADER(100, Set.of(SNEAK), Set.of(SNEAK), BigDecimal.valueOf(100_000), 10_000,
+		ofDays(1), Map.of(Item.GLOCK, 1), Map.of(Item.Category.WEAPON, 1)),
+	HEIST_DRIVER(50, Set.of(SNEAK), Set.of(SNEAK), BigDecimal.valueOf(100_000), 10_000,
+		ofDays(1), Map.of(Item.FORD_FIESTA, 1), Map.of(Item.Category.VEHICLE, 1));
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;

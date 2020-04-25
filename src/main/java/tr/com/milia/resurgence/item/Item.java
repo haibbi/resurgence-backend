@@ -6,9 +6,13 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.emptyMap;
+
 public enum Item {
 
-	KNIFE(BigDecimal.ZERO, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON));
+	KNIFE(BigDecimal.ZERO, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON)),
+	GLOCK(BigDecimal.valueOf(100), emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
+	FORD_FIESTA(BigDecimal.valueOf(10_000), emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE));
 
 	private final BigDecimal price;
 	private final Map<Skill, Integer> skills;
