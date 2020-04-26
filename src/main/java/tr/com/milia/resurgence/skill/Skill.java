@@ -5,6 +5,11 @@ import tr.com.milia.resurgence.i18n.LocaleEnum;
 public enum Skill implements LocaleEnum {
 
 	/**
+	 * Ability to use weapons
+	 */
+	GUN_MASTERY(90),
+
+	/**
 	 * Increases the rate of not getting caught while performing task.
 	 */
 	SNEAK(90);

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -124,6 +125,62 @@ class TaskServiceTest {
 
 		// execution
 		TaskResult result = taskService.perform(task, USERNAME, Map.of(item, 1));
+
+		// asserts
+		assertSucceedTask(task, result);
+	}
+
+	@Test
+	void taskNonAuxiliaryTest() {
+		// task
+		Task task = Task.BANK_RUBBERY;
+		Skill nonAuxiliarySkill = Skill.GUN_MASTERY;
+		Skill auxiliarySkill = Skill.SNEAK;
+
+		ReflectionTestUtils.setField(task, "difficulty", 5);
+		ReflectionTestUtils.setField(nonAuxiliarySkill, "contribution", 5);
+		ReflectionTestUtils.setField(auxiliarySkill, "contribution", 5);
+
+		// player
+		Player player = new Player();
+		// the player have maximum skill expertise
+		PlayerSkill nonAuxiliaryPlayerSkill = new PlayerSkill(player, nonAuxiliarySkill, 100);
+		PlayerSkill auxiliaryPlayerSkill = new PlayerSkill(player, auxiliarySkill, 0);
+		ReflectionTestUtils.setField(player, "skills", Set.of(nonAuxiliaryPlayerSkill, auxiliaryPlayerSkill));
+
+		// mock
+		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
+
+		// execution
+		TaskResult result = taskService.perform(task, USERNAME, emptyMap());
+
+		// asserts
+		assertFailedTask(result);
+	}
+
+	@Test
+	void taskAuxiliaryTest() {
+		// task
+		Task task = Task.BANK_RUBBERY;
+		Skill nonAuxiliarySkill = Skill.GUN_MASTERY;
+		Skill auxiliarySkill = Skill.SNEAK;
+
+		ReflectionTestUtils.setField(task, "difficulty", 5);
+		ReflectionTestUtils.setField(nonAuxiliarySkill, "contribution", 5);
+		ReflectionTestUtils.setField(auxiliarySkill, "contribution", 5);
+
+		// player
+		Player player = new Player();
+		// the player have maximum skill expertise
+		PlayerSkill nonAuxiliaryPlayerSkill = new PlayerSkill(player, nonAuxiliarySkill, 0);
+		PlayerSkill auxiliaryPlayerSkill = new PlayerSkill(player, auxiliarySkill, 100);
+		ReflectionTestUtils.setField(player, "skills", Set.of(nonAuxiliaryPlayerSkill, auxiliaryPlayerSkill));
+
+		// mock
+		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
+
+		// execution
+		TaskResult result = taskService.perform(task, USERNAME, emptyMap());
 
 		// asserts
 		assertSucceedTask(task, result);
