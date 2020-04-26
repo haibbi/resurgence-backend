@@ -19,6 +19,7 @@ import java.util.Date;
 // todo https://milia.atlassian.net/browse/RSRGNC-143 bittiğinde güncelle
 public class BankService {
 
+	public static final String INTEREST_JOB_GROUP_NAME = "interest";
 	private static final Logger log = LoggerFactory.getLogger(BankService.class);
 
 	private final PlayerService playerService;
@@ -31,6 +32,13 @@ public class BankService {
 
 	@Transactional
 	public long interest(String playerName, long amount) {
+		try {
+			JobDetail interest = scheduler.getJobDetail(JobKey.jobKey(playerName, INTEREST_JOB_GROUP_NAME));
+			if (interest != null) throw new DualInterestException();
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+
 		var player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 
 		if (player.getBalance() < amount) throw new NotEnoughMoneyException();
@@ -66,7 +74,7 @@ public class BankService {
 	}
 
 	private void scheduleInterest(String playerName, long amount) {
-		JobKey jobId = new JobKey(playerName, "interest");
+		JobKey jobId = new JobKey(playerName, INTEREST_JOB_GROUP_NAME);
 
 		JobDetail jobDetail = JobBuilder.newJob(InterestJob.class)
 			.withIdentity(jobId)

@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public enum InterestRates {
 
-	LOWEST(InterestRate.of(0, 100_000, .5)),
+	LOWEST(InterestRate.of(10_000, 100_000, .5)),
 	LOW(InterestRate.of(100_001, 1_000_000, .4)),
 	MEDIUM(InterestRate.of(1_000_001, 10_000_000, .3)),
 	HIGH(InterestRate.of(10_000_001, 100_000_000, .2)),
@@ -24,7 +24,7 @@ public enum InterestRates {
 	static Optional<InterestRate> find(long amount) {
 		return Arrays.stream(values())
 			.map(InterestRates::getRate)
-			.filter(rate -> amount >= rate.min || amount < rate.max)
+			.filter(rate -> amount >= rate.min && amount <= rate.max)
 			.findFirst();
 	}
 
