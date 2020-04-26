@@ -1,11 +1,16 @@
 package tr.com.milia.resurgence.bank;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 import tr.com.milia.resurgence.task.PlayerNotFound;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/bank")
@@ -23,6 +28,14 @@ public class BankController {
 		long interest = bankService.interest(playerName, amount);
 
 		return new InterestResponse(interest);
+	}
+
+	@GetMapping("/interest-rates")
+	public List<InterestRateResponse> interestRates() {
+		return Arrays.stream(InterestRates.values())
+			.map(InterestRates::getRate)
+			.map(InterestRateResponse::new)
+			.collect(Collectors.toList());
 	}
 
 	@PostMapping("/transfer/{player}/{amount}")
