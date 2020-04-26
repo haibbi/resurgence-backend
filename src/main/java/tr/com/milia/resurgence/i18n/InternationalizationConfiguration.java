@@ -14,6 +14,7 @@ public class InternationalizationConfiguration {
 
 		messageSource.setDefaultEncoding("UTF-8");
 		messageSource.setBasename("localization/messages");
+		messageSource.setUseCodeAsDefaultMessage(true);
 
 		return messageSource;
 	}
