@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.player;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -7,6 +8,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
 @Component
+@DisallowConcurrentExecution
 public class HonorJob extends QuartzJobBean {
 
 	private final ApplicationEventPublisher eventPublisher;

@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -44,7 +44,8 @@ public class PlayerHonorService {
 			.startAt(Date.from(Instant.now().plus(weekDuration)))
 			.withSchedule(simpleSchedule()
 				.withIntervalInMilliseconds(weekDuration.toMillis())
-				.repeatForever())
+				.repeatForever()
+				.withMisfireHandlingInstructionNowWithExistingCount())
 			.build();
 
 		try {
