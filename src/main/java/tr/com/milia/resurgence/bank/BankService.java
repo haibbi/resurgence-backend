@@ -16,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
+// todo https://milia.atlassian.net/browse/RSRGNC-143 bittiğinde güncelle
 public class BankService {
 
 	private static final Logger log = LoggerFactory.getLogger(BankService.class);
@@ -36,7 +37,7 @@ public class BankService {
 
 		double ratio = InterestRates.find(amount).orElseThrow(InterestRateNotFound::new).ratio;
 
-		player.decreaseBalance((int) amount); // todo https://milia.atlassian.net/browse/RSRGNC-143
+		player.decreaseBalance((int) amount);
 
 		long total = amount + (long) (amount * ratio);
 
@@ -45,11 +46,22 @@ public class BankService {
 		return total;
 	}
 
+	@Transactional
+	public void transfer(String fromPlayerName, String toPlayerName, long amount) {
+		var fromPlayer = playerService.findByName(fromPlayerName).orElseThrow(PlayerNotFound::new);
+		var toPlayer = playerService.findByName(toPlayerName).orElseThrow(PlayerNotFound::new);
+
+		if (fromPlayer.getBalance() < amount) throw new NotEnoughMoneyException();
+
+		fromPlayer.decreaseBalance((int) amount);
+		toPlayer.increaseBalance((int) amount);
+	}
+
 	@EventListener(InterestCompletedEvent.class)
 	@Transactional
 	public void onInterestCompletedEvent(InterestCompletedEvent event) {
 		playerService.findByName(event.getPlayerName()).ifPresent(player -> {
-			player.increaseBalance((int) event.getAmount());  // todo https://milia.atlassian.net/browse/RSRGNC-143
+			player.increaseBalance((int) event.getAmount());
 		});
 	}
 

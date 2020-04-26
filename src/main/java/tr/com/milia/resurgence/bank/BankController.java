@@ -25,4 +25,12 @@ public class BankController {
 		return new InterestResponse(interest);
 	}
 
+	@PostMapping("/transfer/{player}/{amount}")
+	public void transfer(TokenAuthentication authentication,
+						 @PathVariable("player") String toPlayer,
+						 @PathVariable("amount") long amount) {
+		String fromPlayer = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		bankService.transfer(fromPlayer, toPlayer, amount);
+	}
+
 }
