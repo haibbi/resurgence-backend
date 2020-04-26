@@ -45,13 +45,16 @@ public class TaskService {
 
 		// todo level'den geleni ekle
 		// skill contribution
-		double sum = playerSkills.stream().mapToDouble(playerSkill -> {
-			BigDecimal expertise = playerSkill.getExpertise();
-			double contribution = playerSkill.getSkill().contribution();
-			return expertise.multiply(BigDecimal.valueOf(contribution))
-				.divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
-				.doubleValue();
-		}).sum();
+		double sum = playerSkills.stream()
+			.filter(playerSkill -> task.getAuxiliary().contains(playerSkill.getSkill()))
+			.mapToDouble(playerSkill -> {
+				BigDecimal expertise = playerSkill.getExpertise();
+				double contribution = playerSkill.getSkill().contribution();
+				return expertise.multiply(BigDecimal.valueOf(contribution))
+					.divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
+					.doubleValue();
+			})
+			.sum();
 
 		// item contribution
 		sum += selectedItems.entrySet().stream()
