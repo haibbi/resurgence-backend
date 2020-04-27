@@ -7,6 +7,7 @@ class PlayerInfoResponse {
 	private final int balance;
 	private final int health;
 	private final int honor;
+	private final Title title;
 
 	public PlayerInfoResponse(Player player) {
 		nickname = player.getName();
@@ -15,6 +16,8 @@ class PlayerInfoResponse {
 		balance = player.getBalance();
 		health = player.getHealth();
 		honor = player.getHonor();
+		// todo capo, father and male control
+		title = Title.find(player.getExperience(), false, false, false);
 	}
 
 	public String getNickname() {
@@ -39,5 +42,9 @@ class PlayerInfoResponse {
 
 	public int getHonor() {
 		return honor;
+	}
+
+	public Title getTitle() {
+		return title;
 	}
 }

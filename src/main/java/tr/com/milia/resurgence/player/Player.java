@@ -90,6 +90,10 @@ public class Player extends AbstractAggregateRoot<Player> {
 		experience += value;
 	}
 
+	public int getExperience() {
+		return experience;
+	}
+
 	public Long getId() {
 		return id;
 	}
