@@ -15,9 +15,11 @@ import javax.validation.constraints.Min;
 public class GamblingController {
 
 	private final NumberGame numberGame;
+	private final LotteryService lotteryService;
 
-	public GamblingController(NumberGame numberGame) {
+	public GamblingController(NumberGame numberGame, LotteryService lotteryService) {
 		this.numberGame = numberGame;
+		this.lotteryService = lotteryService;
 	}
 
 	@PostMapping("/number/{number}/{bet}")
@@ -38,6 +40,12 @@ public class GamblingController {
 		boolean win = numberGame.play(playerName, even, bet);
 
 		return new GamblingResponse(win);
+	}
+
+	@PostMapping("/lottery")
+	public void purchaseLotteryTicket(TokenAuthentication authentication) {
+		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		lotteryService.purchase(player);
 	}
 
 }
