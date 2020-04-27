@@ -20,21 +20,21 @@ public class NumberGame {
 	@Transactional
 	public boolean play(String playerName, int number, int bet) {
 		if (number < 1 || number > 12) return false;
-		return play(playerName, bet, number(number));
+		return play(playerName, bet, number(number), 5);
 	}
 
 	@Transactional
 	public boolean play(String playerName, boolean even, int bet) {
-		return play(playerName, bet, even == even());
+		return play(playerName, bet, even == even(), 1);
 	}
 
-	private boolean play(String playerName, int bet, boolean win) {
+	private boolean play(String playerName, int bet, boolean win, int ratio) {
 		if (bet < 0) return true;
 
 		Player player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 		if (player.getBalance() < bet) throw new NotEnoughMoneyException();
 
-		if (win) player.increaseBalance(bet);
+		if (win) player.increaseBalance(bet * ratio);
 		else player.decreaseBalance(bet);
 
 		return win;
