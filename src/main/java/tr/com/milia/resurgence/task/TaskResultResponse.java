@@ -9,7 +9,7 @@ public class TaskResultResponse {
 
 	private final boolean succeed;
 	private int experienceGain;
-	private int moneyGain;
+	private long moneyGain;
 	private Set<Skill> skillGain;
 	private Set<DropResponse> drop;
 
@@ -32,7 +32,7 @@ public class TaskResultResponse {
 		return experienceGain;
 	}
 
-	public int getMoneyGain() {
+	public long getMoneyGain() {
 		return moneyGain;
 	}
 

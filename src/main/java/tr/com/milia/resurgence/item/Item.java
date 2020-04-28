@@ -19,20 +19,20 @@ public enum Item {
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;
 	private final Set<Category> category;
-	private int price;
+	private long price;
 
-	Item(int price, Map<Skill, Integer> skills, Quality quality, Set<Category> category) {
+	Item(long price, Map<Skill, Integer> skills, Quality quality, Set<Category> category) {
 		this.price = price;
 		this.skills = skills;
 		this.quality = quality;
 		this.category = category;
 	}
 
-	public int getPrice() {
+	public long getPrice() {
 		return price;
 	}
 
-	void setPrice(int value) {
+	void setPrice(long value) {
 		price = value;
 	}
 

@@ -6,11 +6,11 @@ import java.util.Map;
 
 public class Status {
 	private final MultiPlayerTask.Position position;
-	private final Map<Item, Integer> items;
+	private final Map<Item, Long> items;
 	private final boolean invited;
 	private final boolean prepared;
 
-	public Status(MultiPlayerTask.Position position, Map<Item, Integer> items, boolean invited, boolean prepared) {
+	public Status(MultiPlayerTask.Position position, Map<Item, Long> items, boolean invited, boolean prepared) {
 		this.position = position;
 		this.items = items;
 		this.invited = invited;
@@ -21,7 +21,7 @@ public class Status {
 		return position;
 	}
 
-	public Map<Item, Integer> getItems() {
+	public Map<Item, Long> getItems() {
 		return items;
 	}
 

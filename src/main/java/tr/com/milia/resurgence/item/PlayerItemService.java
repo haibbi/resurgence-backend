@@ -16,7 +16,7 @@ public class PlayerItemService {
 		this.repository = repository;
 	}
 
-	public void addItem(Player player, Item item, int quantity) {
+	public void addItem(Player player, Item item, long quantity) {
 		repository.findByPlayerAndItem(player, item).ifPresentOrElse(
 			playerItem -> playerItem.add(quantity),
 			() -> repository.save(new PlayerItem(player, item, quantity))
@@ -30,7 +30,7 @@ public class PlayerItemService {
 
 		for (var entry : drop) {
 			Item item = entry.getItem();
-			int quantity = entry.getQuantity();
+			long quantity = entry.getQuantity();
 			repository.findByPlayerAndItem(player, item).ifPresentOrElse(
 				playerItem -> playerItem.add(quantity),
 				() -> repository.save(new PlayerItem(player, item, quantity))
@@ -46,11 +46,11 @@ public class PlayerItemService {
 		var selectedItems = event.getSelectedItems();
 
 		requiredItemCategory.forEach((category, count) -> {
-			int quantity = selectedItems.keySet().stream()
+			long quantity = selectedItems.keySet().stream()
 				.filter(item -> item.getCategory().contains(category))
-				.mapToInt(item -> repository.findByPlayerAndItem(player, item)
+				.mapToLong(item -> repository.findByPlayerAndItem(player, item)
 					.map(PlayerItem::getQuantity)
-					.orElse(0))
+					.orElse(0L))
 				.sum();
 			// todo control if player have selected item
 			if (quantity < count) throw new RequiredItemException(category.name());

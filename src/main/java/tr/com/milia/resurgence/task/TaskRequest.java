@@ -5,9 +5,9 @@ import tr.com.milia.resurgence.item.Item;
 import java.util.Map;
 
 class TaskRequest {
-	Map<Item, Integer> selectedItems;
+	Map<Item, Long> selectedItems;
 
-	public void setSelectedItems(Map<Item, Integer> selectedItems) {
+	public void setSelectedItems(Map<Item, Long> selectedItems) {
 		this.selectedItems = selectedItems;
 	}
 }

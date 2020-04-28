@@ -28,7 +28,7 @@ public class TaskService {
 	}
 
 	@Transactional
-	public TaskResult perform(Task task, String playerName, @Nullable Map<Item, Integer> selectedItems) {
+	public TaskResult perform(Task task, String playerName, @Nullable Map<Item, Long> selectedItems) {
 		var player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 
 		selectedItems = selectedItems == null ? Collections.emptyMap() : selectedItems;
@@ -40,7 +40,7 @@ public class TaskService {
 		return taskResult;
 	}
 
-	private TaskResult performInternal(Task task, Player player, Map<Item, Integer> selectedItems) {
+	private TaskResult performInternal(Task task, Player player, Map<Item, Long> selectedItems) {
 		var playerSkills = player.getSkills();
 
 		// todo level'den geleni ekle
@@ -58,7 +58,7 @@ public class TaskService {
 
 		// item contribution
 		sum += selectedItems.entrySet().stream()
-			.mapToInt(e -> e.getKey().getSkillsContribution(task.getAuxiliary()) * e.getValue())
+			.mapToLong(e -> e.getKey().getSkillsContribution(task.getAuxiliary()) * e.getValue())
 			.sum();
 
 		double success = sum / task.getDifficulty();
@@ -72,7 +72,7 @@ public class TaskService {
 		double gainRatio = random / success;
 
 		int experienceGain = (int) (task.getExperienceGain() * gainRatio);
-		int moneyGain = (int) (task.getMoneyGain() * gainRatio);
+		long moneyGain = (long) (task.getMoneyGain() * gainRatio);
 		var gainedSkills = task.getSkillGain().stream()
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());

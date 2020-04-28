@@ -7,9 +7,9 @@ import java.util.Map;
 class Preparation {
 	final String leader;
 	final MultiPlayerTask.Position position;
-	final Map<Item, Integer> selectedItems;
+	final Map<Item, Long> selectedItems;
 
-	Preparation(String leader, MultiPlayerTask.Position position, Map<Item, Integer> selectedItems) {
+	Preparation(String leader, MultiPlayerTask.Position position, Map<Item, Long> selectedItems) {
 		this.leader = leader;
 		this.position = position;
 		this.selectedItems = selectedItems;
@@ -23,7 +23,7 @@ class Preparation {
 		return position;
 	}
 
-	public Map<Item, Integer> getSelectedItems() {
+	public Map<Item, Long> getSelectedItems() {
 		return selectedItems;
 	}
 }

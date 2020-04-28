@@ -22,28 +22,28 @@ public class PlayerItem {
 
 	@Min(0)
 	@Column(nullable = false)
-	private int quantity;
+	private long quantity;
 
 	public PlayerItem() {
 	}
 
-	public PlayerItem(Player player, Item item, int quantity) {
+	public PlayerItem(Player player, Item item, long quantity) {
 		if (quantity < 0) throw new IllegalStateException();
 		this.player = player;
 		this.item = item;
 		this.quantity = quantity;
 	}
 
-	public void add(int value) {
+	public void add(long value) {
 		quantity += value;
 	}
 
-	public void remove(int value) throws ItemOutOfBoundsException {
-		if (quantity - value < 0) throw new ItemOutOfBoundsException();
+	public void remove(long value) throws ItemOutOfBoundsException {
+		if (value > quantity) throw new ItemOutOfBoundsException();
 		quantity -= value;
 	}
 
-	public int getQuantity() {
+	public long getQuantity() {
 		return quantity;
 	}
 

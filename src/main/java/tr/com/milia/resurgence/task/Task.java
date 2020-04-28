@@ -23,7 +23,7 @@ public enum Task implements LocaleEnum {
 		1_000,
 		ofSeconds(1),
 		Set.of(Drop.of(Item.KNIFE, 1, .10)),
-		Map.of(Item.Category.WEAPON, 1),
+		Map.of(Item.Category.WEAPON, 1L),
 		true),
 
 	BEER_SMUGGLING(
@@ -38,7 +38,7 @@ public enum Task implements LocaleEnum {
 		true
 	) {
 		@Override
-		public Map<Item.Category, Integer> getRequiredItemCategory() {
+		public Map<Item.Category, Long> getRequiredItemCategory() {
 			return Map.of(Item.Category.MONEY, Item.BEER.getPrice());
 		}
 	},
@@ -50,7 +50,7 @@ public enum Task implements LocaleEnum {
 		10_000,
 		ofDays(1),
 		Set.of(Drop.of(Item.GLOCK, 1, .10)),
-		Map.of(Item.Category.WEAPON, 1),
+		Map.of(Item.Category.WEAPON, 1L),
 		false),
 
 	HEIST_DRIVER(50,
@@ -60,13 +60,13 @@ public enum Task implements LocaleEnum {
 		10_000,
 		ofDays(1),
 		Set.of(Drop.of(Item.FORD_FIESTA, 1, .10)),
-		Map.of(Item.Category.VEHICLE, 1),
+		Map.of(Item.Category.VEHICLE, 1L),
 		false);
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
 	private final Set<Skill> skillGain;
-	private final int moneyGain;
+	private final long moneyGain;
 	private final int experienceGain;
 	private final Duration duration;
 	private final Set<Drop> drop;
@@ -74,18 +74,18 @@ public enum Task implements LocaleEnum {
 	/**
 	 * Value değerleri sıfır olamaz! O halde required değildir.
 	 */
-	private final Map<Item.Category, Integer> requiredItemCategory;
+	private final Map<Item.Category, Long> requiredItemCategory;
 
 	private final boolean performSolo;
 
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
 		 Set<Skill> skillGain,
-		 int moneyGain,
+		 long moneyGain,
 		 int experienceGain,
 		 Duration duration,
 		 Set<Drop> drop,
-		 Map<Item.Category, Integer> requiredItemCategory,
+		 Map<Item.Category, Long> requiredItemCategory,
 		 boolean performSolo) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
@@ -113,7 +113,7 @@ public enum Task implements LocaleEnum {
 		return Collections.unmodifiableSet(skillGain);
 	}
 
-	public int getMoneyGain() {
+	public long getMoneyGain() {
 		return moneyGain;
 	}
 
@@ -129,7 +129,7 @@ public enum Task implements LocaleEnum {
 		return Collections.unmodifiableSet(drop);
 	}
 
-	public Map<Item.Category, Integer> getRequiredItemCategory() {
+	public Map<Item.Category, Long> getRequiredItemCategory() {
 		return Collections.unmodifiableMap(requiredItemCategory);
 	}
 

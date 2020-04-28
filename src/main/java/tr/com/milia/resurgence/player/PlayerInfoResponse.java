@@ -6,7 +6,7 @@ class PlayerInfoResponse {
 	private final String nickname;
 	private final String image;
 	private final Race race;
-	private final int balance;
+	private final long balance;
 	private final int health;
 	private final int honor;
 	private final Title title;
@@ -36,7 +36,7 @@ class PlayerInfoResponse {
 		return race;
 	}
 
-	public int getBalance() {
+	public long getBalance() {
 		return balance;
 	}
 

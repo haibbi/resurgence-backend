@@ -9,13 +9,13 @@ class PrepareRequest {
 	@NotNull
 	MultiPlayerTask.Position position;
 
-	Map<Item, Integer> selectedItems;
+	Map<Item, Long> selectedItems;
 
 	public void setPosition(MultiPlayerTask.Position position) {
 		this.position = position;
 	}
 
-	public void setSelectedItems(Map<Item, Integer> selectedItems) {
+	public void setSelectedItems(Map<Item, Long> selectedItems) {
 		this.selectedItems = selectedItems;
 	}
 }

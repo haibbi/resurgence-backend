@@ -7,14 +7,14 @@ import tr.com.milia.resurgence.stock.StockEvent;
 @Service
 public class ItemService {
 
-	void updateItemPrice(Item item, int price) {
+	void updateItemPrice(Item item, long price) {
 		item.setPrice(price);
 	}
 
 	@EventListener(StockEvent.class)
 	public void onStockEvent(StockEvent event) {
 		Item item = event.getItem();
-		int newPrice = item.getPrice() + event.getChange();
+		long newPrice = item.getPrice() + event.getChange();
 		updateItemPrice(item, newPrice);
 	}
 
