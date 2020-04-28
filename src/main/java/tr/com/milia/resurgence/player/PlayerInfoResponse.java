@@ -1,5 +1,7 @@
 package tr.com.milia.resurgence.player;
 
+import tr.com.milia.resurgence.family.Family;
+
 class PlayerInfoResponse {
 	private final String nickname;
 	private final String image;
@@ -8,6 +10,7 @@ class PlayerInfoResponse {
 	private final int health;
 	private final int honor;
 	private final Title title;
+	private final String family;
 
 	public PlayerInfoResponse(Player player) {
 		nickname = player.getName();
@@ -18,6 +21,7 @@ class PlayerInfoResponse {
 		honor = player.getHonor();
 		// todo capo, father and male control
 		title = Title.find(player.getExperience(), false, false, false);
+		family = player.getFamily().map(Family::getName).orElse(null);
 	}
 
 	public String getNickname() {
@@ -46,5 +50,9 @@ class PlayerInfoResponse {
 
 	public Title getTitle() {
 		return title;
+	}
+
+	public String getFamily() {
+		return family;
 	}
 }

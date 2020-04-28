@@ -2,12 +2,14 @@ package tr.com.milia.resurgence.player;
 
 import org.springframework.data.domain.AbstractAggregateRoot;
 import tr.com.milia.resurgence.account.Account;
+import tr.com.milia.resurgence.family.Family;
 import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.skill.PlayerSkill;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -49,6 +51,9 @@ public class Player extends AbstractAggregateRoot<Player> {
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false, updatable = false)
 	private Race race;
+
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "don")
+	private Family family;
 
 	public Player() {
 	}
@@ -136,5 +141,9 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public Race getRace() {
 		return race;
+	}
+
+	public Optional<Family> getFamily() {
+		return Optional.ofNullable(family);
 	}
 }
