@@ -9,6 +9,7 @@ import tr.com.milia.resurgence.skill.PlayerSkill;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -142,7 +143,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 		return race;
 	}
 
-	public Family getFamily() {
-		return family;
+	public Optional<Family> getFamily() {
+		return Optional.ofNullable(family);
 	}
 }

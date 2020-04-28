@@ -32,19 +32,18 @@ public class FamilyService {
 
 		if (player.getHonor() < REQUIRED_HONOR_FOUND_A_FAMILY) throw new NotEnoughHonorException();
 		if (player.getBalance() < buildingPrice) throw new NotEnoughMoneyException();
-		if (player.getFamily() != null) throw new AlreadyInFamilyException();
+		if (player.getFamily().isPresent()) throw new AlreadyInFamilyException();
 		if (repository.findByName(familyName).isPresent()) throw new DuplicateFamilyNameException();
 
 		player.decreaseBalance((int) buildingPrice);
 
 		Family family = new Family(familyName, player, buildingPrice, building);
-		family.addMember(player);
 
 		return repository.save(family);
 	}
 
 	@Transactional
-	public List<Family> findAllWithMember() {
+	public List<Family> findAll() {
 		List<Family> all = repository.findAll();
 		for (Family family : all) {
 			// initialize lazy fields
@@ -55,9 +54,9 @@ public class FamilyService {
 	}
 
 	@Transactional
-	public Optional<Family> findPlayerFamilyFamily(String playerName) {
+	public Optional<Family> findFamilyByPlayerName(String playerName) {
 		final Player player = findPlayer(playerName);
-		Optional<Family> family = Optional.ofNullable(player.getFamily());
+		Optional<Family> family = player.getFamily();
 		family.ifPresent(f -> Hibernate.initialize(f.getMembers().size()));
 
 		return family;
@@ -69,7 +68,7 @@ public class FamilyService {
 
 		if (player.getBalance() < amount) throw new NotEnoughMoneyException();
 
-		Family family = Optional.ofNullable(player.getFamily()).orElseThrow(FamilyNotFoundException::new);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 
 		player.decreaseBalance((int) amount);
 		family.deposit(amount);
@@ -81,7 +80,7 @@ public class FamilyService {
 	public void withdraw(String playerName, long amount) {
 		final Player player = findPlayer(playerName);
 
-		Family family = Optional.ofNullable(player.getFamily()).orElseThrow(FamilyNotFoundException::new);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 
 		// only don can withdraw
 		if (!family.getDon().getName().equals(player.getName())) throw new FamilyBankAccessDeniedException();

@@ -11,7 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-public class Family extends AbstractAggregateRoot<Player> {
+public class Family extends AbstractAggregateRoot<Family> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +43,7 @@ public class Family extends AbstractAggregateRoot<Player> {
 		this.bank = bank;
 		members = new LinkedHashSet<>();
 		build(building);
+		addMember(don);
 	}
 
 	/**

@@ -33,15 +33,15 @@ public class FamilyController {
 	@GetMapping
 	public ResponseEntity<FamilyResponse> family(TokenAuthentication authentication) {
 		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
-		return service.findPlayerFamilyFamily(playerName)
+		return service.findFamilyByPlayerName(playerName)
 			.map(FamilyResponse::exposed)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("/families")
-	public List<FamilyResponse> families() {
-		return service.findAllWithMember().stream()
+	@GetMapping("/all")
+	public List<FamilyResponse> allFamilies() {
+		return service.findAll().stream()
 			.map(FamilyResponse::new)
 			.collect(Collectors.toList());
 	}

@@ -2,8 +2,6 @@ package tr.com.milia.resurgence.player;
 
 import tr.com.milia.resurgence.family.Family;
 
-import java.util.Optional;
-
 class PlayerInfoResponse {
 	private final String nickname;
 	private final String image;
@@ -23,7 +21,7 @@ class PlayerInfoResponse {
 		honor = player.getHonor();
 		// todo capo, father and male control
 		title = Title.find(player.getExperience(), false, false, false);
-		family = Optional.ofNullable(player.getFamily()).map(Family::getName).orElse(null);
+		family = player.getFamily().map(Family::getName).orElse(null);
 	}
 
 	public String getNickname() {

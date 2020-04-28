@@ -21,13 +21,11 @@ public class FamilyBankLogService {
 	@EventListener(FamilyBankEvent.class)
 	public void onFamilyBankEvent(FamilyBankEvent event) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication instanceof TokenAuthentication) {
-			TokenAuthentication tokenAuthentication = (TokenAuthentication) authentication;
-			String member = tokenAuthentication.getPlayerName().orElseThrow(PlayerNotFound::new);
-			repository.save(new FamilyBankLog(member, event.getAmount(), event.getReason()));
-		} else {
-			throw new PlayerNotFound();
-		}
+		if (!(authentication instanceof TokenAuthentication)) throw new PlayerNotFound();
+
+		TokenAuthentication tokenAuthentication = (TokenAuthentication) authentication;
+		String member = tokenAuthentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		repository.save(new FamilyBankLog(member, event.getAmount(), event.getReason()));
 	}
 
 	List<FamilyBankLog> findAllLogs() {
