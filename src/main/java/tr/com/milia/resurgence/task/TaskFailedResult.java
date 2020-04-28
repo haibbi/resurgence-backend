@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class TaskFailedResult extends TaskResult {
 
-	protected TaskFailedResult(Player player, Task task, Map<Item, Integer> usedItems) {
+	protected TaskFailedResult(Player player, Task task, Map<Item, Long> usedItems) {
 		super(player, task, usedItems);
 	}
 

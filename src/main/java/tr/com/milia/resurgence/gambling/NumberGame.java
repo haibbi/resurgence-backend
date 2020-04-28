@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.RandomUtils;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.smuggling.NotEnoughMoneyException;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
 @Service
@@ -18,21 +17,20 @@ public class NumberGame {
 	}
 
 	@Transactional
-	public boolean play(String playerName, int number, int bet) {
+	public boolean play(String playerName, int number, long bet) {
 		if (number < 1 || number > 12) return false;
 		return play(playerName, bet, number(number), 5);
 	}
 
 	@Transactional
-	public boolean play(String playerName, boolean even, int bet) {
+	public boolean play(String playerName, boolean even, long bet) {
 		return play(playerName, bet, even == even(), 1);
 	}
 
-	private boolean play(String playerName, int bet, boolean win, int ratio) {
+	private boolean play(String playerName, long bet, boolean win, int ratio) {
 		if (bet < 0) return true;
 
 		Player player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
-		if (player.getBalance() < bet) throw new NotEnoughMoneyException();
 
 		if (win) player.increaseBalance(bet * ratio);
 		else player.decreaseBalance(bet);

@@ -4,7 +4,7 @@ import tr.com.milia.resurgence.item.Item;
 
 class DropResponse {
 	Item item;
-	int quantity;
+	long quantity;
 
 	public DropResponse(Drop drop) {
 		item = drop.getItem();
@@ -15,7 +15,7 @@ class DropResponse {
 		return item;
 	}
 
-	public int getQuantity() {
+	public long getQuantity() {
 		return quantity;
 	}
 }

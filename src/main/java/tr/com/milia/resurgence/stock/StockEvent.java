@@ -4,9 +4,9 @@ import tr.com.milia.resurgence.item.Item;
 
 public class StockEvent {
 	private final Item item;
-	private final int change;
+	private final long change;
 
-	public StockEvent(Item item, int change) {
+	public StockEvent(Item item, long change) {
 		this.item = item;
 		this.change = change;
 	}
@@ -15,7 +15,7 @@ public class StockEvent {
 		return item;
 	}
 
-	public int getChange() {
+	public long getChange() {
 		return change;
 	}
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.smuggling.NotEnoughMoneyException;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.List;
@@ -31,11 +30,10 @@ public class FamilyService {
 		final Player player = findPlayer(playerName);
 
 		if (player.getHonor() < REQUIRED_HONOR_FOUND_A_FAMILY) throw new NotEnoughHonorException();
-		if (player.getBalance() < buildingPrice) throw new NotEnoughMoneyException();
 		if (player.getFamily().isPresent()) throw new AlreadyInFamilyException();
 		if (repository.findByName(familyName).isPresent()) throw new DuplicateFamilyNameException();
 
-		player.decreaseBalance((int) buildingPrice);
+		player.decreaseBalance(buildingPrice);
 
 		Family family = new Family(familyName, player, buildingPrice, building);
 
@@ -66,11 +64,9 @@ public class FamilyService {
 	public void deposit(String playerName, long amount) {
 		final Player player = findPlayer(playerName);
 
-		if (player.getBalance() < amount) throw new NotEnoughMoneyException();
-
 		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 
-		player.decreaseBalance((int) amount);
+		player.decreaseBalance(amount);
 		family.deposit(amount);
 
 		repository.save(family); // todo sadece FamilyBankEvent atılması için save kullanıldı. Araştır
@@ -86,7 +82,7 @@ public class FamilyService {
 		if (!family.getDon().getName().equals(player.getName())) throw new FamilyBankAccessDeniedException();
 
 		family.withdraw(amount);
-		player.increaseBalance((int) amount);
+		player.increaseBalance(amount);
 
 		repository.save(family); // todo sadece FamilyBankEvent atılması için save kullanıldı. Araştır
 	}

@@ -10,9 +10,9 @@ public class TaskStartedEvent {
 
 	private final Player player;
 	private final Task task;
-	private final Map<Item, Integer> selectedItems;
+	private final Map<Item, Long> selectedItems;
 
-	public TaskStartedEvent(Player player, Task task, Map<Item, Integer> selectedItems) {
+	public TaskStartedEvent(Player player, Task task, Map<Item, Long> selectedItems) {
 		this.player = player;
 		this.task = task;
 		this.selectedItems = selectedItems;
@@ -26,7 +26,7 @@ public class TaskStartedEvent {
 		return task;
 	}
 
-	public Map<Item, Integer> getSelectedItems() {
+	public Map<Item, Long> getSelectedItems() {
 		return Collections.unmodifiableMap(selectedItems);
 	}
 }

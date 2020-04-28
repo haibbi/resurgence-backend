@@ -31,9 +31,9 @@ public class StockService {
 		double ratio = RandomUtils.random(0, change);
 		if (RandomUtils.random() <= .50) ratio *= -1;
 
-		int amount = (int) (item.getPrice() * ratio);
+		long amount = (long) (item.getPrice() * ratio);
 
-		int newPrice = item.getPrice() + amount;
+		long newPrice = item.getPrice() + amount;
 
 		log.debug(item.name() + " price has {}. old/new/ratio: {}/{}/{}",
 			ratio < 0 ? "down" : "up", item.getPrice(), newPrice, amount);

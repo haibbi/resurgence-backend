@@ -4,16 +4,16 @@ import tr.com.milia.resurgence.item.Item;
 
 public class Drop {
 	private final Item item;
-	private final int quantity;
+	private final long quantity;
 	private final double ratio;
 
-	private Drop(Item item, int quantity, double ratio) {
+	private Drop(Item item, long quantity, double ratio) {
 		this.item = item;
 		this.quantity = quantity;
 		this.ratio = ratio;
 	}
 
-	static Drop of(Item item, int quantity, double ratio) {
+	static Drop of(Item item, long quantity, double ratio) {
 		return new Drop(item, quantity, ratio);
 	}
 
@@ -21,7 +21,7 @@ public class Drop {
 		return item;
 	}
 
-	public int getQuantity() {
+	public long getQuantity() {
 		return quantity;
 	}
 

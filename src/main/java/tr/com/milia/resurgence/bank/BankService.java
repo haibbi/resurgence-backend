@@ -7,7 +7,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.smuggling.NotEnoughMoneyException;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.time.Duration;
@@ -41,11 +40,9 @@ public class BankService {
 
 		var player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 
-		if (player.getBalance() < amount) throw new NotEnoughMoneyException();
-
 		double ratio = InterestRates.find(amount).orElseThrow(InterestRateNotFound::new).ratio;
 
-		player.decreaseBalance((int) amount);
+		player.decreaseBalance(amount);
 
 		long total = amount + (long) (amount * ratio);
 
@@ -59,17 +56,15 @@ public class BankService {
 		var fromPlayer = playerService.findByName(fromPlayerName).orElseThrow(PlayerNotFound::new);
 		var toPlayer = playerService.findByName(toPlayerName).orElseThrow(PlayerNotFound::new);
 
-		if (fromPlayer.getBalance() < amount) throw new NotEnoughMoneyException();
-
-		fromPlayer.decreaseBalance((int) amount);
-		toPlayer.increaseBalance((int) amount);
+		fromPlayer.decreaseBalance(amount);
+		toPlayer.increaseBalance(amount);
 	}
 
 	@EventListener(InterestCompletedEvent.class)
 	@Transactional
 	public void onInterestCompletedEvent(InterestCompletedEvent event) {
 		playerService.findByName(event.getPlayerName()).ifPresent(player -> {
-			player.increaseBalance((int) event.getAmount());
+			player.increaseBalance(event.getAmount());
 		});
 	}
 

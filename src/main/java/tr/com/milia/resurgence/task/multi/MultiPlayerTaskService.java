@@ -99,7 +99,7 @@ public class MultiPlayerTaskService {
 		}
 	}
 
-	public void prepare(String playerName, MultiPlayerTask.Position position, Map<Item, Integer> selectedItems) {
+	public void prepare(String playerName, MultiPlayerTask.Position position, Map<Item, Long> selectedItems) {
 		final String leader;
 		if (position != LEADER) {
 			Invitation invitation = INVITATION.get(playerName);

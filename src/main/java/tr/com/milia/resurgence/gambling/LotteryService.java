@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.RandomUtils;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.smuggling.NotEnoughMoneyException;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.time.Instant;
@@ -19,7 +18,7 @@ import java.util.List;
 @Service
 public class LotteryService {
 
-	public final static int LOTTERY_TICKET_PRICE = 50_000;
+	public final static long LOTTERY_TICKET_PRICE = 50_000;
 	private static final Logger log = LoggerFactory.getLogger(LotteryService.class);
 
 	private final PlayerService playerService;
@@ -61,7 +60,6 @@ public class LotteryService {
 	@Transactional
 	public void purchase(String playerName) {
 		Player player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
-		if (player.getBalance() < LOTTERY_TICKET_PRICE) throw new NotEnoughMoneyException();
 
 		repository.save(new LotteryTicket(player));
 		player.decreaseBalance(LOTTERY_TICKET_PRICE);
@@ -78,7 +76,7 @@ public class LotteryService {
 
 		LotteryTicket luckTicket = repository.findById(selected).orElseThrow();
 
-		int prize = allPurchasedTicket.size() * LOTTERY_TICKET_PRICE;
+		long prize = allPurchasedTicket.size() * LOTTERY_TICKET_PRICE;
 
 		luckTicket.getPlayer().increaseBalance(prize);
 

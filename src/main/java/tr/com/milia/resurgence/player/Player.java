@@ -5,6 +5,7 @@ import tr.com.milia.resurgence.account.Account;
 import tr.com.milia.resurgence.family.Family;
 import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.skill.PlayerSkill;
+import tr.com.milia.resurgence.smuggling.NotEnoughMoneyException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -29,7 +30,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	@Column(nullable = false)
 	@Min(0)
-	private int balance;
+	private long balance;
 
 	@Column(nullable = false)
 	@Min(0)
@@ -58,7 +59,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 	public Player() {
 	}
 
-	public Player(Account account, String name, Race race, int balance, int health, int honor) {
+	public Player(Account account, String name, Race race, long balance, int health, int honor) {
 		this.account = account;
 		this.name = name;
 		this.race = race;
@@ -71,14 +72,15 @@ public class Player extends AbstractAggregateRoot<Player> {
 		registerEvent(new PlayerCreatedEvent(this));
 	}
 
-	public int increaseBalance(int value) {
+	public void increaseBalance(long value) {
 		if (value < 0) throw new IllegalStateException();
-		return balance += value;
+		balance += value;
 	}
 
-	public int decreaseBalance(int value) {
-		if (value < 0 || value > balance) throw new IllegalStateException();
-		return balance -= value;
+	public void decreaseBalance(long value) {
+		if (value < 0) throw new IllegalStateException();
+		if (value > balance) throw new NotEnoughMoneyException();
+		balance -= value;
 	}
 
 	public int increaseHonor(int value) {
@@ -119,7 +121,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 		this.image = image;
 	}
 
-	public int getBalance() {
+	public long getBalance() {
 		return balance;
 	}
 

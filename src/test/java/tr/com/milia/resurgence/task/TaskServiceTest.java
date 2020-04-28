@@ -124,7 +124,7 @@ class TaskServiceTest {
 		Mockito.when(playerService.findByName(eq(USERNAME))).thenReturn(Optional.of(player));
 
 		// execution
-		TaskResult result = taskService.perform(task, USERNAME, Map.of(item, 1));
+		TaskResult result = taskService.perform(task, USERNAME, Map.of(item, 1L));
 
 		// asserts
 		assertSucceedTask(task, result);

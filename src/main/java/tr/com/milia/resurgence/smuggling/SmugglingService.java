@@ -39,11 +39,7 @@ public class SmugglingService {
 
 		Player player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 
-		int requiredMoney = task.getRequiredItemCategory().get(Item.Category.MONEY) * repeat;
-
-		if (player.getBalance() < requiredMoney) {
-			throw new NotEnoughMoneyException();
-		}
+		long requiredMoney = task.getRequiredItemCategory().get(Item.Category.MONEY) * repeat;
 
 		playerItemService.addItem(player, Item.MONEY, requiredMoney);
 		player.decreaseBalance(requiredMoney);
