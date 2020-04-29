@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FamilyBankLogRepository extends JpaRepository<FamilyBankLog, Long> {
-	List<FamilyBankLog> findAllByOrderByDateDesc();
+
+	List<FamilyBankLog> findAllByFamilyOrderByDateDesc(String family);
+
 }

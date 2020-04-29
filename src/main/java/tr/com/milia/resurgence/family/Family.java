@@ -65,13 +65,13 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 	void deposit(long amount) {
 		bank += amount;
-		registerEvent(new FamilyBankEvent(Reason.DEPOSIT, amount));
+		registerEvent(new FamilyBankEvent(getName(), Reason.DEPOSIT, amount));
 	}
 
 	void withdraw(long amount) {
 		if (amount > bank) throw new NotEnoughMoneyInBankException();
 		bank -= amount;
-		registerEvent(new FamilyBankEvent(Reason.WITHDRAW, amount));
+		registerEvent(new FamilyBankEvent(getName(), Reason.WITHDRAW, amount));
 	}
 
 	void upgradeBuilding() {
@@ -86,7 +86,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 		bank -= price;
 		this.building = building;
-		registerEvent(new FamilyBankEvent(Reason.BUILDING, price));
+		registerEvent(new FamilyBankEvent(getName(), Reason.BUILDING, price));
 	}
 
 	public String getName() {

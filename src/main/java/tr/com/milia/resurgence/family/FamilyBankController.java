@@ -36,8 +36,11 @@ public class FamilyBankController {
 	}
 
 	@GetMapping("log")
-	public List<FamilyBankLogResponse> logs() {
-		return logService.findAllLogs().stream().map(FamilyBankLogResponse::new).collect(Collectors.toList());
+	public List<FamilyBankLogResponse> logs(TokenAuthentication authentication) {
+		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		return logService.findAllLogs(player).stream()
+			.map(FamilyBankLogResponse::new)
+			.collect(Collectors.toList());
 	}
 
 }
