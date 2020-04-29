@@ -1,6 +1,7 @@
 package tr.com.milia.resurgence.player;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ public class PlayerController {
 	}
 
 	@GetMapping
+	@Transactional
 	public ResponseEntity<PlayerInfoResponse> info(Principal principal) {
 		return service.findByUsername(principal.getName())
 			.map(PlayerInfoResponse::new)

@@ -11,6 +11,7 @@ class PlayerInfoResponse {
 	private final int honor;
 	private final Title title;
 	private final String family;
+	private final int experience;
 
 	public PlayerInfoResponse(Player player) {
 		nickname = player.getName();
@@ -22,6 +23,7 @@ class PlayerInfoResponse {
 		// todo capo, father and male control
 		title = Title.find(player.getExperience(), false, false, false);
 		family = player.getFamily().map(Family::getName).orElse(null);
+		experience = player.getExperience();
 	}
 
 	public String getNickname() {
@@ -54,5 +56,9 @@ class PlayerInfoResponse {
 
 	public String getFamily() {
 		return family;
+	}
+
+	public int getExperience() {
+		return experience;
 	}
 }
