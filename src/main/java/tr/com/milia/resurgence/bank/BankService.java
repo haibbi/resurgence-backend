@@ -13,6 +13,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 // todo https://milia.atlassian.net/browse/RSRGNC-143 bittiğinde güncelle
@@ -50,6 +52,28 @@ public class BankService {
 
 		return total;
 	}
+
+	@Transactional
+	public Optional<InterestAccount> currentInterest(String playerName) {
+		try {
+			JobKey jobKey = JobKey.jobKey(playerName, INTEREST_JOB_GROUP_NAME);
+			JobDetail interest = scheduler.getJobDetail(jobKey);
+			if (interest == null) return Optional.empty();
+			List<? extends Trigger> trigger = scheduler.getTriggersOfJob(jobKey);
+			if (trigger == null || trigger.isEmpty()) return Optional.empty();
+			Trigger interestTrigger = trigger.get(0);
+			Date nextFireTime = interestTrigger.getNextFireTime();
+
+			JobDataMap data = interest.getJobDataMap();
+			long amount = data.getLong("amount");
+
+			return Optional.of(new InterestAccount(amount, nextFireTime));
+		} catch (SchedulerException e) {
+			log.warn("Something wrong while fetching interest account", e);
+			return Optional.empty();
+		}
+	}
+
 
 	@Transactional
 	public void transfer(String fromPlayerName, String toPlayerName, long amount) {

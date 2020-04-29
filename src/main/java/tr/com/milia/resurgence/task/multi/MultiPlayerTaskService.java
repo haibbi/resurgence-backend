@@ -130,11 +130,6 @@ public class MultiPlayerTaskService {
 			.map(Map.Entry::getKey)
 			.collect(Collectors.toSet());
 
-		members.forEach(player -> {
-			if (!PREPARATION.containsKey(player))
-				throw new RuntimeException("Members does not prepared for multiplayer task");
-		});
-
 		task.getQuorum().forEach((position, count) -> {
 			var categories = members.stream()
 				.map(PREPARATION::get)

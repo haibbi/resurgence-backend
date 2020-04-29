@@ -7,9 +7,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.Period;
 import java.util.Date;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -37,13 +36,13 @@ public class PlayerHonorService {
 			.usingJobData("playerName", player.getName())
 			.build();
 
-		Duration weekDuration = Duration.of(1, ChronoUnit.WEEKS);
+		Period weekPeriod = Period.ofWeeks(1);
 
 		Trigger trigger = TriggerBuilder.newTrigger()
 			.forJob(jobDetail)
-			.startAt(Date.from(Instant.now().plus(weekDuration)))
+			.startAt(Date.from(Instant.now().plus(weekPeriod)))
 			.withSchedule(simpleSchedule()
-				.withIntervalInMilliseconds(weekDuration.toMillis())
+				.withIntervalInHours(weekPeriod.getDays() * 24)
 				.repeatForever()
 				.withMisfireHandlingInstructionNowWithExistingCount())
 			.build();
