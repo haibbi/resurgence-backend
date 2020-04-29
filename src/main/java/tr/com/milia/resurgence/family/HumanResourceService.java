@@ -70,12 +70,12 @@ public class HumanResourceService {
 		Family family = invitation.getFamily();
 		if (invitation.getDirection() == Invitation.Direction.PLAYER
 			&& player.getName().equals(playerOrDonName)) {
-			familyService.addMember(family, player);
+			family.addMember(player);
 			repository.deleteAllByPlayer(player);
 			return;
 		} else if (invitation.getDirection() == Invitation.Direction.FAMILY &&
 			family.getDon().getName().equals(playerOrDonName)) {
-			familyService.addMember(family, player);
+			family.addMember(player);
 			repository.deleteAllByPlayer(player);
 			return;
 		}
@@ -87,7 +87,7 @@ public class HumanResourceService {
 	}
 
 	private Family findFamily(String name) {
-		return familyService.findFamilyByName(name).orElseThrow(FamilyNotFoundException::new);
+		return familyService.findByName(name).orElseThrow(FamilyNotFoundException::new);
 	}
 
 }

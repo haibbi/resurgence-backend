@@ -15,4 +15,5 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 	Optional<Invitation> findByPlayerAndFamily(Player player, Family family);
 
     void deleteAllByPlayer(Player player);
+
 }
