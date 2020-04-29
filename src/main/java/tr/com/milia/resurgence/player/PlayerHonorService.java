@@ -58,7 +58,7 @@ public class PlayerHonorService {
 	@Transactional
 	public void onHonorPeriodCompletedEvent(HonorPeriodCompletedEvent event) {
 		playerService.findByName(event.getPlayerName()).ifPresent(player -> {
-			player.increaseHonor(10); // todo level'e göre değişken alması lazım
+			player.increaseUsableHonor(10); // todo level'e göre değişken alması lazım
 		});
 	}
 

@@ -40,6 +40,9 @@ public class Player extends AbstractAggregateRoot<Player> {
 	private int honor;
 
 	@Column(nullable = false)
+	private int usableHonor;
+
+	@Column(nullable = false)
 	@Min(0)
 	private int experience;
 
@@ -87,6 +90,11 @@ public class Player extends AbstractAggregateRoot<Player> {
 	public int increaseHonor(int value) {
 		if (value < 0) throw new IllegalStateException();
 		return honor += value;
+	}
+
+	public int increaseUsableHonor(int value) {
+		if (value < 0) throw new IllegalStateException();
+		return usableHonor += value;
 	}
 
 	public int decreaseHonor(int value) {
