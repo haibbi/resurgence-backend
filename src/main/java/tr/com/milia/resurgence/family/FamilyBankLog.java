@@ -14,6 +14,9 @@ public class FamilyBankLog {
 	private String member;
 
 	@Column(nullable = false, updatable = false)
+	private String family;
+
+	@Column(nullable = false, updatable = false)
 	private long amount;
 
 	@Enumerated(value = EnumType.STRING)
@@ -26,8 +29,9 @@ public class FamilyBankLog {
 	public FamilyBankLog() {
 	}
 
-	public FamilyBankLog(String member, long amount, Reason reason) {
+	public FamilyBankLog(String member, String family, long amount, Reason reason) {
 		this.member = member;
+		this.family = family;
 		this.amount = amount;
 		this.reason = reason;
 		date = Instant.now();
@@ -39,6 +43,10 @@ public class FamilyBankLog {
 
 	public String getMember() {
 		return member;
+	}
+
+	public String getFamily() {
+		return family;
 	}
 
 	public long getAmount() {

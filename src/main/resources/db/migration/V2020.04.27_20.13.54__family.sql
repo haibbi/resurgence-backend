@@ -19,6 +19,7 @@ create table family_bank_log
     id     bigserial not null
         constraint family_bank_log_pk primary key,
     member varchar   not null,
+    family varchar   not null,
     amount bigint    not null,
     reason varchar   not null,
     date   timestamp not null
