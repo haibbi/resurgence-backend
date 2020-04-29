@@ -90,4 +90,9 @@ public class FamilyService {
 	private Player findPlayer(String playerName) {
 		return playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 	}
+
+	public Optional<Family> findByName(String name) {
+		return repository.findByName(name);
+	}
+
 }

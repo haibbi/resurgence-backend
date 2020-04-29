@@ -53,7 +53,8 @@ public class Player extends AbstractAggregateRoot<Player> {
 	@Column(nullable = false, updatable = false)
 	private Race race;
 
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "don")
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinTable(name = "family_members", joinColumns = @JoinColumn(name = "members_id"))
 	private Family family;
 
 	public Player() {
