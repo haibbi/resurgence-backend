@@ -21,7 +21,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 	private String name;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
-	private Player don;
+	private Player boss;
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
@@ -37,13 +37,13 @@ public class Family extends AbstractAggregateRoot<Family> {
 	public Family() {
 	}
 
-	public Family(String name, Player don, long bank, Building building) {
+	public Family(String name, Player boss, long bank, Building building) {
 		this.name = name;
-		this.don = don;
+		this.boss = boss;
 		this.bank = bank;
 		members = new LinkedHashSet<>();
 		build(building);
-		addMember(don);
+		addMember(boss);
 	}
 
 	/**
@@ -93,8 +93,8 @@ public class Family extends AbstractAggregateRoot<Family> {
 		return name;
 	}
 
-	public Player getDon() {
-		return don;
+	public Player getBoss() {
+		return boss;
 	}
 
 	public Building getBuilding() {
@@ -110,6 +110,6 @@ public class Family extends AbstractAggregateRoot<Family> {
 	}
 
 	public Race getRace() {
-		return don.getRace();
+		return boss.getRace();
 	}
 }

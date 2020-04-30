@@ -29,15 +29,15 @@ public class Invitation {
 	public Invitation() {
 	}
 
-	public Invitation(Player player, Player don) {
-		if (don.getName().equals(player.getName())) throw new SelfInvitationException();
+	public Invitation(Player player, Player boss) {
+		if (boss.getName().equals(player.getName())) throw new SelfInvitationException();
 		if (player.getFamily().isPresent()) throw new PlayerAlreadyHaveFamilyException();
 
-		Optional<Family> optionalFamily = don.getFamily();
+		Optional<Family> optionalFamily = boss.getFamily();
 		if (optionalFamily.isEmpty()) throw new FamilyNotFoundException();
 		family = optionalFamily.get();
 
-		if (!family.getDon().getName().equals(don.getName())) throw new FamilyAccessDeniedException();
+		if (!family.getBoss().getName().equals(boss.getName())) throw new FamilyAccessDeniedException();
 		if (family.getRace() != player.getRace()) throw new RaceCompatibilityException();
 
 		this.player = player;
@@ -46,7 +46,7 @@ public class Invitation {
 	}
 
 	public Invitation(Player player, Family family) {
-		this(player, family.getDon());
+		this(player, family.getBoss());
 		direction = Direction.FAMILY;
 	}
 

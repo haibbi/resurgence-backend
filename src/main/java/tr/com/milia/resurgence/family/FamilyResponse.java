@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class FamilyResponse {
 	private final String name;
-	private final String don;
+	private final String boss;
 	private final Building building;
 	private final Set<String> members;
 	private final Race race;
@@ -16,7 +16,7 @@ public class FamilyResponse {
 
 	public FamilyResponse(Family family) {
 		name = family.getName();
-		don = family.getDon().getName();
+		boss = family.getBoss().getName();
 		building = family.getBuilding();
 		members = family.getMembers().stream().map(Player::getName).collect(Collectors.toSet());
 		race = family.getRace();
@@ -32,8 +32,8 @@ public class FamilyResponse {
 		return name;
 	}
 
-	public String getDon() {
-		return don;
+	public String getBoss() {
+		return boss;
 	}
 
 	public Building getBuilding() {

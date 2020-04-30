@@ -45,7 +45,7 @@ public class FamilyService {
 		List<Family> all = repository.findAll();
 		for (Family family : all) {
 			// initialize lazy fields
-			Hibernate.initialize(family.getDon());
+			Hibernate.initialize(family.getBoss());
 			Hibernate.initialize(family.getMembers().size());
 		}
 		return all;
@@ -78,8 +78,8 @@ public class FamilyService {
 
 		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 
-		// only don can withdraw
-		if (!family.getDon().getName().equals(player.getName())) throw new FamilyBankAccessDeniedException();
+		// only boss can withdraw
+		if (!family.getBoss().getName().equals(player.getName())) throw new FamilyBankAccessDeniedException();
 
 		family.withdraw(amount);
 		player.increaseBalance(amount);
