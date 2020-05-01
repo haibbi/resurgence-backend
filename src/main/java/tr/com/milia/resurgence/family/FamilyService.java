@@ -168,7 +168,7 @@ public class FamilyService {
 	@EventListener(TaskSucceedResult.class)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 3)
 	public void onTaskSucceedResult(TaskSucceedResult event) {
-		log.info("Task Succeed Result {}", event);
+		log.debug("Task Succeed Result {}", event);
 		Player player = event.getPlayer();
 		player.getChief().ifPresentOrElse(chief -> {
 			// boss and chief share revenue
