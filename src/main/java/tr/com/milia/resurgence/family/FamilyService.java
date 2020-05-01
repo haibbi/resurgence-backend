@@ -87,6 +87,25 @@ public class FamilyService {
 		repository.save(family); // todo sadece FamilyBankEvent atılması için save kullanıldı. Araştır
 	}
 
+	@Transactional
+	public void assignConsultant(String playerName, String consultantName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+
+		Player consultant = findPlayer(consultantName);
+		family.assignConsultant(consultant);
+	}
+
+	@Transactional
+	public void fireConsultant(String playerName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+
+		family.fireConsultant();
+	}
+
 	private Player findPlayer(String playerName) {
 		return playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 	}

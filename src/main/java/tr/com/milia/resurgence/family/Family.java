@@ -1,6 +1,7 @@
 package tr.com.milia.resurgence.family;
 
 import org.springframework.data.domain.AbstractAggregateRoot;
+import tr.com.milia.resurgence.i18n.LocalizedException;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Race;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -22,6 +24,12 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	private Player boss;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	private Player consultant;
+
+	@OneToMany(mappedBy = "chief")
+	private Set<Chief> chiefs;
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
@@ -89,6 +97,19 @@ public class Family extends AbstractAggregateRoot<Family> {
 		registerEvent(new FamilyBankEvent(getName(), Reason.BUILDING, price));
 	}
 
+	void assignConsultant(Player consultant) {
+		if (consultant.getName().equals(boss.getName())) throw new LocalizedException("boss.can.not.be.consultant");
+		if (!consultant.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
+			throw new LocalizedException("consultant.have.different.family");
+		}
+
+		this.consultant = consultant;
+	}
+
+	void fireConsultant() {
+		this.consultant = null;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -111,5 +132,13 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 	public Race getRace() {
 		return boss.getRace();
+	}
+
+	public Optional<Player> getConsultant() {
+		return Optional.ofNullable(consultant);
+	}
+
+	public Set<Chief> getChiefs() {
+		return chiefs;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class FamilyResponse {
 	private final String name;
 	private final String boss;
+	private final String consultant;
 	private final Building building;
 	private final Set<String> members;
 	private final Race race;
@@ -17,6 +18,7 @@ public class FamilyResponse {
 	public FamilyResponse(Family family) {
 		name = family.getName();
 		boss = family.getBoss().getName();
+		consultant = family.getConsultant().map(Player::getName).orElse(null);
 		building = family.getBuilding();
 		members = family.getMembers().stream().map(Player::getName).collect(Collectors.toSet());
 		race = family.getRace();
@@ -34,6 +36,10 @@ public class FamilyResponse {
 
 	public String getBoss() {
 		return boss;
+	}
+
+	public String getConsultant() {
+		return consultant;
 	}
 
 	public Building getBuilding() {

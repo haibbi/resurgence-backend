@@ -1,11 +1,7 @@
 package tr.com.milia.resurgence.family;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
@@ -44,6 +40,18 @@ public class FamilyController {
 		return service.findAll().stream()
 			.map(FamilyResponse::new)
 			.collect(Collectors.toList());
+	}
+
+	@PostMapping("assign/consultant/{name}")
+	public void assignConsultant(TokenAuthentication authentication, @PathVariable("name") String consultant) {
+		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		service.assignConsultant(player, consultant);
+	}
+
+	@DeleteMapping("assign/consultant")
+	public void fireConsultant(TokenAuthentication authentication) {
+		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		service.fireConsultant(player);
 	}
 
 }
