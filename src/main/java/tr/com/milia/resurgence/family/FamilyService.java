@@ -145,6 +145,10 @@ public class FamilyService {
 
 	}
 
+	public void delete(Family family) {
+		repository.deleteById(family.getId());
+	}
+
 	private Player findPlayer(String playerName) {
 		return playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 	}

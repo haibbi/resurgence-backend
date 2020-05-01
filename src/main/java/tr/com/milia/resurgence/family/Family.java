@@ -145,6 +145,10 @@ public class Family extends AbstractAggregateRoot<Family> {
 		if (consultant.getName().equals(name)) consultant = null;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
 	public String getName() {
 		return name;
 	}
