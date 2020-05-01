@@ -14,6 +14,7 @@ import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class FamilyService {
@@ -146,6 +147,10 @@ public class FamilyService {
 	}
 
 	public void delete(Family family) {
+		Set<Player> members = family.getMembers();
+		for (Player member : members) {
+			member.increaseBalance(family.getBank() / members.size());
+		}
 		repository.deleteById(family.getId());
 	}
 
