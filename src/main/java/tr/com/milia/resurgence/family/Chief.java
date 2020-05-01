@@ -33,6 +33,7 @@ public class Chief {
 	}
 
 	void addMember(Player player) {
+		if (player.getName().equals(chief.getName())) throw new SelfAssignmentException();
 		members.add(player);
 	}
 
