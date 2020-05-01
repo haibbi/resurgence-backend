@@ -82,6 +82,22 @@ public class HumanResourceService {
 		throw new InvitationNotException();
 	}
 
+	@Transactional
+	public void leave(String playerName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+
+		if (family.getBoss().getName().equals(playerName)) throw new BossLeaveException();
+
+		family.getConsultant().ifPresent(consultant -> {
+			if (consultant.getName().equals(playerName))
+				family.removeConsultant();
+		});
+		// todo remove chief
+		if (family.findChief(playerName).isPresent()) throw new RuntimeException();
+		family.removeMember(player);
+	}
+
 	private Player findPlayer(String name) {
 		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
 	}

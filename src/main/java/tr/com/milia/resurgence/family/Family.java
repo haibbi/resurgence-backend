@@ -119,7 +119,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 		return chiefs.stream().filter(chief -> chief.getChief().getName().equals(chiefName)).findFirst();
 	}
 
-	void fireConsultant() {
+	void removeConsultant() {
 		this.consultant = null;
 	}
 

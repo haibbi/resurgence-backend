@@ -101,7 +101,7 @@ public class FamilyService {
 		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
 
-		family.fireConsultant();
+		family.removeConsultant();
 	}
 
 	@Transactional
