@@ -4,7 +4,7 @@ create table family
         constraint family_pk primary key,
     bank     bigint                                      not null check (bank >= 0),
     building varchar                                     not null,
-    don_id   bigint
+    boss_id  bigint
         constraint family_player_id_fk references player not null,
     name     varchar unique                              not null
 );

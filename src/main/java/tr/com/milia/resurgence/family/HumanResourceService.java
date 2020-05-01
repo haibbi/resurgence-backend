@@ -64,17 +64,17 @@ public class HumanResourceService {
 	}
 
 	@Transactional
-	public void accept(String playerOrDonName, Long id) {
+	public void accept(String playerOrBossName, Long id) {
 		final Invitation invitation = repository.findById(id).orElseThrow(InvitationNotException::new);
 		final Player player = invitation.getPlayer();
 		Family family = invitation.getFamily();
 		if (invitation.getDirection() == Invitation.Direction.PLAYER
-			&& player.getName().equals(playerOrDonName)) {
+			&& player.getName().equals(playerOrBossName)) {
 			family.addMember(player);
 			repository.deleteAllByPlayer(player);
 			return;
 		} else if (invitation.getDirection() == Invitation.Direction.FAMILY &&
-			family.getDon().getName().equals(playerOrDonName)) {
+			family.getBoss().getName().equals(playerOrBossName)) {
 			family.addMember(player);
 			repository.deleteAllByPlayer(player);
 			return;

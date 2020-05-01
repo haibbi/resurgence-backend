@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,14 @@ public class Family extends AbstractAggregateRoot<Family> {
 	private String name;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
-	private Player don;
+	private Player boss;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	private Player consultant;
+
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "family_id")
+	private Set<Chief> chiefs;
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
@@ -37,13 +45,14 @@ public class Family extends AbstractAggregateRoot<Family> {
 	public Family() {
 	}
 
-	public Family(String name, Player don, long bank, Building building) {
+	public Family(String name, Player boss, long bank, Building building) {
 		this.name = name;
-		this.don = don;
+		this.boss = boss;
 		this.bank = bank;
 		members = new LinkedHashSet<>();
+		chiefs = new LinkedHashSet<>();
 		build(building);
-		addMember(don);
+		addMember(boss);
 	}
 
 	/**
@@ -89,12 +98,37 @@ public class Family extends AbstractAggregateRoot<Family> {
 		registerEvent(new FamilyBankEvent(getName(), Reason.BUILDING, price));
 	}
 
+	void assignConsultant(Player consultant) {
+		if (consultant.getName().equals(boss.getName())) throw new SelfAssignmentException();
+		if (!consultant.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
+			throw new DifferentFamilyException();
+		}
+
+		this.consultant = consultant;
+	}
+
+	Chief createChief(Player chief) {
+		if (chief.getName().equals(boss.getName())) throw new SelfAssignmentException();
+		if (!chief.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
+			throw new DifferentFamilyException();
+		}
+		return new Chief(chief, this);
+	}
+
+	Optional<Chief> findChief(String chiefName) {
+		return chiefs.stream().filter(chief -> chief.getChief().getName().equals(chiefName)).findFirst();
+	}
+
+	void fireConsultant() {
+		this.consultant = null;
+	}
+
 	public String getName() {
 		return name;
 	}
 
-	public Player getDon() {
-		return don;
+	public Player getBoss() {
+		return boss;
 	}
 
 	public Building getBuilding() {
@@ -110,6 +144,14 @@ public class Family extends AbstractAggregateRoot<Family> {
 	}
 
 	public Race getRace() {
-		return don.getRace();
+		return boss.getRace();
+	}
+
+	public Optional<Player> getConsultant() {
+		return Optional.ofNullable(consultant);
+	}
+
+	public Set<Chief> getChiefs() {
+		return Collections.unmodifiableSet(chiefs);
 	}
 }

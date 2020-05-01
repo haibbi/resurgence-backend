@@ -1,6 +1,10 @@
 package tr.com.milia.resurgence.item;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.task.TaskResult;
@@ -9,6 +13,8 @@ import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 @Service
 public class PlayerItemService {
+
+	private static final Logger log = LoggerFactory.getLogger(PlayerItemService.class);
 
 	private final PlayerItemRepository repository;
 
@@ -24,7 +30,9 @@ public class PlayerItemService {
 	}
 
 	@EventListener(TaskSucceedResult.class)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 	public void onTaskSucceedResult(TaskSucceedResult result) {
+		log.debug("Task Succeed Result {}", result);
 		var drop = result.getDrop();
 		var player = result.getPlayer();
 

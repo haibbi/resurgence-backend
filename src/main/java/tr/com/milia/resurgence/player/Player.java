@@ -2,6 +2,7 @@ package tr.com.milia.resurgence.player;
 
 import org.springframework.data.domain.AbstractAggregateRoot;
 import tr.com.milia.resurgence.account.Account;
+import tr.com.milia.resurgence.family.Chief;
 import tr.com.milia.resurgence.family.Family;
 import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.skill.PlayerSkill;
@@ -59,6 +60,10 @@ public class Player extends AbstractAggregateRoot<Player> {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinTable(name = "family_members", joinColumns = @JoinColumn(name = "members_id"))
 	private Family family;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinTable(name = "chief_members", joinColumns = @JoinColumn(name = "members_id"))
+	private Chief chief;
 
 	public Player() {
 	}
@@ -156,5 +161,9 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public Optional<Family> getFamily() {
 		return Optional.ofNullable(family);
+	}
+
+	public Optional<Chief> getChief() {
+		return Optional.ofNullable(chief);
 	}
 }
