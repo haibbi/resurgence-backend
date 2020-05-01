@@ -19,7 +19,7 @@ import java.util.Set;
 @Service
 public class SmugglingService {
 
-	private static final Set<Task> SMUGGLING_TASKS = Set.of(Task.BEER_SMUGGLING);
+	public static final Set<Task> SMUGGLING_TASKS = Set.of(Task.BEER_SMUGGLING);
 
 	private final TaskService taskService;
 	private final PlayerService playerService;

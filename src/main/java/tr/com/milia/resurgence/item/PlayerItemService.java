@@ -6,20 +6,33 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
-import tr.com.milia.resurgence.task.TaskResult;
-import tr.com.milia.resurgence.task.TaskStartedEvent;
-import tr.com.milia.resurgence.task.TaskSucceedResult;
+import tr.com.milia.resurgence.player.PlayerService;
+import tr.com.milia.resurgence.smuggling.SmugglingService;
+import tr.com.milia.resurgence.task.*;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerItemService {
 
 	private static final Logger log = LoggerFactory.getLogger(PlayerItemService.class);
+	private static final Set<Item> FORBIDDEN_TO_BUY = SmugglingService.SMUGGLING_TASKS.stream()
+		.map(Task::getDrop)
+		.flatMap(Collection::stream)
+		.map(Drop::getItem)
+		.collect(Collectors.toSet());
 
 	private final PlayerItemRepository repository;
+	private final PlayerService playerService;
 
-	public PlayerItemService(PlayerItemRepository repository) {
+	public PlayerItemService(PlayerItemRepository repository, PlayerService playerService) {
 		this.repository = repository;
+		this.playerService = playerService;
 	}
 
 	public void addItem(Player player, Item item, long quantity) {
@@ -27,6 +40,31 @@ public class PlayerItemService {
 			playerItem -> playerItem.add(quantity),
 			() -> repository.save(new PlayerItem(player, item, quantity))
 		);
+	}
+
+	@Transactional
+	public void sellItem(String playerName, Item item, long quantity) {
+		Player player = findPlayer(playerName);
+		PlayerItem playerItem = repository.findByPlayerAndItem(player, item).orElseThrow(ItemNotFound::new);
+
+		playerItem.remove(quantity);
+		long totalPrice = item.getPrice() * quantity;
+		player.increaseBalance(totalPrice);
+	}
+
+	@Transactional
+	public void buyItem(String playerName, Item item, long quantity) {
+		if (FORBIDDEN_TO_BUY.contains(item)) throw new ForbiddenItemSoldException();
+
+		Player player = findPlayer(playerName);
+		long totalPrice = item.getPrice() * quantity;
+		player.decreaseBalance(totalPrice);
+		addItem(player, item, quantity);
+	}
+
+	public List<PlayerItem> findAllPlayerItem(String playerName) {
+		Player player = findPlayer(playerName);
+		return repository.findAllByPlayer(player);
 	}
 
 	@EventListener(TaskSucceedResult.class)
@@ -76,4 +114,9 @@ public class PlayerItemService {
 				throw new RequiredItemException(item.name());
 			}).remove(count));
 	}
+
+	private Player findPlayer(String name) {
+		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
+	}
+
 }

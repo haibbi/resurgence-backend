@@ -1,4 +1,9 @@
 package tr.com.milia.resurgence.item;
 
-public class ItemOutOfBoundsException extends RuntimeException {
+import tr.com.milia.resurgence.i18n.LocalizedException;
+
+public class ItemOutOfBoundsException extends LocalizedException {
+	public ItemOutOfBoundsException() {
+		super("item.out.of.bounds");
+	}
 }
