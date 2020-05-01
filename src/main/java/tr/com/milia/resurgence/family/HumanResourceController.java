@@ -56,4 +56,10 @@ public class HumanResourceController {
 		service.leave(player);
 	}
 
+	@DeleteMapping("/fire/{member}")
+	public void leave(TokenAuthentication authentication, @PathVariable("member") String member) {
+		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		service.fire(player, member);
+	}
+
 }

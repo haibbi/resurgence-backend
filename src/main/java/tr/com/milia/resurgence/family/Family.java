@@ -69,6 +69,18 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 	void removeMember(Player member) {
 		members.remove(member);
+		if (chiefs != null) {
+			for (Chief chief : chiefs) {
+				chief.removeMember(member);
+			}
+		}
+		findChief(member.getName()).ifPresent(this::removeChief);
+		removeConsultantIfPresent(member.getName());
+	}
+
+	void removeMember(String member) {
+		if (members == null) return;
+		members.stream().filter(m -> m.getName().equals(member)).findFirst().ifPresent(this::removeMember);
 	}
 
 	void deposit(long amount) {
@@ -126,6 +138,11 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 	void removeConsultant() {
 		this.consultant = null;
+	}
+
+	void removeConsultantIfPresent(String name) {
+		if (consultant == null) return;
+		if (consultant.getName().equals(name)) consultant = null;
 	}
 
 	public String getName() {

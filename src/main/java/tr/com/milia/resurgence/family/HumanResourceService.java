@@ -89,12 +89,16 @@ public class HumanResourceService {
 
 		if (family.getBoss().getName().equals(playerName)) throw new BossLeaveException();
 
-		family.getConsultant().ifPresent(consultant -> {
-			if (consultant.getName().equals(playerName))
-				family.removeConsultant();
-		});
-		family.findChief(playerName).ifPresent(family::removeChief);
 		family.removeMember(player);
+	}
+
+	@Transactional
+	public void fire(String playerName, String memberName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+
+		family.removeMember(memberName);
 	}
 
 	private Player findPlayer(String name) {
