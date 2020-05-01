@@ -82,6 +82,34 @@ public class HumanResourceService {
 		throw new InvitationNotException();
 	}
 
+	@Transactional
+	public void leave(String playerName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+
+		if (family.getBoss().getName().equals(playerName)) throw new BossLeaveException();
+
+		family.removeMember(player);
+	}
+
+	@Transactional
+	public void fire(String playerName, String memberName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+
+		family.removeMember(memberName);
+	}
+
+	@Transactional
+	public void destroy(String playerName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+
+		familyService.delete(family);
+	}
+
 	private Player findPlayer(String name) {
 		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
 	}
