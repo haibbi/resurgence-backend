@@ -1,7 +1,6 @@
 package tr.com.milia.resurgence.family;
 
 import org.springframework.data.domain.AbstractAggregateRoot;
-import tr.com.milia.resurgence.i18n.LocalizedException;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Race;
 
@@ -100,18 +99,18 @@ public class Family extends AbstractAggregateRoot<Family> {
 	}
 
 	void assignConsultant(Player consultant) {
-		if (consultant.getName().equals(boss.getName())) throw new LocalizedException("boss.can.not.be.consultant");
+		if (consultant.getName().equals(boss.getName())) throw new SelfAssignmentException();
 		if (!consultant.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
-			throw new LocalizedException("consultant.have.different.family");
+			throw new DifferentFamilyException();
 		}
 
 		this.consultant = consultant;
 	}
 
 	Chief createChief(Player chief) {
-		if (chief.getName().equals(boss.getName())) throw new LocalizedException("boss.can.not.be.chief");
+		if (chief.getName().equals(boss.getName())) throw new SelfAssignmentException();
 		if (!chief.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
-			throw new LocalizedException("chief.have.different.family");
+			throw new DifferentFamilyException();
 		}
 		return new Chief(chief, this);
 	}

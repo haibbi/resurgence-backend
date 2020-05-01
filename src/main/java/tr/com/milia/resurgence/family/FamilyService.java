@@ -8,7 +8,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tr.com.milia.resurgence.i18n.LocalizedException;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.PlayerNotFound;
@@ -139,7 +138,7 @@ public class FamilyService {
 		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
 		family.findChief(chiefName).ifPresent(chief -> {
 			Player member = findPlayer(memberName);
-			if (member.getChief().isPresent()) throw new LocalizedException("member.have.chief");
+			if (member.getChief().isPresent()) throw new MemberAlreadyHaveChiefException();
 			chief.addMember(member);
 		});
 
