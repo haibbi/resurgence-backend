@@ -27,8 +27,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 	@OneToOne(fetch = FetchType.LAZY)
 	private Player consultant;
 
-	@OneToMany(orphanRemoval = true)
-	@JoinColumn(name = "family_id")
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Chief> chiefs;
 
 	@Enumerated(value = EnumType.STRING)
@@ -112,11 +111,17 @@ public class Family extends AbstractAggregateRoot<Family> {
 		if (!chief.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
 			throw new DifferentFamilyException();
 		}
-		return new Chief(chief, this);
+		Chief createdChief = new Chief(chief, this);
+		chiefs.add(createdChief);
+		return createdChief;
 	}
 
 	Optional<Chief> findChief(String chiefName) {
 		return chiefs.stream().filter(chief -> chief.getChief().getName().equals(chiefName)).findFirst();
+	}
+
+	public void removeChief(Chief chief) {
+		chiefs.remove(chief);
 	}
 
 	void removeConsultant() {

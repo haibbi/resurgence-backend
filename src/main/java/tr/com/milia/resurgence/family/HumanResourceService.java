@@ -93,8 +93,7 @@ public class HumanResourceService {
 			if (consultant.getName().equals(playerName))
 				family.removeConsultant();
 		});
-		// todo remove chief
-		if (family.findChief(playerName).isPresent()) throw new RuntimeException();
+		family.findChief(playerName).ifPresent(family::removeChief);
 		family.removeMember(player);
 	}
 

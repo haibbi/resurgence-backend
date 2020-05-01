@@ -23,12 +23,10 @@ public class FamilyService {
 
 	private final FamilyRepository repository;
 	private final PlayerService playerService;
-	private final ChiefRepository chiefRepository;
 
-	public FamilyService(FamilyRepository repository, PlayerService playerService, ChiefRepository chiefRepository) {
+	public FamilyService(FamilyRepository repository, PlayerService playerService) {
 		this.repository = repository;
 		this.playerService = playerService;
-		this.chiefRepository = chiefRepository;
 	}
 
 	@Transactional
@@ -111,8 +109,7 @@ public class FamilyService {
 		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
 
 		Player chiefCandidate = findPlayer(chiefName);
-		Chief chief = family.createChief(chiefCandidate);
-		chiefRepository.save(chief);
+		family.createChief(chiefCandidate);
 	}
 
 	@Transactional
@@ -120,7 +117,7 @@ public class FamilyService {
 		Player player = findPlayer(playerName);
 		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
-		family.findChief(chiefName).ifPresent(chiefRepository::delete);
+		family.findChief(chiefName).ifPresent(family::removeChief);
 	}
 
 	@Transactional
