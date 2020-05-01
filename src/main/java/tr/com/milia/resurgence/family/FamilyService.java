@@ -1,6 +1,5 @@
 package tr.com.milia.resurgence.family;
 
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -49,15 +48,8 @@ public class FamilyService {
 		return repository.save(family);
 	}
 
-	@Transactional
 	public List<Family> findAll() {
-		List<Family> all = repository.findAll();
-		for (Family family : all) {
-			// initialize lazy fields
-			Hibernate.initialize(family.getBoss());
-			Hibernate.initialize(family.getMembers().size());
-		}
-		return all;
+		return repository.findAll();
 	}
 
 	@Transactional

@@ -39,6 +39,7 @@ public class FamilyController {
 	}
 
 	@GetMapping("/all")
+	@Transactional
 	public List<FamilyResponse> allFamilies() {
 		return service.findAll().stream()
 			.map(FamilyResponse::new)
