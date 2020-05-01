@@ -45,32 +45,32 @@ public class FamilyController {
 			.collect(Collectors.toList());
 	}
 
-	@PostMapping("assign/consultant/{name}")
+	@PostMapping("/consultant/{name}")
 	public void assignConsultant(TokenAuthentication authentication, @PathVariable("name") String consultant) {
 		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
 		service.assignConsultant(player, consultant);
 	}
 
-	@DeleteMapping("fire/consultant")
+	@DeleteMapping("/consultant")
 	public void fireConsultant(TokenAuthentication authentication) {
 		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
 		service.fireConsultant(player);
 	}
 
-	@PostMapping("assign/chief/{name}")
+	@PostMapping("/chief/{name}")
 	public void assignChief(TokenAuthentication authentication, @PathVariable("name") String chief) {
 		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
 		service.assignChief(player, chief);
 	}
 
-	@DeleteMapping("fire/chief/{name}")
+	@DeleteMapping("/chief/{name}")
 	public void fireChief(TokenAuthentication authentication, @PathVariable("name") String chief) {
 		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
 		service.fireChief(player, chief);
 	}
 
 
-	@PostMapping("assign/chief/member/{chief}/{member}")
+	@PostMapping("/chief/member/{chief}/{member}")
 	public void assignMemberToChief(TokenAuthentication authentication,
 									@PathVariable("chief") String chief,
 									@PathVariable("member") String member) {
@@ -78,7 +78,7 @@ public class FamilyController {
 		service.assignMemberToChief(player, chief, member);
 	}
 
-	@DeleteMapping("fire/chief/member/{chief}/{member}")
+	@DeleteMapping("/chief/member/{chief}/{member}")
 	public void removeMemberFromChief(TokenAuthentication authentication,
 									  @PathVariable("chief") String chief,
 									  @PathVariable("member") String member) {
