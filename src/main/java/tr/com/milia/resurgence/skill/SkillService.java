@@ -1,12 +1,18 @@
 package tr.com.milia.resurgence.skill;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.player.PlayerCreatedEvent;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 @Service
 public class SkillService {
+
+	private static final Logger log = LoggerFactory.getLogger(SkillService.class);
 
 	private final PlayerSkillRepository repository;
 
@@ -21,7 +27,9 @@ public class SkillService {
 	}
 
 	@EventListener(TaskSucceedResult.class)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 	public void onTaskSucceedResult(TaskSucceedResult result) {
+		log.debug("Task Succeed Result {}", result);
 		var player = result.getPlayer();
 		result.getSkillGain().forEach(skill -> repository.findByPlayerAndSkill(player, skill).ifPresentOrElse(
 			playerSkill -> playerSkill.learn(0.1),

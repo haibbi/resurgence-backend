@@ -3,6 +3,7 @@ package tr.com.milia.resurgence.family;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Race;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ public class FamilyResponse {
 	private final Building building;
 	private final Set<String> members;
 	private final Race race;
+	private Map<String, Set<String>> chiefs;
 	private Long bank;
 
 	public FamilyResponse(Family family) {
@@ -27,6 +29,11 @@ public class FamilyResponse {
 	static FamilyResponse exposed(Family family) {
 		FamilyResponse response = new FamilyResponse(family);
 		response.bank = family.getBank();
+		response.chiefs = family.getChiefs().stream()
+			.collect(Collectors.toMap(
+				chief -> chief.getChief().getName(),
+				chief -> chief.getMembers().stream().map(Player::getName).collect(Collectors.toSet())
+			));
 		return response;
 	}
 
@@ -40,6 +47,10 @@ public class FamilyResponse {
 
 	public String getConsultant() {
 		return consultant;
+	}
+
+	public Map<String, Set<String>> getChiefs() {
+		return chiefs;
 	}
 
 	public Building getBuilding() {

@@ -28,7 +28,8 @@ public class Family extends AbstractAggregateRoot<Family> {
 	@OneToOne(fetch = FetchType.LAZY)
 	private Player consultant;
 
-	@OneToMany(mappedBy = "chief")
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "family_id")
 	private Set<Chief> chiefs;
 
 	@Enumerated(value = EnumType.STRING)
@@ -50,6 +51,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 		this.boss = boss;
 		this.bank = bank;
 		members = new LinkedHashSet<>();
+		chiefs = new LinkedHashSet<>();
 		build(building);
 		addMember(boss);
 	}
@@ -106,6 +108,18 @@ public class Family extends AbstractAggregateRoot<Family> {
 		this.consultant = consultant;
 	}
 
+	Chief createChief(Player chief) {
+		if (chief.getName().equals(boss.getName())) throw new LocalizedException("boss.can.not.be.chief");
+		if (!chief.getFamily().orElseThrow(FamilyNotFoundException::new).getName().equals(this.getName())) {
+			throw new LocalizedException("chief.have.different.family");
+		}
+		return new Chief(chief, this);
+	}
+
+	Optional<Chief> findChief(String chiefName) {
+		return chiefs.stream().filter(chief -> chief.getChief().getName().equals(chiefName)).findFirst();
+	}
+
 	void fireConsultant() {
 		this.consultant = null;
 	}
@@ -139,6 +153,6 @@ public class Family extends AbstractAggregateRoot<Family> {
 	}
 
 	public Set<Chief> getChiefs() {
-		return chiefs;
+		return Collections.unmodifiableSet(chiefs);
 	}
 }

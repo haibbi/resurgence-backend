@@ -1,11 +1,18 @@
 package tr.com.milia.resurgence.family;
 
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tr.com.milia.resurgence.i18n.LocalizedException;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.PlayerNotFound;
+import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +21,16 @@ import java.util.Optional;
 public class FamilyService {
 
 	public static final int REQUIRED_HONOR_FOUND_A_FAMILY = 1000;
+	private static final Logger log = LoggerFactory.getLogger(FamilyService.class);
 
 	private final FamilyRepository repository;
 	private final PlayerService playerService;
+	private final ChiefRepository chiefRepository;
 
-	public FamilyService(FamilyRepository repository, PlayerService playerService) {
+	public FamilyService(FamilyRepository repository, PlayerService playerService, ChiefRepository chiefRepository) {
 		this.repository = repository;
 		this.playerService = playerService;
+		this.chiefRepository = chiefRepository;
 	}
 
 	@Transactional
@@ -54,10 +64,7 @@ public class FamilyService {
 	@Transactional
 	public Optional<Family> findFamilyByPlayerName(String playerName) {
 		final Player player = findPlayer(playerName);
-		Optional<Family> family = player.getFamily();
-		family.ifPresent(f -> Hibernate.initialize(f.getMembers().size()));
-
-		return family;
+		return player.getFamily();
 	}
 
 	@Transactional
@@ -106,12 +113,82 @@ public class FamilyService {
 		family.fireConsultant();
 	}
 
+	@Transactional
+	public void assignChief(String playerName, String chiefName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+
+		Player chiefCandidate = findPlayer(chiefName);
+		Chief chief = family.createChief(chiefCandidate);
+		chiefRepository.save(chief);
+	}
+
+	@Transactional
+	public void fireChief(String playerName, String chiefName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+		family.findChief(chiefName).ifPresent(chiefRepository::delete);
+	}
+
+	@Transactional
+	public void assignMemberToChief(String playerName, String chiefName, String memberName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+		family.findChief(chiefName).ifPresent(chief -> {
+			Player member = findPlayer(memberName);
+			if (member.getChief().isPresent()) throw new LocalizedException("member.have.chief");
+			chief.addMember(member);
+		});
+
+	}
+
+	@Transactional
+	public void removeMemberFromChief(String playerName, String chiefName, String memberName) {
+		Player player = findPlayer(playerName);
+		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
+		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+		family.findChief(chiefName).ifPresent(chief -> {
+			Player member = findPlayer(memberName);
+			chief.removeMember(member);
+		});
+
+	}
+
 	private Player findPlayer(String playerName) {
 		return playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 	}
 
 	public Optional<Family> findByName(String name) {
 		return repository.findByName(name);
+	}
+
+	@EventListener(TaskSucceedResult.class)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 3)
+	public void onTaskSucceedResult(TaskSucceedResult event) {
+		log.info("Task Succeed Result {}", event);
+		Player player = event.getPlayer();
+		player.getChief().ifPresentOrElse(chief -> {
+			// boss and chief share revenue
+			long totalMoneyGain = event.getMoneyGain();
+			long chiefsShare = (long) (totalMoneyGain * .03);
+			long bossesShare = (long) (totalMoneyGain * .02);
+			long diminishing = chiefsShare + bossesShare;
+			log.debug("Total Money: {}, Chief's share: {}, Boss'es Share: {}",
+				totalMoneyGain, chiefsShare, bossesShare);
+			chief.getChief().increaseBalance(chiefsShare);
+			chief.getFamily().getBoss().increaseBalance(bossesShare);
+			player.decreaseBalance(diminishing);
+		}, () -> {
+			// boss take the all revenue
+			long totalMoneyGain = event.getMoneyGain();
+			long bossesShare = (long) (totalMoneyGain * .05);
+			log.debug("Total Money: {}, Boss'es Share: {}", totalMoneyGain, bossesShare);
+			player.getFamily().ifPresent(family -> family.getBoss().increaseBalance(bossesShare));
+			player.decreaseBalance(bossesShare);
+		});
 	}
 
 }

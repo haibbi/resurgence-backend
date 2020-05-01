@@ -2,19 +2,18 @@ package tr.com.milia.resurgence.family;
 
 import tr.com.milia.resurgence.player.Player;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import java.io.Serializable;
+import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-public class Chief implements Serializable {
+public class Chief {
 
 	@Id
+	@Column(unique = true, nullable = false)
+	private Long id;
+
+	@MapsId
 	@OneToOne
 	private Player chief;
 

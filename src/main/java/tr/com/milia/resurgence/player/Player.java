@@ -162,4 +162,8 @@ public class Player extends AbstractAggregateRoot<Player> {
 	public Optional<Family> getFamily() {
 		return Optional.ofNullable(family);
 	}
+
+	public Optional<Chief> getChief() {
+		return Optional.ofNullable(chief);
+	}
 }
