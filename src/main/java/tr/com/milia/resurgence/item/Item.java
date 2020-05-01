@@ -14,6 +14,7 @@ public enum Item {
 	GLOCK(100, emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
 	MONEY(1, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
 	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
+	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet()),
 	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE));
 
 	private final Map<Skill, Integer> skills;

@@ -17,6 +17,7 @@ public class StockConfiguration {
 		stockService.schedule(Duration.ofSeconds(10), Item.BEER, 0.05);
 		stockService.schedule(Duration.ofSeconds(30), Item.GLOCK, 0.05);
 		stockService.schedule(Duration.ofMinutes(1), Item.FORD_FIESTA, 0.05);
+		stockService.schedule(Duration.ofMinutes(5), Item.HOUSE, 0.1);
 
 		return stockService;
 	}
