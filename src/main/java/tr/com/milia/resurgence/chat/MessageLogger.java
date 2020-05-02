@@ -39,7 +39,7 @@ public class MessageLogger implements ChannelInterceptor {
 
 				if (sentMessage.getType() != Type.MESSAGE) return;
 
-				repository.save(new MessageLog(sentMessage, topic, player)); // todo topic name
+				repository.save(new MessageLog(sentMessage, topic, player));
 			} catch (Exception e) {
 				// do nothing
 				log.warn("An error occurred while persistent message log", e);
