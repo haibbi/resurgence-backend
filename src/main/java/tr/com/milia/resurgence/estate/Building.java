@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.estate;
 
+import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.item.Item;
 
 import java.time.Duration;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 import static java.util.Map.of;
 
-public enum Building {
+public enum Building implements LocaleEnum {
 
 	HOTEL(5_000_000, Duration.ofDays(1), of(Item.MONEY, 10_000L)),
 	BEER_FACTORY(5_000_000, Duration.ofDays(1), of(Item.BEER, 1_000L));

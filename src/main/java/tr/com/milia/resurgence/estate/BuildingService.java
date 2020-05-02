@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
@@ -55,10 +54,7 @@ public class BuildingService {
 
 	@Transactional
 	public void sell(String playerName, Building building) {
-		Optional<Deed> optionalDeed = repository.findById(building);
-		if (optionalDeed.isEmpty()) throw new BuildingOwnerException();
-
-		Deed deed = optionalDeed.get();
+		Deed deed = repository.findById(building).orElseThrow(BuildingOwnerException::new);
 		Player player = deed.getPlayer();
 
 		if (!player.getName().equals(playerName)) throw new BuildingOwnerException();
