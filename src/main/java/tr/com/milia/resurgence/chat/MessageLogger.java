@@ -16,10 +16,10 @@ public class MessageLogger implements ChannelInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(MessageLogger.class);
 
-	private final InMemoryMessageLogRepository repository;
+	private final MessageLogRepository repository;
 	private final ObjectMapper objectMapper;
 
-	public MessageLogger(InMemoryMessageLogRepository repository, ObjectMapper objectMapper) {
+	public MessageLogger(MessageLogRepository repository, ObjectMapper objectMapper) {
 		this.repository = repository;
 		this.objectMapper = objectMapper;
 	}
@@ -36,7 +36,10 @@ public class MessageLogger implements ChannelInterceptor {
 				final String topic = (String) message.getHeaders().get(SimpMessageHeaderAccessor.DESTINATION_HEADER);
 				final String player = headerAccessor.getFirstNativeHeader("player");
 				var sentMessage = objectMapper.readValue((byte[]) payload, tr.com.milia.resurgence.chat.Message.class);
-				repository.add(new MessageLog(sentMessage.getContent(), topic, sentMessage.getType(), player)); // todo topic name
+
+				if (sentMessage.getType() != Type.MESSAGE) return;
+
+				repository.save(new MessageLog(sentMessage, topic, player)); // todo topic name
 			} catch (Exception e) {
 				// do nothing
 				log.warn("An error occurred while persistent message log", e);

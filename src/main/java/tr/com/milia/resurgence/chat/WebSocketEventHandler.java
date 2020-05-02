@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
@@ -23,16 +24,25 @@ public class WebSocketEventHandler {
 
 	@EventListener(SessionSubscribeEvent.class)
 	public void onSessionSubscribeEvent(SessionSubscribeEvent event) {
-		final Principal user = event.getUser();
+		send(event.getUser(), event.getMessage(), Type.SUBSCRIBE);
+	}
+
+	@EventListener(SessionUnsubscribeEvent.class)
+	public void onSessionUnsubscribeEvent(SessionUnsubscribeEvent event) {
+		send(event.getUser(), event.getMessage(), Type.UNSUBSCRIBE);
+	}
+
+	private void send(Principal user, org.springframework.messaging.Message<byte[]> message, Type type) {
 		if (!(user instanceof TokenAuthentication)) throw new AccessDeniedException("invalid user");
 		final TokenAuthentication authentication = (TokenAuthentication) user;
 		final String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
 
-		final Object destinationHeader = event.getMessage().getHeaders().get(SimpMessageHeaderAccessor.DESTINATION_HEADER);
+		final Object destinationHeader = message.getHeaders().get(SimpMessageHeaderAccessor.DESTINATION_HEADER);
 		if (!(destinationHeader instanceof String)) return;
 		final String destination = (String) destinationHeader;
 
-		template.convertAndSend(destination, new Message(Type.SUBSCRIBE), Map.of("player", playerName));
+		Map<String, Object> headers = Map.of("player", playerName);
+		template.convertAndSend(destination, new Message(type), headers);
 	}
 
 }

@@ -1,22 +1,29 @@
 package tr.com.milia.resurgence.chat;
 
-import org.springframework.web.util.HtmlUtils;
+import java.util.UUID;
 
 public class Message {
 
+	private final UUID id;
 	private String content;
 	private Type type;
 
-	public Message() {
-	}
-
 	public Message(String content) {
-		this.content = content;
-		type = Type.MESSAGE;
+		this(content, Type.MESSAGE);
 	}
 
 	public Message(Type type) {
+		this(null, type);
+	}
+
+	public Message(String content, Type type) {
+		id = UUID.randomUUID();
 		this.type = type;
+		setContent(content);
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	public String getContent() {
@@ -24,7 +31,7 @@ public class Message {
 	}
 
 	public void setContent(String content) {
-		this.content = HtmlUtils.htmlEscape(content); // todo gerekli mi? smileyler gözükmeyebilir.
+		this.content = content;
 	}
 
 	public Type getType() {

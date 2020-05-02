@@ -1,20 +1,38 @@
 package tr.com.milia.resurgence.chat;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import java.time.Instant;
+import java.util.UUID;
+
+@Entity
 public class MessageLog {
 
+	@Id
+	private UUID id;
 	private String content;
 	private String topic;
+	@Enumerated(EnumType.STRING)
 	private Type type;
 	private String player;
+	private Instant time;
 
 	public MessageLog() {
 	}
 
-	public MessageLog(String content, String topic, Type type, String player) {
-		this.content = content;
+	public MessageLog(Message message, String topic, String player) {
+		id = message.getId();
+		content = message.getContent();
+		type = message.getType();
 		this.topic = topic;
-		this.type = type;
 		this.player = player;
+		time = Instant.now();
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	public String getContent() {
@@ -31,5 +49,9 @@ public class MessageLog {
 
 	public String getPlayer() {
 		return player;
+	}
+
+	public Instant getTime() {
+		return time;
 	}
 }
