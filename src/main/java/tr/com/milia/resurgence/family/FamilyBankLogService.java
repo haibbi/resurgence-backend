@@ -29,7 +29,7 @@ public class FamilyBankLogService {
 		if (!(authentication instanceof TokenAuthentication)) throw new PlayerNotFound();
 
 		TokenAuthentication tokenAuthentication = (TokenAuthentication) authentication;
-		String member = tokenAuthentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String member = tokenAuthentication.getPlayerName();
 		repository.save(new FamilyBankLog(member, event.getFamily(), event.getAmount(), event.getReason()));
 	}
 

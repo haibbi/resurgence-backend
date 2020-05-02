@@ -2,7 +2,6 @@ package tr.com.milia.resurgence.family;
 
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,19 +19,19 @@ public class HumanResourceController {
 
 	@PostMapping("/invite/{player}")
 	public void invite(TokenAuthentication authentication, @PathVariable("player") String playerName) {
-		String member = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String member = authentication.getPlayerName();
 		service.invite(playerName, member);
 	}
 
 	@PostMapping("/application/{family}")
 	public void application(TokenAuthentication authentication, @PathVariable("family") String familyName) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.application(player, familyName);
 	}
 
 	@GetMapping
 	public List<InvitationResponse> allInvitations(TokenAuthentication authentication) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		final List<Invitation> invitations = new LinkedList<>();
 
 		invitations.addAll(service.findAllByPlayer(player));
@@ -46,25 +45,25 @@ public class HumanResourceController {
 	@PostMapping("accept/{invitationId}")
 	public void accept(TokenAuthentication authentication,
 					   @PathVariable("invitationId") Long id) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.accept(player, id);
 	}
 
 	@DeleteMapping("/leave")
 	public void leave(TokenAuthentication authentication) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.leave(player);
 	}
 
 	@DeleteMapping("/fire/{member}")
 	public void fire(TokenAuthentication authentication, @PathVariable("member") String member) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.fire(player, member);
 	}
 
 	@DeleteMapping("/destroy")
 	public void destroy(TokenAuthentication authentication) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.destroy(player);
 	}
 

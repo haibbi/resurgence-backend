@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class FamilyBankController {
 	public void deposit(TokenAuthentication authentication,
 						@PathVariable("operation") String operation,
 						@PathVariable("amount") long amount) {
-		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String playerName = authentication.getPlayerName();
 		if ("deposit".equals(operation)) {
 			service.deposit(playerName, amount);
 		} else if ("withdraw".equals(operation)) {
@@ -37,7 +36,7 @@ public class FamilyBankController {
 
 	@GetMapping("log")
 	public List<FamilyBankLogResponse> logs(TokenAuthentication authentication) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		return logService.findAllLogs(player).stream()
 			.map(FamilyBankLogResponse::new)
 			.collect(Collectors.toList());
