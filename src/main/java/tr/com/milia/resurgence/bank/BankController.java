@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,7 @@ public class BankController {
 
 	@PostMapping("/interest/{amount}")
 	public InterestResponse interest(TokenAuthentication authentication, @PathVariable("amount") long amount) {
-		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String playerName = authentication.getPlayerName();
 		long interest = service.interest(playerName, amount);
 
 		return new InterestResponse(interest);
@@ -33,7 +32,7 @@ public class BankController {
 
 	@GetMapping("/interest")
 	public ResponseEntity<InterestAccount> currentInterest(TokenAuthentication authentication) {
-		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String playerName = authentication.getPlayerName();
 		return service.currentInterest(playerName)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
@@ -51,7 +50,7 @@ public class BankController {
 	public void transfer(TokenAuthentication authentication,
 						 @PathVariable("player") String toPlayer,
 						 @PathVariable("amount") long amount) {
-		String fromPlayer = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String fromPlayer = authentication.getPlayerName();
 		service.transfer(fromPlayer, toPlayer, amount);
 	}
 

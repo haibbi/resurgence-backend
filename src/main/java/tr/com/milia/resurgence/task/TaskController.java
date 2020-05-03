@@ -23,7 +23,7 @@ public class TaskController {
 									  @RequestBody TaskRequest request) {
 		if (!task.isPerformSolo()) throw new SoloTaskException();
 
-		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String playerName = authentication.getPlayerName();
 		TaskResult result = service.perform(task, playerName, request.selectedItems);
 		return new TaskResultResponse(result);
 	}

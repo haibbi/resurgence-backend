@@ -5,7 +5,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class ChatController {
 						 TokenAuthentication authentication,
 						 @DestinationVariable("topic") String topic) {
 		Map<String, Object> headers = new LinkedHashMap<>();
-		headers.put("player", authentication.getPlayerName().orElseThrow(PlayerNotFound::new));
+		headers.put("player", authentication.getPlayerName());
 
 		message.setType(Type.MESSAGE);
 

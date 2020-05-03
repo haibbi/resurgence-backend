@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.security.Principal;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class WebSocketEventHandler {
 	private void send(Principal user, org.springframework.messaging.Message<byte[]> message, Type type) {
 		if (!(user instanceof TokenAuthentication)) throw new AccessDeniedException("invalid user");
 		final TokenAuthentication authentication = (TokenAuthentication) user;
-		final String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		final String playerName = authentication.getPlayerName();
 
 		final Object destinationHeader = message.getHeaders().get(SimpMessageHeaderAccessor.DESTINATION_HEADER);
 		if (!(destinationHeader instanceof String)) return;

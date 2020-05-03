@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.Collection;
 import java.util.Date;
@@ -45,8 +46,10 @@ public class TokenAuthentication extends AbstractAuthenticationToken {
 		return jwt.getSubject();
 	}
 
-	public Optional<String> getPlayerName() {
-		return Optional.ofNullable(jwt.getClaim(Claims.PLAYER)).map(Claim::asString);
+	public String getPlayerName() {
+		return Optional.ofNullable(jwt.getClaim(Claims.PLAYER))
+			.map(Claim::asString)
+			.orElseThrow(PlayerNotFound::new);
 	}
 
 }

@@ -2,7 +2,6 @@ package tr.com.milia.resurgence.estate;
 
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,13 +37,13 @@ public class BuildingController {
 
 	@PostMapping("/{building}")
 	public void buy(TokenAuthentication authentication, @PathVariable("building") Building building) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.buy(player, building);
 	}
 
 	@DeleteMapping("/{building}")
 	public void sell(TokenAuthentication authentication, @PathVariable("building") Building building) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.sell(player, building);
 	}
 

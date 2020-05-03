@@ -2,7 +2,6 @@ package tr.com.milia.resurgence.item;
 
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ public class NPCController {
 
 	@GetMapping
 	public List<PlayerItemResponse> items(TokenAuthentication authentication) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		return service.findAllPlayerItem(player).stream()
 			.filter(item -> item.getQuantity() > 0)
 			.map(PlayerItemResponse::new)
@@ -30,7 +29,7 @@ public class NPCController {
 	public void sell(TokenAuthentication authentication,
 					 @PathVariable("item") Item item,
 					 @PathVariable("quantity") long quantity) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.sellItem(player, item, quantity);
 	}
 
@@ -38,7 +37,7 @@ public class NPCController {
 	public void buy(TokenAuthentication authentication,
 					@PathVariable("item") Item item,
 					@PathVariable("quantity") long quantity) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		service.buyItem(player, item, quantity);
 	}
 

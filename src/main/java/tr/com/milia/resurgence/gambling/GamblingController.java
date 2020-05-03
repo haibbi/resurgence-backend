@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tr.com.milia.resurgence.security.TokenAuthentication;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 @RestController
 @RequestMapping("/gambling")
@@ -23,7 +22,7 @@ public class GamblingController {
 	public GamblingResponse number(TokenAuthentication authentication,
 								   @PathVariable("number") int number,
 								   @PathVariable("bet") long bet) {
-		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String playerName = authentication.getPlayerName();
 		boolean win = numberGame.play(playerName, number, bet);
 
 		return new GamblingResponse(win);
@@ -33,7 +32,7 @@ public class GamblingController {
 	public GamblingResponse even(TokenAuthentication authentication,
 								 @PathVariable("even") boolean even,
 								 @PathVariable("bet") long bet) {
-		String playerName = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String playerName = authentication.getPlayerName();
 		boolean win = numberGame.play(playerName, even, bet);
 
 		return new GamblingResponse(win);
@@ -41,7 +40,7 @@ public class GamblingController {
 
 	@PostMapping("/lottery")
 	public void purchaseLotteryTicket(TokenAuthentication authentication) {
-		String player = authentication.getPlayerName().orElseThrow(PlayerNotFound::new);
+		String player = authentication.getPlayerName();
 		lotteryService.purchase(player);
 	}
 

@@ -190,8 +190,8 @@ class TaskServiceTest {
 		assert result.isSucceed();
 		assert result instanceof TaskSucceedResult;
 		TaskSucceedResult succeedResult = (TaskSucceedResult) result;
-		assert succeedResult.getExperienceGain() > 0;
-		assert succeedResult.getMoneyGain() > 0;
+		assert succeedResult.getExperienceGain() >= 0;
+		assert succeedResult.getMoneyGain() >= 0;
 		assert succeedResult.getSkillGain() != null;
 
 		if (!succeedResult.getSkillGain().isEmpty()) {
