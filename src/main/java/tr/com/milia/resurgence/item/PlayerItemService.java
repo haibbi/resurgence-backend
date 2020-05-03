@@ -28,8 +28,8 @@ public class PlayerItemService {
 	private static final Logger log = LoggerFactory.getLogger(PlayerItemService.class);
 	private static final Set<Item> FORBIDDEN_TO_BUY = Task.SMUGGLING_TASKS.stream()
 		.map(Task::getDrop)
+		.map(Map::keySet)
 		.flatMap(Collection::stream)
-		.map(Drop::getItem)
 		.collect(Collectors.toSet());
 
 	private final PlayerItemRepository repository;
@@ -83,18 +83,18 @@ public class PlayerItemService {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 	public void onTaskSucceedResult(TaskSucceedResult result) {
 		log.debug("Task Succeed Result {}", result);
-		var drop = result.getDrop();
+		Map<Item, Drop> drop = result.getDrop();
 		var player = result.getPlayer();
 
-		for (var entry : drop) {
-			Item item = entry.getItem();
-			long quantity = entry.getQuantity();
+		for (var entry : drop.entrySet()) {
+			Item item = entry.getKey();
+			long quantity = entry.getValue().getQuantity();
 			addItem(player, item, quantity);
 		}
 
 	}
 
-	@EventListener(TaskStartedEvent.class)
+	@EventListener(value = TaskStartedEvent.class, condition = "#event.checkSelectedItem")
 	public void onTaskStartedEvent(TaskStartedEvent event) {
 		var player = event.getPlayer();
 		var requiredItemCategory = event.getTask().getRequiredItemCategory();

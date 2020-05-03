@@ -20,7 +20,9 @@ public class TaskResultResponse {
 			experienceGain = succeedResult.getExperienceGain();
 			moneyGain = succeedResult.getMoneyGain();
 			skillGain = succeedResult.getSkillGain();
-			drop = succeedResult.getDrop().stream().map(DropResponse::new).collect(Collectors.toSet());
+			drop = succeedResult.getDrop().entrySet().stream()
+				.map(e -> new DropResponse(e.getKey(), e.getValue()))
+				.collect(Collectors.toSet());
 		}
 	}
 

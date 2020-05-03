@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class LocalizedResponse {
 	private final String message;
 
-	@JsonIgnoreProperties({"stack_trace", "codes", "suppressed"})
+	@JsonIgnoreProperties({"stack_trace", "codes", "suppressed", "arguments"})
 	private final LocalizedException detail;
 
 	public LocalizedResponse(String message, LocalizedException detail) {
