@@ -57,9 +57,22 @@ public class PlayerHonorService {
 	@EventListener(HonorPeriodCompletedEvent.class)
 	@Transactional
 	public void onHonorPeriodCompletedEvent(HonorPeriodCompletedEvent event) {
-		playerService.findByName(event.getPlayerName()).ifPresent(player -> {
-			player.increaseUsableHonor(10); // todo level'e göre değişken alması lazım
-		});
+		playerService.findByName(event.getPlayerName()).ifPresent(player ->
+			player.increaseUsableHonor(titleHonorPoint(player)));
+	}
+
+	private int titleHonorPoint(Player player) {
+		// capo, father or male does not effect honor point
+		Title title = Title.find(player.getExperience(), false, false, false);
+		return switch (title) {
+			case EMPTY_SUIT, DELIVERY_BOY, DELIVERY_GIRL, PICCIOTTO -> 10;
+			case SHOPLIFTER, PICKPOCKET -> 20;
+			case THIEF, ASSOCIATE, MOBSTER -> 40;
+			case SOLDIER -> 50;
+			case SWINDLER, ASSASSIN, LOCAL_CHIEF -> 75;
+			case CHIEF -> 100;
+			case BRUGLIONE, CAPODECINA, GODFATHER, FIRST_LADY -> 125;
+		};
 	}
 
 }
