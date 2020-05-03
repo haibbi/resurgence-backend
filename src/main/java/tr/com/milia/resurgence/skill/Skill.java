@@ -10,6 +10,11 @@ public enum Skill implements LocaleEnum {
 	GUN_MASTERY(90),
 
 	/**
+	 * Ability to use detective agent
+	 */
+	TRACING(90),
+
+	/**
 	 * Increases the rate of not getting caught while performing task.
 	 */
 	SNEAK(90);

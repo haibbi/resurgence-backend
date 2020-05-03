@@ -11,12 +11,20 @@ import static java.util.Collections.emptySet;
 
 public enum Item {
 
+	// Money
+	MONEY(1, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
+
+	// Weapon
 	KNIFE(0, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON)),
 	GLOCK(100, emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
-	MONEY(1, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
+
+	// Vehicle
+	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE)),
+
+	// No Category
 	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
-	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet()),
-	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE));
+	AGENT(50_000, Map.of(Skill.TRACING, 10), Quality.COMMON, emptySet()),
+	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
 
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;

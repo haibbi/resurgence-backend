@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 public class PlayerSkill implements Serializable {
@@ -50,6 +51,11 @@ public class PlayerSkill implements Serializable {
 
 	public BigDecimal getExpertise() {
 		return expertise;
+	}
+
+	public BigDecimal skillContribution() {
+		return expertise.multiply(BigDecimal.valueOf(skill.contribution()))
+			.divide(BigDecimal.valueOf(100), 2, RoundingMode.CEILING);
 	}
 
 }
