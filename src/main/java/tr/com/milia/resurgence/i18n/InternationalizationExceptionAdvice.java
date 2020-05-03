@@ -23,7 +23,7 @@ public class InternationalizationExceptionAdvice {
 
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
-			.body(new LocalizedResponse(message));
+			.body(new LocalizedResponse(message, e));
 	}
 
 

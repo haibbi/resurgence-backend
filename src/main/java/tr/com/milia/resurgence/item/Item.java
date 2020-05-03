@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.item;
 
+import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.skill.Skill;
 
 import java.util.Map;
@@ -49,7 +50,7 @@ public enum Item {
 		return category;
 	}
 
-	public enum Category {
+	public enum Category implements LocaleEnum {
 
 		WEAPON,
 

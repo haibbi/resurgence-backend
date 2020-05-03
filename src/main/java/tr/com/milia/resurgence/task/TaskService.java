@@ -1,6 +1,7 @@
 package tr.com.milia.resurgence.task;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Primary;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.RandomUtils;
@@ -17,11 +18,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Primary
 public class TaskService {
 
 	private final double PH = .10;
 	private final PlayerService playerService;
-	private final ApplicationEventPublisher eventPublisher;
+	protected final ApplicationEventPublisher eventPublisher;
 
 	public TaskService(PlayerService playerService, ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
@@ -30,7 +32,7 @@ public class TaskService {
 
 	@Transactional
 	public TaskResult perform(Task task, String playerName, @Nullable Map<Item, Long> selectedItems) {
-		var player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
+		var player = findPlayer(playerName);
 
 		selectedItems = selectedItems == null ? Collections.emptyMap() : selectedItems;
 
@@ -41,7 +43,7 @@ public class TaskService {
 		return taskResult;
 	}
 
-	private TaskResult performInternal(Task task, Player player, Map<Item, Long> selectedItems) {
+	protected TaskResult performInternal(Task task, Player player, Map<Item, Long> selectedItems) {
 		var playerSkills = player.getSkills();
 
 		// todo level'den geleni ekle
@@ -77,11 +79,15 @@ public class TaskService {
 		var gainedSkills = task.getSkillGain().stream()
 			.filter(skill -> RandomUtils.random() <= PH)
 			.collect(Collectors.toSet());
-		var drop = task.getDrop().stream()
-			.filter(d -> RandomUtils.random() <= d.getRatio())
-			.collect(Collectors.toSet());
+		var drop = task.getDrop().entrySet().stream() // just filter by random
+			.filter(d -> RandomUtils.random() <= d.getValue().getRatio())
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop, selectedItems);
+	}
+
+	protected Player findPlayer(String name) {
+		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
 	}
 
 }

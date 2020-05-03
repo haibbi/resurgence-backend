@@ -5,13 +5,14 @@ import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.skill.Skill;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import static java.time.Duration.ofDays;
 import static java.time.Duration.ofSeconds;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
@@ -23,20 +24,18 @@ public enum Task implements LocaleEnum {
 		50_000,
 		1_000,
 		ofSeconds(0),
-		Set.of(Drop.of(Item.KNIFE, 1, .10)),
-		emptyMap(),
-		true),
+		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 1L)),
 
 	BEER_SMUGGLING(
 		100,
 		Set.of(SNEAK),
 		emptySet(),
 		0,
-		0,
-		Duration.ofMillis(0),
-		Set.of(Drop.of(Item.BEER, 1, 1)),
-		Map.of(Item.Category.MONEY, Item.BEER.getPrice()),
-		true
+		100,
+		Duration.ofSeconds(5),
+		Map.of(Item.BEER, DropDetail.of(1, 1)),
+		Map.of(Item.Category.MONEY, Item.BEER.getPrice())
 	) {
 		@Override
 		public Map<Item.Category, Long> getRequiredItemCategory() {
@@ -50,9 +49,8 @@ public enum Task implements LocaleEnum {
 		100_000,
 		10_000,
 		ofDays(1),
-		Set.of(Drop.of(Item.GLOCK, 1, .10)),
-		Map.of(Item.Category.WEAPON, 1L),
-		false),
+		Map.of(Item.GLOCK, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 1L)),
 
 	HEIST_DRIVER(50,
 		Set.of(SNEAK),
@@ -60,9 +58,25 @@ public enum Task implements LocaleEnum {
 		100_000,
 		10_000,
 		ofDays(1),
-		Set.of(Drop.of(Item.FORD_FIESTA, 1, .10)),
-		Map.of(Item.Category.VEHICLE, 1L),
-		false);
+		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
+		Map.of(Item.Category.VEHICLE, 1L));
+
+	public static final Set<Task> SMUGGLING_TASKS = Set.of(
+		Task.BEER_SMUGGLING
+	);
+
+	public static final Set<Task> MULTI_PLAYER_TASKS = Set.of(
+		Task.HEIST_LEADER,
+		Task.HEIST_DRIVER
+	);
+
+	public static final Set<Task> SOLO_TASKS;
+
+	static {
+		SOLO_TASKS = new HashSet<>(Arrays.asList(values()));
+		SOLO_TASKS.removeAll(MULTI_PLAYER_TASKS);
+		SOLO_TASKS.removeAll(SMUGGLING_TASKS);
+	}
 
 	private final int difficulty;
 	private final Set<Skill> auxiliary;
@@ -70,14 +84,12 @@ public enum Task implements LocaleEnum {
 	private final long moneyGain;
 	private final int experienceGain;
 	private final Duration duration;
-	private final Set<Drop> drop;
+	private final Map<Item, DropDetail> drop;
 
 	/**
-	 * Value değerleri sıfır olamaz! O halde required değildir.
+	 * Value must greater than 0, otherwise this is not required
 	 */
 	private final Map<Item.Category, Long> requiredItemCategory;
-
-	private final boolean performSolo;
 
 	Task(int difficulty,
 		 Set<Skill> auxiliary,
@@ -85,9 +97,8 @@ public enum Task implements LocaleEnum {
 		 long moneyGain,
 		 int experienceGain,
 		 Duration duration,
-		 Set<Drop> drop,
-		 Map<Item.Category, Long> requiredItemCategory,
-		 boolean performSolo) {
+		 Map<Item, DropDetail> drop,
+		 Map<Item.Category, Long> requiredItemCategory) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
 		this.skillGain = skillGain;
@@ -95,7 +106,6 @@ public enum Task implements LocaleEnum {
 		this.experienceGain = experienceGain;
 		this.duration = duration;
 		this.drop = drop;
-		this.performSolo = performSolo;
 		if (requiredItemCategory.values().stream().anyMatch(i -> i <= 0)) {
 			throw new IllegalStateException("Required item count should positive");
 		}
@@ -126,15 +136,23 @@ public enum Task implements LocaleEnum {
 		return duration;
 	}
 
-	public Set<Drop> getDrop() {
-		return Collections.unmodifiableSet(drop);
+	public Map<Item, DropDetail> getDrop() {
+		return Collections.unmodifiableMap(drop);
 	}
 
 	public Map<Item.Category, Long> getRequiredItemCategory() {
 		return Collections.unmodifiableMap(requiredItemCategory);
 	}
 
-	public boolean isPerformSolo() {
-		return performSolo;
+	public boolean isSmuggling() {
+		return SMUGGLING_TASKS.contains(this);
+	}
+
+	public boolean isMultiPlayer() {
+		return MULTI_PLAYER_TASKS.contains(this);
+	}
+
+	public boolean isSolo() {
+		return SOLO_TASKS.contains(this);
 	}
 }

@@ -5,12 +5,13 @@ import tr.com.milia.resurgence.player.Player;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class TaskResult {
 
 	private final Player player;
 	private final Task task;
-	private final Map<Item, Long> usedItems;
+	private Map<Item, Long> usedItems;
 
 	protected TaskResult(Player player, Task task, Map<Item, Long> usedItems) {
 		this.player = player;
@@ -33,4 +34,11 @@ public abstract class TaskResult {
 	public Map<Item, Long> getUsedItems() {
 		return Collections.unmodifiableMap(usedItems);
 	}
+
+	public TaskResult aggregate(TaskResult result) {
+		this.usedItems = new ConcurrentHashMap<>(this.usedItems);
+		result.usedItems.forEach((item, quantity) -> this.usedItems.merge(item, quantity, Long::sum));
+		return this;
+	}
+
 }
