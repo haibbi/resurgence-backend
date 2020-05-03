@@ -6,9 +6,9 @@ class DropResponse {
 	Item item;
 	long quantity;
 
-	public DropResponse(Item item, Drop drop) {
+	public DropResponse(Item item, DropDetail dropDetail) {
 		this.item = item;
-		quantity = drop.getQuantity();
+		quantity = dropDetail.getQuantity();
 	}
 
 	public Item getItem() {

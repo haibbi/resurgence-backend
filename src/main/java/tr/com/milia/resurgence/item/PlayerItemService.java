@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.task.Drop;
+import tr.com.milia.resurgence.task.DropDetail;
 import tr.com.milia.resurgence.task.Task;
 import tr.com.milia.resurgence.task.TaskResult;
 import tr.com.milia.resurgence.task.TaskStartedEvent;
@@ -83,7 +83,7 @@ public class PlayerItemService {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 	public void onTaskSucceedResult(TaskSucceedResult result) {
 		log.debug("Task Succeed Result {}", result);
-		Map<Item, Drop> drop = result.getDrop();
+		Map<Item, DropDetail> drop = result.getDrop();
 		var player = result.getPlayer();
 
 		for (var entry : drop.entrySet()) {

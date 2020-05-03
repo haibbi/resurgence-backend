@@ -24,7 +24,7 @@ public enum Task implements LocaleEnum {
 		50_000,
 		1_000,
 		ofSeconds(0),
-		Map.of(Item.KNIFE, Drop.of(1, .10)),
+		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
 		Map.of(Item.Category.WEAPON, 1L)),
 
 	BEER_SMUGGLING(
@@ -34,7 +34,7 @@ public enum Task implements LocaleEnum {
 		0,
 		100,
 		Duration.ofSeconds(5),
-		Map.of(Item.BEER, Drop.of(1, 1)),
+		Map.of(Item.BEER, DropDetail.of(1, 1)),
 		Map.of(Item.Category.MONEY, Item.BEER.getPrice())
 	) {
 		@Override
@@ -49,7 +49,7 @@ public enum Task implements LocaleEnum {
 		100_000,
 		10_000,
 		ofDays(1),
-		Map.of(Item.GLOCK, Drop.of(1, .10)),
+		Map.of(Item.GLOCK, DropDetail.of(1, .10)),
 		Map.of(Item.Category.WEAPON, 1L)),
 
 	HEIST_DRIVER(50,
@@ -58,7 +58,7 @@ public enum Task implements LocaleEnum {
 		100_000,
 		10_000,
 		ofDays(1),
-		Map.of(Item.FORD_FIESTA, Drop.of(1, .10)),
+		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
 		Map.of(Item.Category.VEHICLE, 1L));
 
 	public static final Set<Task> SMUGGLING_TASKS = Set.of(
@@ -84,7 +84,7 @@ public enum Task implements LocaleEnum {
 	private final long moneyGain;
 	private final int experienceGain;
 	private final Duration duration;
-	private final Map<Item, Drop> drop;
+	private final Map<Item, DropDetail> drop;
 
 	/**
 	 * Value must greater than 0, otherwise this is not required
@@ -97,7 +97,7 @@ public enum Task implements LocaleEnum {
 		 long moneyGain,
 		 int experienceGain,
 		 Duration duration,
-		 Map<Item, Drop> drop,
+		 Map<Item, DropDetail> drop,
 		 Map<Item.Category, Long> requiredItemCategory) {
 		this.difficulty = difficulty;
 		this.auxiliary = auxiliary;
@@ -136,7 +136,7 @@ public enum Task implements LocaleEnum {
 		return duration;
 	}
 
-	public Map<Item, Drop> getDrop() {
+	public Map<Item, DropDetail> getDrop() {
 		return Collections.unmodifiableMap(drop);
 	}
 

@@ -1,17 +1,17 @@
 package tr.com.milia.resurgence.task;
 
-public class Drop {
+public class DropDetail {
 
 	private final long quantity;
 	private final double ratio;
 
-	private Drop(long quantity, double ratio) {
+	private DropDetail(long quantity, double ratio) {
 		this.quantity = quantity;
 		this.ratio = ratio;
 	}
 
-	static Drop of(long quantity, double ratio) {
-		return new Drop(quantity, ratio);
+	static DropDetail of(long quantity, double ratio) {
+		return new DropDetail(quantity, ratio);
 	}
 
 	public long getQuantity() {

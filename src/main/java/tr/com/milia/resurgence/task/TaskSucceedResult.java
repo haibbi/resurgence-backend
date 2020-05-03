@@ -14,14 +14,14 @@ public class TaskSucceedResult extends TaskResult {
 	private final Set<Skill> skillGain;
 	private int experienceGain;
 	private long moneyGain;
-	private Map<Item, Drop> drop;
+	private Map<Item, DropDetail> drop;
 
 	public TaskSucceedResult(Player player,
 							 Task task,
 							 int experienceGain,
 							 long moneyGain,
 							 Set<Skill> skillGain,
-							 Map<Item, Drop> drop,
+							 Map<Item, DropDetail> drop,
 							 Map<Item, Long> usedItems) {
 		super(player, task, usedItems);
 		this.experienceGain = experienceGain;
@@ -42,7 +42,7 @@ public class TaskSucceedResult extends TaskResult {
 		return skillGain == null ? Collections.emptySet() : Collections.unmodifiableSet(skillGain);
 	}
 
-	public Map<Item, Drop> getDrop() {
+	public Map<Item, DropDetail> getDrop() {
 		return drop == null ? Collections.emptyMap() : Collections.unmodifiableMap(drop);
 	}
 
@@ -54,7 +54,7 @@ public class TaskSucceedResult extends TaskResult {
 		this.drop = new ConcurrentHashMap<>(this.drop);
 		result.drop.forEach((item, resultDrop) ->
 			this.drop.merge(item, resultDrop, (oldDrop, newDrop) ->
-				Drop.of(oldDrop.getQuantity() + newDrop.getQuantity(), oldDrop.getRatio())));
+				DropDetail.of(oldDrop.getQuantity() + newDrop.getQuantity(), oldDrop.getRatio())));
 
 		return this;
 	}
