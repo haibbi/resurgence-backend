@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.PlayerNotFound;
 
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-// todo https://milia.atlassian.net/browse/RSRGNC-143 bittiğinde güncelle
 public class BankService {
 
 	public static final String INTEREST_JOB_GROUP_NAME = "interest";
@@ -25,10 +25,12 @@ public class BankService {
 
 	private final PlayerService playerService;
 	private final Scheduler scheduler;
+	private final BankAccountRepository accountRepository;
 
-	public BankService(PlayerService playerService, Scheduler scheduler) {
+	public BankService(PlayerService playerService, Scheduler scheduler, BankAccountRepository accountRepository) {
 		this.playerService = playerService;
 		this.scheduler = scheduler;
+		this.accountRepository = accountRepository;
 	}
 
 	@Transactional
@@ -40,7 +42,7 @@ public class BankService {
 			throw new RuntimeException(e);
 		}
 
-		var player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
+		var player = findPlayer(playerName);
 
 		double ratio = InterestRates.find(amount).orElseThrow(InterestRateNotFound::new).ratio;
 
@@ -74,11 +76,34 @@ public class BankService {
 		}
 	}
 
+	@Transactional
+	public void deposit(String playerName, long amount) {
+		Player player = findPlayer(playerName);
+		BankAccount account = accountRepository.findByOwner(player)
+			.orElseGet(() -> new BankAccount(player, 0L));
+
+		account.increase(amount);
+		accountRepository.save(account);
+	}
+
+	@Transactional
+	public void withdraw(String playerName, long amount) {
+		Player player = findPlayer(playerName);
+		BankAccount account = accountRepository.findByOwner(player)
+			.orElseThrow(BankAccountNotFoundException::new);
+
+		account.decrease(amount);
+	}
+
+	public Optional<BankAccount> findAccount(String playerName) {
+		Player player = findPlayer(playerName);
+		return accountRepository.findByOwner(player);
+	}
 
 	@Transactional
 	public void transfer(String fromPlayerName, String toPlayerName, long amount) {
-		var fromPlayer = playerService.findByName(fromPlayerName).orElseThrow(PlayerNotFound::new);
-		var toPlayer = playerService.findByName(toPlayerName).orElseThrow(PlayerNotFound::new);
+		var fromPlayer = findPlayer(fromPlayerName);
+		var toPlayer = findPlayer(toPlayerName);
 
 		fromPlayer.decreaseBalance(amount);
 		toPlayer.increaseBalance(amount);
@@ -87,9 +112,8 @@ public class BankService {
 	@EventListener(InterestCompletedEvent.class)
 	@Transactional
 	public void onInterestCompletedEvent(InterestCompletedEvent event) {
-		playerService.findByName(event.getPlayerName()).ifPresent(player -> {
-			player.increaseBalance(event.getAmount());
-		});
+		playerService.findByName(event.getPlayerName())
+			.ifPresent(player -> player.increaseBalance(event.getAmount()));
 	}
 
 	private void scheduleInterest(String playerName, long amount) {
@@ -113,6 +137,10 @@ public class BankService {
 		} catch (SchedulerException e) {
 			log.error("An error occurred while scheduling interest job {}", jobId, e);
 		}
+	}
+
+	private Player findPlayer(String name) {
+		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
 	}
 
 }

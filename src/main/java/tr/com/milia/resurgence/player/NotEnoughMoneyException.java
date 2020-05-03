@@ -1,4 +1,4 @@
-package tr.com.milia.resurgence.smuggling;
+package tr.com.milia.resurgence.player;
 
 import tr.com.milia.resurgence.i18n.LocalizedException;
 

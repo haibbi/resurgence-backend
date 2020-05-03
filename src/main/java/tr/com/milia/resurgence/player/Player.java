@@ -6,7 +6,6 @@ import tr.com.milia.resurgence.family.Chief;
 import tr.com.milia.resurgence.family.Family;
 import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.skill.PlayerSkill;
-import tr.com.milia.resurgence.smuggling.NotEnoughMoneyException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;

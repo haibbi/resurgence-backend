@@ -69,6 +69,8 @@ public class LotteryService {
 	public void finish() {
 		List<LotteryTicket> allPurchasedTicket = repository.findAllByPurchaseTimeBefore(Instant.now());
 
+		if (allPurchasedTicket.isEmpty()) return;
+
 		long min = allPurchasedTicket.stream().mapToLong(LotteryTicket::getId).min().orElseThrow();
 		long max = allPurchasedTicket.stream().mapToLong(LotteryTicket::getId).max().orElseThrow();
 
