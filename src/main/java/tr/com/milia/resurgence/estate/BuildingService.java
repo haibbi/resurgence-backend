@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.item.PlayerItemService;
 import tr.com.milia.resurgence.player.Player;
+import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 
 import java.time.Duration;
 import java.time.Instant;
