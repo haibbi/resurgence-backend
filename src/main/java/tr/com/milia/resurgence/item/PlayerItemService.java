@@ -19,6 +19,7 @@ import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,7 @@ public class PlayerItemService {
 		this.playerService = playerService;
 	}
 
+	@Transactional
 	public void addItem(Player player, Item item, long quantity) {
 		repository.findByPlayerAndItem(player, item).ifPresentOrElse(
 			playerItem -> playerItem.add(quantity),
@@ -50,7 +52,7 @@ public class PlayerItemService {
 	@Transactional
 	public void sellItem(String playerName, Item item, long quantity) {
 		Player player = findPlayer(playerName);
-		PlayerItem playerItem = repository.findByPlayerAndItem(player, item).orElseThrow(ItemNotFound::new);
+		PlayerItem playerItem = repository.findByPlayerAndItem(player, item).orElseThrow(ItemNotFoundException::new);
 
 		playerItem.remove(quantity);
 		long totalPrice = item.getPrice() * quantity;
@@ -72,6 +74,12 @@ public class PlayerItemService {
 		return repository.findAllByPlayer(player);
 	}
 
+	@Transactional
+	public void removeItem(Player player, Item item, long quantity) {
+		PlayerItem playerItem = repository.findByPlayerAndItem(player, item).orElseThrow(ItemNotFoundException::new);
+		playerItem.remove(quantity);
+	}
+
 	@EventListener(TaskSucceedResult.class)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 	public void onTaskSucceedResult(TaskSucceedResult result) {
@@ -82,10 +90,7 @@ public class PlayerItemService {
 		for (var entry : drop) {
 			Item item = entry.getItem();
 			long quantity = entry.getQuantity();
-			repository.findByPlayerAndItem(player, item).ifPresentOrElse(
-				playerItem -> playerItem.add(quantity),
-				() -> repository.save(new PlayerItem(player, item, quantity))
-			);
+			addItem(player, item, quantity);
 		}
 
 	}
@@ -96,32 +101,37 @@ public class PlayerItemService {
 		var requiredItemCategory = event.getTask().getRequiredItemCategory();
 		var selectedItems = event.getSelectedItems();
 
-		requiredItemCategory.forEach((category, count) -> {
-			long quantity = selectedItems.keySet().stream()
-				.filter(item -> item.getCategory().contains(category))
-				.mapToLong(item -> repository.findByPlayerAndItem(player, item)
-					.map(PlayerItem::getQuantity)
-					.orElse(0L))
+		requiredItemCategory.forEach((category, requiredCount) -> {
+
+			// Total number of selected item with filtered by required category
+			long selectedCategoryItemCount = selectedItems.entrySet().stream()
+				.filter(e -> e.getKey().getCategory().contains(category)) // The categories of the selected material
+				// are filtered with the required category.
+				.filter(e -> haveItem(player, e.getKey(), e.getValue())) // Control of the player's selected item
+				.mapToLong(Map.Entry::getValue)
 				.sum();
-			// todo control if player have selected item
-			if (quantity < count) throw new RequiredItemException(category.name());
+
+			if (selectedCategoryItemCount != requiredCount)
+				throw new RequiredItemException(category);
+
 		});
 	}
 
 	@EventListener(TaskResult.class)
 	public void onTaskResult(TaskResult event) {
-		// task başarılı veya başarısız olmasına bakmaksızın required itemlar silinir.
+		// Whenever task succeed or failed, used item will be removed.
 		var player = event.getPlayer();
 		var usedItems = event.getUsedItems();
-
-		usedItems.forEach((item, count) -> repository.findByPlayerAndItem(player, item)
-			.orElseThrow(() -> {
-				throw new RequiredItemException(item.name());
-			}).remove(count));
+		usedItems.forEach((item, count) -> removeItem(player, item, count));
 	}
 
 	private Player findPlayer(String name) {
 		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
+	}
+
+	private boolean haveItem(Player player, Item item, long quantity) {
+		if (quantity == 0) return true;
+		return repository.findByPlayerAndItemAndQuantityGreaterThanEqual(player, item, quantity).isPresent();
 	}
 
 }

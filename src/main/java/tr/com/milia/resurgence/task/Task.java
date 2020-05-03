@@ -11,7 +11,6 @@ import java.util.Set;
 
 import static java.time.Duration.ofDays;
 import static java.time.Duration.ofSeconds;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
@@ -24,7 +23,7 @@ public enum Task implements LocaleEnum {
 		1_000,
 		ofSeconds(0),
 		Set.of(Drop.of(Item.KNIFE, 1, .10)),
-		emptyMap(),
+		Map.of(Item.Category.WEAPON, 1L),
 		true),
 
 	BEER_SMUGGLING(
