@@ -8,8 +8,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
+import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.task.PlayerNotFound;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.util.List;
