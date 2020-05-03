@@ -21,7 +21,7 @@ public class TaskController {
 	public TaskResultResponse perform(TokenAuthentication authentication,
 									  @PathVariable("task") Task task,
 									  @RequestBody TaskRequest request) {
-		if (!task.isPerformSolo()) throw new SoloTaskException();
+		if (!task.isSolo()) throw new SoloTaskException();
 
 		String playerName = authentication.getPlayerName();
 		TaskResult result = service.perform(task, playerName, request.selectedItems);

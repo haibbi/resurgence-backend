@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.smuggling.SmugglingService;
 import tr.com.milia.resurgence.task.Drop;
 import tr.com.milia.resurgence.task.Task;
 import tr.com.milia.resurgence.task.TaskResult;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 public class PlayerItemService {
 
 	private static final Logger log = LoggerFactory.getLogger(PlayerItemService.class);
-	private static final Set<Item> FORBIDDEN_TO_BUY = SmugglingService.SMUGGLING_TASKS.stream()
+	private static final Set<Item> FORBIDDEN_TO_BUY = Task.SMUGGLING_TASKS.stream()
 		.map(Task::getDrop)
 		.flatMap(Collection::stream)
 		.map(Drop::getItem)

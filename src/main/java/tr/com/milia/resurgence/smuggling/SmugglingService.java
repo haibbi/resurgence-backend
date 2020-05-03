@@ -14,12 +14,9 @@ import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class SmugglingService {
-
-	public static final Set<Task> SMUGGLING_TASKS = Set.of(Task.BEER_SMUGGLING);
 
 	private final TaskService taskService;
 	private final PlayerService playerService;
@@ -35,7 +32,7 @@ public class SmugglingService {
 
 	@Transactional
 	public List<TaskResult> perform(Task task, String playerName, int repeat) {
-		if (!SMUGGLING_TASKS.contains(task)) throw new NotSmugglingTaskException();
+		if (!task.isSmuggling()) throw new NotSmugglingTaskException();
 
 		Player player = playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 
