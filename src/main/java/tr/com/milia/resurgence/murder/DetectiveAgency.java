@@ -19,11 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +42,15 @@ public class DetectiveAgency {
 	public void hireAgent(String seekerName, String wantedName, int agentQuantity) {
 		if (agentQuantity < 0) throw new IllegalArgumentException();
 
+		try {
+			long totalDetectiveCount = findRunningAgentKey().stream()
+				.filter(jobKey -> jobKey.getName().startsWith(seekerName + "-"))
+				.count();
+			if (totalDetectiveCount > 25) throw new AgentLimitExceededException();
+		} catch (SchedulerException e) {
+			log.warn("An error occurred while fetching agent job keys", e);
+		}
+
 		Player seeker = findPlayer(seekerName);
 		findPlayer(wantedName); // just check if player exists
 
@@ -59,9 +64,10 @@ public class DetectiveAgency {
 	public List<AgencyStatus> status(String seekerName) {
 		Player seeker = findPlayer(seekerName);
 
-		List<AgencyStatus> statuses = repository.findAllBySeeker(seeker).stream()
-			.map(AgencyStatus::report)
-			.collect(Collectors.toCollection(LinkedList::new));
+		List<AgencyStatus> statuses =
+			repository.findAllBySeekerAndExpireTimeGreaterThanEqualOrderByExpireTime(seeker, Instant.now()).stream()
+				.map(AgencyStatus::report)
+				.collect(Collectors.toCollection(LinkedList::new));
 
 		try {
 			statuses.addAll(searchRunningAgent(seeker));
@@ -104,18 +110,19 @@ public class DetectiveAgency {
 
 		boolean succeed = random < successRatio;
 
-		repository.save(new ResearchResult(seeker, wanted, succeed));
+		repository.save(new ResearchResult(seeker, wanted, agentQuantity, succeed));
 	}
 
 	private List<AgencyStatus> searchRunningAgent(Player seeker) throws SchedulerException {
 		List<AgencyStatus> statuses = new LinkedList<>();
-		Set<JobKey> detectiveAgencyJobs = scheduler.getJobKeys(GroupMatcher.groupEquals(SCHEDULER_GROUP_NAME));
+		Set<JobKey> detectiveAgencyJobs = findRunningAgentKey();
 		for (JobKey jobKey : detectiveAgencyJobs) {
 			if (!jobKey.getName().startsWith(seeker.getName() + "-")) continue;
 
 			JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 			JobDataMap data = jobDetail.getJobDataMap();
 			String wantedName = data.getString("wanted");
+			int agent = data.getInt("agent");
 			Player wanted = findPlayer(wantedName);
 
 			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
@@ -126,9 +133,14 @@ public class DetectiveAgency {
 			Trigger trigger = triggers.get(0);
 			Date fireTime = trigger.getFinalFireTime();
 
-			statuses.add(AgencyStatus.searching(seeker, wanted, fireTime.toInstant()));
+			statuses.add(AgencyStatus.searching(seeker, wanted, agent, fireTime.toInstant()));
 		}
+		statuses.sort(Comparator.comparing(o -> o.left));
 		return statuses;
+	}
+
+	private Set<JobKey> findRunningAgentKey() throws SchedulerException {
+		return scheduler.getJobKeys(GroupMatcher.groupEquals(SCHEDULER_GROUP_NAME));
 	}
 
 	private void schedule(String seeker, String wanted, int agentQuantity) {

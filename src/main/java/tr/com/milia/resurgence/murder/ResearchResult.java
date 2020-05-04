@@ -23,6 +23,8 @@ public class ResearchResult {
 	@ManyToOne
 	private Player wanted;
 
+	private int agent;
+
 	private boolean found;
 
 	private Instant expireTime;
@@ -30,9 +32,10 @@ public class ResearchResult {
 	public ResearchResult() {
 	}
 
-	public ResearchResult(Player seeker, Player wanted, boolean found) {
+	public ResearchResult(Player seeker, Player wanted, int agent, boolean found) {
 		this.seeker = seeker;
 		this.wanted = wanted;
+		this.agent = agent;
 		this.found = found;
 		expireTime = Instant.now().plus(Duration.ofDays(1));
 	}
@@ -43,6 +46,10 @@ public class ResearchResult {
 
 	public Player getWanted() {
 		return wanted;
+	}
+
+	public int getAgent() {
+		return agent;
 	}
 
 	public boolean isFound() {
