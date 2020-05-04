@@ -2,6 +2,7 @@ package tr.com.milia.resurgence.murder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.RandomUtils;
@@ -31,27 +32,37 @@ public class AttackService {
 	private final PlayerService playerService;
 	private final DetectiveAgency agency;
 	private final PlayerItemService itemService;
+	private final ApplicationEventPublisher eventPublisher;
 
-	public AttackService(PlayerService playerService, DetectiveAgency agency, PlayerItemService itemService) {
+	public AttackService(PlayerService playerService,
+						 DetectiveAgency agency,
+						 PlayerItemService itemService,
+						 ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
 		this.agency = agency;
 		this.itemService = itemService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional
 	public AttackResult attack(String attackerName, String victimName, long bullet) {
-		boolean succeed = attack(attackerName, victimName, bullet, false);
+		Player attacker = findPlayer(attackerName);
+		Player victim = findPlayer(victimName);
+
+		boolean succeed = attack(attacker, victim, bullet, false);
 
 		if (succeed) {
 			log.info("{} killed {}.", attackerName, victimName);
+			eventPublisher.publishEvent(new PlayerDeadEvent(victim));
 			return new AttackResult(true, false);
 		}
 
 		log.info("{}'s kill attempt to {} failed.", attackerName, victimName);
-		boolean backfireSucceed = attack(victimName, attackerName, bullet, true);
+		boolean backfireSucceed = attack(victim, attacker, bullet, true);
 
 		if (backfireSucceed) {
 			log.info("[BACKFIRE] {} killed {}.", attackerName, victimName);
+			eventPublisher.publishEvent(new PlayerDeadEvent(attacker));
 		} else {
 			log.info("[BACKFIRE] {}'s kill attempt to {} failed.", attackerName, victimName);
 		}
@@ -60,16 +71,14 @@ public class AttackService {
 	}
 
 	/**
-	 * @param attackerName Attacker name
-	 * @param victimName   Victim name
-	 * @param bullet       Bullet quantity
-	 * @param isBackfire   is backfire
+	 * @param attacker   Attacker
+	 * @param victim     Victim
+	 * @param bullet     Bullet quantity
+	 * @param isBackfire is backfire
 	 * @return {@code true} if succeed
 	 */
-	private boolean attack(String attackerName, String victimName, long bullet, boolean isBackfire) {
-		if (!isBackfire && !canAttack(attackerName, victimName)) throw new VictimDeterminationException();
-
-		Player attacker = findPlayer(attackerName);
+	private boolean attack(Player attacker, Player victim, long bullet, boolean isBackfire) {
+		if (!isBackfire && !canAttack(attacker.getName(), victim.getName())) throw new VictimDeterminationException();
 
 		long attackerBulletCount = attacker.getItems().stream()
 			.filter(playerItem -> playerItem.getItem() == Item.BULLET)
@@ -82,8 +91,6 @@ public class AttackService {
 		}
 
 		itemService.removeItem(attacker, Item.BULLET, bullet);
-
-		Player victim = findPlayer(victimName);
 
 		double bulletFactor = (double) bullet / MAX_BULLET_COUNT;
 
@@ -109,7 +116,7 @@ public class AttackService {
 
 		double random = RandomUtils.random();
 
-		if (!isBackfire) agency.clean(attackerName, victimName);
+		if (!isBackfire) agency.clean(attacker.getName(), victim.getName());
 
 		return random < successRatio;
 	}
