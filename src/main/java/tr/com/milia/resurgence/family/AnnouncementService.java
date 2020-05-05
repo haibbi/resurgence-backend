@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.family;
 
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
@@ -52,10 +53,11 @@ public class AnnouncementService {
 		repository.deleteById(id);
 	}
 
-	public List<Announcement> findAll(String playerName) {
+	public List<Announcement> findAll(String playerName, @Nullable String familyName) {
 		Player player = findPlayer(playerName);
-		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
-		return repository.findAllByFamilyOrderByTimeDesc(family);
+
+		return player.getFamily().map(repository::findAllByFamilyOrderByTimeDesc).orElseGet(() ->
+			repository.findAllByFamily_NameAndGeneralIsTrueOrderByTimeDesc(familyName));
 	}
 
 	private Player findPlayer(String name) {

@@ -17,10 +17,11 @@ public class AnnouncementController {
 		this.service = service;
 	}
 
-	@GetMapping
-	public List<AnnouncementResponse> all(TokenAuthentication authentication) {
+	@GetMapping({"", "/", "/{family}"})
+	public List<AnnouncementResponse> all(TokenAuthentication authentication,
+										  @PathVariable(value = "family", required = false) String family) {
 		String player = authentication.getPlayerName();
-		return service.findAll(player).stream()
+		return service.findAll(player, family).stream()
 			.map(AnnouncementResponse::new)
 			.collect(Collectors.toList());
 	}
