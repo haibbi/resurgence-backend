@@ -46,16 +46,14 @@ public class DetectiveAgency {
 			long totalDetectiveCount = findRunningAgentKey().stream()
 				.filter(jobKey -> jobKey.getName().startsWith(seekerName + "-"))
 				.mapToInt(jobKey -> {
-					final int activeAgent;
 					try {
 						JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 						JobDataMap data = jobDetail.getJobDataMap();
-						activeAgent = data.getInt("agent");
+						return data.getInt("agent");
 					} catch (SchedulerException e) {
 						log.warn("An error occurred while retrieving agent job details", e);
 						return 0;
 					}
-					return activeAgent;
 				})
 				.sum();
 			if (totalDetectiveCount + agentQuantity > 25) throw new AgentLimitExceededException();
