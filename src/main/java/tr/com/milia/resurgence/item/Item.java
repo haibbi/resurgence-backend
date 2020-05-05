@@ -21,11 +21,16 @@ public enum Item {
 	// Vehicle
 	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE)),
 
+	// Guards
+	JOE(100_000, Map.of(Skill.GUN_MASTERY, 10), Quality.COMMON, Set.of(Category.GUARD)),
+
 	// No Category
 	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
 	BULLET(300, emptyMap(), Quality.COMMON, emptySet()),
 	AGENT(50_000, Map.of(Skill.TRACING, 10), Quality.COMMON, emptySet()),
 	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
+
+	public static final Set<Item> PASSIVE = Set.of(JOE);
 
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;
@@ -66,6 +71,8 @@ public enum Item {
 		VEHICLE,
 
 		MONEY,
+
+		GUARD,
 
 	}
 }
