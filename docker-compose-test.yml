@@ -1,0 +1,45 @@
+version: '3'
+services:
+  resurgence:
+    image: registry.gitlab.com/milia-dev/backend:fc534106
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      spring.datasource.url: jdbc:postgresql://postgres:5432/postgres
+      spring.datasource.username: sUpqbm1bH0gHK7QF
+      spring.datasource.password: fvTg599LTf366Cw3
+      JAVA_TOOL_OPTIONS: "-Xms1G -Xmx1G"
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_USER: sUpqbm1bH0gHK7QF
+      POSTGRES_PASSWORD: fvTg599LTf366Cw3
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  pgbackups:
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    volumes:
+      - db-backup-data:/backups
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=sUpqbm1bH0gHK7QF
+      - POSTGRES_PASSWORD=fvTg599LTf366Cw3
+      - SCHEDULE=@daily
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - HEALTHCHECK_PORT=8080
+
+volumes:
+  db-data:
+  db-backup-data:
