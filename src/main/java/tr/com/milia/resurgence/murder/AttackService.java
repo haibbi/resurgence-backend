@@ -90,6 +90,11 @@ public class AttackService {
 			throw new LackOfBulletException();
 		}
 
+		// backfire attacker can only use what it got
+		if (isBackfire && attackerBulletCount < bullet) {
+			bullet = attackerBulletCount;
+		}
+
 		itemService.removeItem(attacker, Item.BULLET, bullet);
 
 		double bulletFactor = (double) bullet / MAX_BULLET_COUNT;
