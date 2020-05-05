@@ -23,6 +23,7 @@ public enum Item {
 
 	// No Category
 	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
+	BULLET(300, emptyMap(), Quality.COMMON, emptySet()),
 	AGENT(50_000, Map.of(Skill.TRACING, 10), Quality.COMMON, emptySet()),
 	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
 

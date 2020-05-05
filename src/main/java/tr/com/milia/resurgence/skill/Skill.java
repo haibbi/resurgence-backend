@@ -15,6 +15,11 @@ public enum Skill implements LocaleEnum {
 	TRACING(90),
 
 	/**
+	 * Protection
+	 */
+	DEFENCE(90),
+
+	/**
 	 * Increases the rate of not getting caught while performing task.
 	 */
 	SNEAK(90);

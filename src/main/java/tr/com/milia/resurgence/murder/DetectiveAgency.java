@@ -45,8 +45,18 @@ public class DetectiveAgency {
 		try {
 			long totalDetectiveCount = findRunningAgentKey().stream()
 				.filter(jobKey -> jobKey.getName().startsWith(seekerName + "-"))
-				.count();
-			if (totalDetectiveCount > 25) throw new AgentLimitExceededException();
+				.mapToInt(jobKey -> {
+					try {
+						JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+						JobDataMap data = jobDetail.getJobDataMap();
+						return data.getInt("agent");
+					} catch (SchedulerException e) {
+						log.warn("An error occurred while retrieving agent job details", e);
+						return 0;
+					}
+				})
+				.sum();
+			if (totalDetectiveCount + agentQuantity > 25) throw new AgentLimitExceededException();
 		} catch (SchedulerException e) {
 			log.warn("An error occurred while fetching agent job keys", e);
 		}
@@ -54,7 +64,7 @@ public class DetectiveAgency {
 		Player seeker = findPlayer(seekerName);
 		findPlayer(wantedName); // just check if player exists
 
-		long detectivePrice = Item.AGENT.getPrice() * agentQuantity;
+		long detectivePrice = Item.AGENT.getPrice();
 		seeker.decreaseBalance(detectivePrice * agentQuantity);
 
 		schedule(seekerName, wantedName, agentQuantity);
@@ -111,6 +121,19 @@ public class DetectiveAgency {
 		boolean succeed = random < successRatio;
 
 		repository.save(new ResearchResult(seeker, wanted, agentQuantity, succeed));
+	}
+
+	void clean(String attacker, String victim) {
+		try {
+			for (JobKey jobKey : findRunningAgentKey()) {
+				if (jobKey.getName().startsWith(attacker + "-" + victim)) {
+					scheduler.deleteJob(jobKey);
+				}
+			}
+		} catch (SchedulerException e) {
+			log.warn("An error occurred while removing active agent {} {}", attacker, victim, e);
+		}
+		repository.deleteAllBySeeker_NameAndWanted_Name(attacker, victim);
 	}
 
 	private List<AgencyStatus> searchRunningAgent(Player seeker) throws SchedulerException {

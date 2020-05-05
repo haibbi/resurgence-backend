@@ -10,4 +10,6 @@ public interface ResearchResultRepository extends JpaRepository<ResearchResult, 
 
 	List<ResearchResult> findAllBySeekerAndExpireTimeGreaterThanEqualOrderByExpireTime(Player seeker, Instant expireTime);
 
+	void deleteAllBySeeker_NameAndWanted_Name(String seeker, String wanted);
+
 }
