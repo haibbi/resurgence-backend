@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @Primary
 public class TaskService {
 
+	protected final ApplicationEventPublisher eventPublisher;
 	private final double PH = .10;
 	private final PlayerService playerService;
-	protected final ApplicationEventPublisher eventPublisher;
 
 	public TaskService(PlayerService playerService, ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
@@ -61,7 +61,17 @@ public class TaskService {
 
 		// item contribution
 		sum += selectedItems.entrySet().stream()
-			.mapToLong(e -> e.getKey().getSkillsContribution(task.getAuxiliary()) * e.getValue())
+			.mapToLong(selectedItem -> {
+				Item item = selectedItem.getKey();
+				Long quantity = selectedItem.getValue();
+				return item.getSkillsContribution(task.getAuxiliary()) * quantity;
+			})
+			.sum();
+
+		// passive item contribution
+		sum += player.getItems().stream()
+			.filter(playerItem -> Item.PASSIVE.contains(playerItem.getItem()))
+			.mapToLong(p -> p.getItem().getSkillsContribution(task.getAuxiliary()))
 			.sum();
 
 		double success = sum / task.getDifficulty();
