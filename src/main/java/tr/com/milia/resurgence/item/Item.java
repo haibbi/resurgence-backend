@@ -2,9 +2,13 @@ package tr.com.milia.resurgence.item;
 
 import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.skill.Skill;
+import tr.com.milia.resurgence.task.Task;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -31,6 +35,18 @@ public enum Item {
 	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
 
 	public static final Set<Item> PASSIVE = Set.of(JOE);
+	public static final Set<Item> FORBIDDEN_TO_BUY;
+
+	static {
+		FORBIDDEN_TO_BUY = Task.SMUGGLING_TASKS.stream()
+			.map(Task::getDrop)
+			.map(Map::keySet)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toCollection(HashSet::new));
+		FORBIDDEN_TO_BUY.add(MONEY);
+		FORBIDDEN_TO_BUY.add(BULLET);
+		FORBIDDEN_TO_BUY.add(AGENT);
+	}
 
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;

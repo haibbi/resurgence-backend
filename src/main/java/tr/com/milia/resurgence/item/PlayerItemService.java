@@ -11,26 +11,19 @@ import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.DropDetail;
-import tr.com.milia.resurgence.task.Task;
 import tr.com.milia.resurgence.task.TaskResult;
 import tr.com.milia.resurgence.task.TaskStartedEvent;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+import static tr.com.milia.resurgence.item.Item.FORBIDDEN_TO_BUY;
 
 @Service
 public class PlayerItemService {
 
 	private static final Logger log = LoggerFactory.getLogger(PlayerItemService.class);
-	private static final Set<Item> FORBIDDEN_TO_BUY = Task.SMUGGLING_TASKS.stream()
-		.map(Task::getDrop)
-		.map(Map::keySet)
-		.flatMap(Collection::stream)
-		.collect(Collectors.toSet());
 
 	private final PlayerItemRepository repository;
 	private final PlayerService playerService;
