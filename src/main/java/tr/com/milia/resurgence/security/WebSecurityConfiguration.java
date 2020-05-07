@@ -16,10 +16,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private final TokenService tokenService;
 	private final ObjectMapper mapper;
+	private final OAuth2AuthenticationSuccessHandler oAuth2ASH;
 
-	public WebSecurityConfiguration(TokenService tokenService, ObjectMapper mapper) {
+	public WebSecurityConfiguration(TokenService tokenService,
+									ObjectMapper mapper,
+									OAuth2AuthenticationSuccessHandler oAuth2ASH) {
 		this.tokenService = tokenService;
 		this.mapper = mapper;
+		this.oAuth2ASH = oAuth2ASH;
 	}
 
 	@Override
@@ -35,6 +39,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.anonymous().and()
 			.exceptionHandling().authenticationEntryPoint((req, rsp, e) ->
 			rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED)).and()
+			.oauth2Login().successHandler(oAuth2ASH).and()
 			.addFilterAfter(loginProcessingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(characterEncodingFilter, LoginProcessingFilter.class)
