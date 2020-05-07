@@ -1,11 +1,11 @@
 package tr.com.milia.resurgence.task;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/task")
@@ -26,6 +26,11 @@ public class TaskController {
 		String playerName = authentication.getPlayerName();
 		TaskResult result = service.perform(task, playerName, request.selectedItems);
 		return new TaskResultResponse(result);
+	}
+
+	@GetMapping
+	public List<Task> tasks() {
+		return Arrays.stream(Task.values()).filter(Task::isSolo).collect(Collectors.toList());
 	}
 
 }
