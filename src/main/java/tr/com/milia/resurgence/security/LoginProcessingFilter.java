@@ -59,7 +59,9 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
 		writeResponseBody(response, token);
 	}
 
-	private void onFail(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
+	private void onFail(HttpServletRequest request,
+						HttpServletResponse response,
+						AuthenticationException exception) throws IOException {
 		final String code;
 
 		if (exception instanceof BadCredentialsException) {
@@ -73,6 +75,7 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
 		final String message = messageSource.getMessage(code, null, request.getLocale());
 		LocalizedResponse responseBody = new LocalizedResponse(message);
 		writeResponseBody(response, responseBody);
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
 	private void writeResponseBody(HttpServletResponse response, Object body) {

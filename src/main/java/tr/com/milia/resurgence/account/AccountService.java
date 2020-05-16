@@ -21,10 +21,12 @@ public class AccountService {
 		return accountRepository.findAccountByEmail(email);
 	}
 
-	public Account create(Account account) throws EmailAlreadyExistException {
-		Optional<Account> optionalAccount = findByEmail(account.getEmail());
+	public Account create(String email, String password) throws EmailAlreadyExistException {
+		Optional<Account> optionalAccount = findByEmail(email);
 
-		if (optionalAccount.isPresent()) throw new EmailAlreadyExistException(account.getEmail());
+		if (optionalAccount.isPresent()) throw new EmailAlreadyExistException(email);
+
+		Account account = new Account(email, passwordEncoder.encode(password), Status.VERIFIED);
 
 		return accountRepository.save(account);
 	}
