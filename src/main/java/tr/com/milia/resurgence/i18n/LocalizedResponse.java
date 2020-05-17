@@ -8,6 +8,10 @@ public class LocalizedResponse {
 	@JsonIgnoreProperties({"stack_trace", "codes", "suppressed", "arguments"})
 	private final LocalizedException detail;
 
+	public LocalizedResponse(String message) {
+		this(message, null);
+	}
+
 	public LocalizedResponse(String message, LocalizedException detail) {
 		this.message = message;
 		this.detail = detail;

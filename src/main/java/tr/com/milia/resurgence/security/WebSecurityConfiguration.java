@@ -1,6 +1,8 @@
 package tr.com.milia.resurgence.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,19 +19,22 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private final TokenService tokenService;
 	private final ObjectMapper mapper;
 	private final OAuth2AuthenticationSuccessHandler oAuth2ASH;
+	private final MessageSource messageSource;
 
 	public WebSecurityConfiguration(TokenService tokenService,
 									ObjectMapper mapper,
-									OAuth2AuthenticationSuccessHandler oAuth2ASH) {
+									OAuth2AuthenticationSuccessHandler oAuth2ASH,
+									@Qualifier("defaultMessageSource") MessageSource messageSource) {
 		this.tokenService = tokenService;
 		this.mapper = mapper;
 		this.oAuth2ASH = oAuth2ASH;
+		this.messageSource = messageSource;
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		var tokenFilter = new JwtTokenAuthenticationFilter(tokenService);
-		var loginProcessingFilter = new LoginProcessingFilter(authenticationManager(), mapper, tokenService);
+		var loginProcessingFilter = new LoginProcessingFilter(authenticationManager(), mapper, tokenService, messageSource);
 		var characterEncodingFilter = new CharacterEncodingFilter("UTF-8", true);
 
 		http.csrf().disable()

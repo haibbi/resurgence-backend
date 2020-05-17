@@ -10,7 +10,7 @@ class RegistrationRequest {
 	String email;
 
 	@NotNull
-	@Size(min = 6)
+	@Size(min = 6, max = 32)
 	String password;
 
 	public void setEmail(String email) {

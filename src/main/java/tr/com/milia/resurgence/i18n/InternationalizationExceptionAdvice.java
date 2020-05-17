@@ -40,7 +40,7 @@ public class InternationalizationExceptionAdvice {
 		String message = messageSource.getMessage(new DefaultMessageSourceResolvable("not.found"), locale);
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
-			.body(new LocalizedResponse(message, null));
+			.body(new LocalizedResponse(message));
 	}
 
 

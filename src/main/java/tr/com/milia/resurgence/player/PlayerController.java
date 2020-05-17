@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/player")
@@ -28,6 +30,11 @@ public class PlayerController {
 			.map(PlayerInfoResponse::new)
 			.map(ResponseEntity::ok)
 			.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	@GetMapping("/races")
+	public List<Race> races() {
+		return Arrays.asList(Race.values());
 	}
 
 	@PostMapping
