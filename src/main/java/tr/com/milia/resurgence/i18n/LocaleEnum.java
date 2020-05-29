@@ -28,7 +28,7 @@ public interface LocaleEnum extends MessageSourceResolvable {
 	@JsonIgnore
 	@Override
 	default String[] getCodes() {
-		return new String[]{getClass().getCanonicalName() + "#" + name()};
+		return new String[]{getClass().getName() + "#" + name()};
 	}
 
 	@JsonIgnore
