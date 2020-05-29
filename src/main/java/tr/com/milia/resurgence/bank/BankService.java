@@ -93,6 +93,7 @@ public class BankService {
 			.orElseThrow(BankAccountNotFoundException::new);
 
 		account.decrease(amount);
+		accountRepository.save(account);
 	}
 
 	public Optional<BankAccount> findAccount(String playerName) {
