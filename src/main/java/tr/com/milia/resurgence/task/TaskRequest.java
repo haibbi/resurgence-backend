@@ -1,13 +1,11 @@
 package tr.com.milia.resurgence.task;
 
-import tr.com.milia.resurgence.item.Item;
-
-import java.util.Map;
+import java.util.Set;
 
 class TaskRequest {
-	Map<Item, Long> selectedItems;
+	Set<SelectedItem> selectedItems;
 
-	public void setSelectedItems(Map<Item, Long> selectedItems) {
+	public void setSelectedItems(Set<SelectedItem> selectedItems) {
 		this.selectedItems = selectedItems;
 	}
 }

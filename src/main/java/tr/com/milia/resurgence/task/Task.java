@@ -18,6 +18,16 @@ import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
 public enum Task implements LocaleEnum {
 
+
+	SHOPLIFTING(50,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		5_000,
+		10_000,
+		ofSeconds(1),
+		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
+		Collections.emptyMap()),
+
 	BANK_RUBBERY(150,
 		Set.of(SNEAK),
 		Set.of(SNEAK),
@@ -50,7 +60,7 @@ public enum Task implements LocaleEnum {
 		10_000,
 		ofDays(1),
 		Map.of(Item.GLOCK, DropDetail.of(1, .10)),
-		Map.of(Item.Category.WEAPON, 1L)),
+		Map.of(Item.Category.WEAPON, 1L, Item.Category.BULLET, 100L)),
 
 	HEIST_DRIVER(50,
 		Set.of(SNEAK),
