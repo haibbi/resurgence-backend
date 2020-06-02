@@ -13,16 +13,32 @@ import java.util.stream.Collectors;
 public class BankTransactionsController {
 
 	private final BankAccountLogService bankAccountLogService;
+	private final BankTransferLogService transferLogService;
 
-	public BankTransactionsController(BankAccountLogService bankAccountLogService) {
+	public BankTransactionsController(BankAccountLogService bankAccountLogService,
+									  BankTransferLogService transferLogService) {
 		this.bankAccountLogService = bankAccountLogService;
+		this.transferLogService = transferLogService;
 	}
 
 	@GetMapping("/account")
-	public List<BankAccountLogResponse> transactions(TokenAuthentication authentication) {
+	public List<BankAccountLogResponse> account(TokenAuthentication authentication) {
 		String owner = authentication.getPlayerName();
 		return bankAccountLogService.logs(owner).stream()
 			.map(BankAccountLogResponse::new)
+			.collect(Collectors.toList());
+	}
+
+	@GetMapping("/transfer")
+	public List<BankTransferLogResponse> transfers(TokenAuthentication authentication) {
+		String player = authentication.getPlayerName();
+		return transferLogService.findAll(player).stream()
+			.map(log -> {
+				if (player.equals(log.getTo().getName()))
+					return BankTransferLogResponse.in(log);
+				else
+					return BankTransferLogResponse.out(log);
+			})
 			.collect(Collectors.toList());
 	}
 
