@@ -18,7 +18,7 @@ public class BankTransactionsController {
 		this.bankAccountLogService = bankAccountLogService;
 	}
 
-	@GetMapping
+	@GetMapping("/account")
 	public List<BankAccountLogResponse> transactions(TokenAuthentication authentication) {
 		String owner = authentication.getPlayerName();
 		return bankAccountLogService.logs(owner).stream()
