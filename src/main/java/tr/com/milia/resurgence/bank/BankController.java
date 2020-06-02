@@ -31,9 +31,10 @@ public class BankController {
 	}
 
 	@GetMapping("/interest")
-	public ResponseEntity<InterestAccount> currentInterest(TokenAuthentication authentication) {
+	public ResponseEntity<InterestAccountResponse> currentInterest(TokenAuthentication authentication) {
 		String playerName = authentication.getPlayerName();
 		return service.currentInterest(playerName)
+			.map(InterestAccountResponse::new)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}

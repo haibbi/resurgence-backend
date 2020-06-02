@@ -4,6 +4,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.player.Player;
 
+import java.time.Duration;
+import java.util.Optional;
+
 @Service
 public class TaskLogService {
 
@@ -18,6 +21,12 @@ public class TaskLogService {
 		repository.findFirstByTaskAndCreatedByOrderByCreatedDateDesc(task, player).ifPresent(taskLog -> {
 			if (!taskLog.isExpired()) throw new TaskCoolDownException(taskLog.durationToLeft());
 		});
+	}
+
+	Optional<Duration> leftTime(Player player, Task task) {
+		return repository.findFirstByTaskAndCreatedByOrderByCreatedDateDesc(task, player)
+			.filter(taskLog -> !taskLog.isExpired())
+			.map(TaskLog::durationToLeft);
 	}
 
 	@EventListener(TaskStartedEvent.class)

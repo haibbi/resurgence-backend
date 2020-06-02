@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 
-public enum Item {
+public enum Item implements LocaleEnum {
 
 	// Money
 	MONEY(1, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
@@ -30,7 +30,7 @@ public enum Item {
 
 	// No Category
 	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
-	BULLET(300, emptyMap(), Quality.COMMON, emptySet()),
+	BULLET(300, emptyMap(), Quality.COMMON, Set.of(Category.BULLET)),
 	AGENT(50_000, Map.of(Skill.TRACING, 10), Quality.COMMON, emptySet()),
 	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
 
@@ -87,6 +87,8 @@ public enum Item {
 		VEHICLE,
 
 		MONEY,
+
+		BULLET,
 
 		GUARD,
 
