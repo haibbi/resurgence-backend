@@ -1,11 +1,7 @@
 package tr.com.milia.resurgence.bank;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
 import java.util.Arrays;
@@ -50,9 +46,13 @@ public class BankController {
 	@PostMapping("/transfer/{player}/{amount}")
 	public void transfer(TokenAuthentication authentication,
 						 @PathVariable("player") String toPlayer,
-						 @PathVariable("amount") long amount) {
+						 @PathVariable("amount") long amount,
+						 @RequestParam(value = "d", required = false) String description) {
 		String fromPlayer = authentication.getPlayerName();
-		service.transfer(fromPlayer, toPlayer, amount);
+
+		if (fromPlayer.equals(toPlayer)) throw new SelfTransferException();
+
+		service.transfer(fromPlayer, toPlayer, amount, description);
 	}
 
 }

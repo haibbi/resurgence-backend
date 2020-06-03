@@ -3,7 +3,9 @@ package tr.com.milia.resurgence.bank;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
@@ -26,11 +28,16 @@ public class BankService {
 	private final PlayerService playerService;
 	private final Scheduler scheduler;
 	private final BankAccountRepository accountRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
-	public BankService(PlayerService playerService, Scheduler scheduler, BankAccountRepository accountRepository) {
+	public BankService(PlayerService playerService,
+					   Scheduler scheduler,
+					   BankAccountRepository accountRepository,
+					   ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
 		this.scheduler = scheduler;
 		this.accountRepository = accountRepository;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional
@@ -102,12 +109,13 @@ public class BankService {
 	}
 
 	@Transactional
-	public void transfer(String fromPlayerName, String toPlayerName, long amount) {
+	public void transfer(String fromPlayerName, String toPlayerName, long amount, @Nullable String description) {
 		var fromPlayer = findPlayer(fromPlayerName);
 		var toPlayer = findPlayer(toPlayerName);
 
 		fromPlayer.decreaseBalance(amount);
 		toPlayer.increaseBalance(amount);
+		eventPublisher.publishEvent(new TransferCompletedEvent(fromPlayer, toPlayer, description, amount));
 	}
 
 	@EventListener(InterestCompletedEvent.class)
