@@ -32,19 +32,19 @@ public class MailService {
 	}
 
 	public List<Mail> incoming(String playerName) {
-		return repository.findAllByTo_Name(playerName);
+		return repository.findAllByTo_NameAndDeletedIsFalseOrderByIdDesc(playerName);
 	}
 
 	public List<Mail> outgoing(String playerName) {
-		return repository.findAllByFrom_Name(playerName);
+		return repository.findAllByFrom_NameAndDeletedBySenderIsFalseOrderByIdDesc(playerName);
 	}
 
 	@Transactional
-	public void report(String to, Long id) {
+	public void report(String player, Long id) {
 		if (reportedMailRepository.findById(id).isPresent()) return;
 
 		repository.findById(id)
-			.filter(mail -> mail.getTo().getName().equals(to))
+			.filter(mail -> mail.getTo().getName().equals(player))
 			.map(ReportedMail::new)
 			.ifPresent(reportedMailRepository::save);
 	}
@@ -56,10 +56,16 @@ public class MailService {
 			.ifPresent(Mail::markAsRead);
 	}
 
-	public void delete(String to, Long id) {
+	@Transactional
+	public void delete(String player, Long id) {
 		repository.findById(id)
-			.filter(mail -> mail.getTo().getName().equals(to))
-			.ifPresent(repository::delete);
+			.ifPresent(mail -> {
+				if (mail.getTo().getName().equals(player)) {
+					mail.markAsDeleted();
+				} else {
+					mail.markAsDeletedBySender();
+				}
+			});
 	}
 
 	private Player findPlayer(String name) {

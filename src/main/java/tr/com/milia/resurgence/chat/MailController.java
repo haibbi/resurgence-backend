@@ -39,8 +39,8 @@ public class MailController {
 
 	@PostMapping("/report/{id}")
 	public void report(TokenAuthentication authentication, @PathVariable("id") Long id) {
-		String to = authentication.getPlayerName();
-		service.report(to, id);
+		String player = authentication.getPlayerName();
+		service.report(player, id);
 	}
 
 	@PostMapping("/read/{id}")
@@ -51,8 +51,8 @@ public class MailController {
 
 	@DeleteMapping("/{id}")
 	public void delete(TokenAuthentication authentication, @PathVariable("id") Long id) {
-		String to = authentication.getPlayerName();
-		service.delete(to, id);
+		String player = authentication.getPlayerName();
+		service.delete(player, id);
 	}
 
 }

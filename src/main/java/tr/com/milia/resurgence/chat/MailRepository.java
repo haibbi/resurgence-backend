@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface MailRepository extends JpaRepository<Mail, Long> {
 
-	List<Mail> findAllByFrom_Name(String from);
+	List<Mail> findAllByFrom_NameAndDeletedBySenderIsFalseOrderByIdDesc(String from);
 
-	List<Mail> findAllByTo_Name(String to);
+	List<Mail> findAllByTo_NameAndDeletedIsFalseOrderByIdDesc(String to);
 
 }
