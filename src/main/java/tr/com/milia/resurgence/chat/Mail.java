@@ -28,6 +28,10 @@ public class Mail {
 
 	private boolean read;
 
+	private boolean deleted;
+
+	private boolean deletedBySender;
+
 	public Mail() {
 	}
 
@@ -41,6 +45,14 @@ public class Mail {
 
 	public void markAsRead() {
 		read = true;
+	}
+
+	public void markAsDeleted() {
+		deleted = true;
+	}
+
+	public void markAsDeletedBySender() {
+		deletedBySender = true;
 	}
 
 	public Long getId() {
@@ -65,5 +77,13 @@ public class Mail {
 
 	public boolean isRead() {
 		return read;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public boolean isDeletedBySender() {
+		return deletedBySender;
 	}
 }
