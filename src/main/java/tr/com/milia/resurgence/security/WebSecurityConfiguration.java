@@ -48,6 +48,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.addFilterAfter(loginProcessingFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(characterEncodingFilter, LoginProcessingFilter.class)
+			.authorizeRequests().antMatchers(HttpMethod.GET, "/static/**").permitAll().and()
 			.authorizeRequests().antMatchers(HttpMethod.POST, "/login").permitAll().and()
 			.authorizeRequests().antMatchers(HttpMethod.POST, "/account").permitAll().and()
 			.authorizeRequests().antMatchers(HttpMethod.POST, "/security/refresh").permitAll().and()
