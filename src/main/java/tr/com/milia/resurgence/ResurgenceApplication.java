@@ -13,8 +13,13 @@ public class ResurgenceApplication {
 	}
 
 	@Bean
-	CommonsRequestLoggingFilter requestLoggingFilter(){
-		return new CommonsRequestLoggingFilter();
+	CommonsRequestLoggingFilter requestLoggingFilter() {
+		CommonsRequestLoggingFilter logFilter = new CommonsRequestLoggingFilter();
+		logFilter.setIncludeClientInfo(true);
+		logFilter.setIncludeHeaders(true);
+		logFilter.setIncludePayload(true);
+		logFilter.setIncludeQueryString(true);
+		return logFilter;
 	}
 
 }
