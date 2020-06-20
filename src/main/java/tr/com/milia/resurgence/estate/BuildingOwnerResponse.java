@@ -2,20 +2,20 @@ package tr.com.milia.resurgence.estate;
 
 public class BuildingOwnerResponse {
 
-	private final Building building;
+	private final BuildingResponse building;
 	private final String owner;
 
 	public BuildingOwnerResponse(Deed deed) {
-		building = deed.getBuilding();
+		building = new BuildingResponse(deed.getBuilding());
 		owner = deed.getPlayer().getName();
 	}
 
 	public BuildingOwnerResponse(Building building) {
-		this.building = building;
+		this.building = new BuildingResponse(building);
 		owner = null;
 	}
 
-	public Building getBuilding() {
+	public BuildingResponse getBuilding() {
 		return building;
 	}
 

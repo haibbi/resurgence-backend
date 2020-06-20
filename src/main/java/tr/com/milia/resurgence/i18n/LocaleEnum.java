@@ -13,7 +13,7 @@ import org.springframework.context.MessageSourceResolvable;
  * <p>
  * Lokalizasyon istenilen enum'a implement edilmesi ve
  * {@code resource/enum/messages} bundle'ına {@link Class#getCanonicalName()} + "#" + {@link Enum#name()} eklenmelidir.<br>
- * Örnek olarak bundle'a eklenmesi gereken değer {@code tr.com.aselsan.enum.Status#RUNNING=Çalışıyor}
+ * Örnek olarak bundle'a eklenmesi gereken değer {@code tr.com.milia.resurgence.enum.Status#RUNNING=Çalışıyor}
  * </p>
  * Eğer çeviri girilmemiş ise {@link #getDefaultMessage()} devreye girer.<br>
  */
