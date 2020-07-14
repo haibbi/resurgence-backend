@@ -1,9 +1,11 @@
 package tr.com.milia.resurgence.family;
 
+import tr.com.milia.resurgence.i18n.LocaleEnum;
+
 /**
  * Do not change ordinal.
  */
-public enum Building {
+public enum Building implements LocaleEnum {
 
 	HOME(10, 5_000_000),
 	APARTMENT(25, 50_000_000),
