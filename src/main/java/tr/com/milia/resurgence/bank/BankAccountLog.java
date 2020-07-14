@@ -2,7 +2,11 @@ package tr.com.milia.resurgence.bank;
 
 import tr.com.milia.resurgence.player.Player;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.time.Instant;
 
 @Entity

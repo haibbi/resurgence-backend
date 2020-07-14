@@ -17,15 +17,15 @@ public enum InterestRates {
 		this.rate = rate;
 	}
 
-	public InterestRate getRate() {
-		return rate;
-	}
-
 	static Optional<InterestRate> find(long amount) {
 		return Arrays.stream(values())
 			.map(InterestRates::getRate)
 			.filter(rate -> amount >= rate.min && amount <= rate.max)
 			.findFirst();
+	}
+
+	public InterestRate getRate() {
+		return rate;
 	}
 
 	static class InterestRate {
