@@ -114,9 +114,6 @@
                     <from>
                         <image>openjdk:14-jdk-slim</image>
                     </from>
-                    <to>
-                        <image>registry.gitlab.com/milia-dev/backend</image>
-                    </to>
                 </configuration>
             </plugin>
         </plugins>

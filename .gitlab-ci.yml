@@ -25,6 +25,7 @@ build_image:
     DOCKER_DRIVER: overlay2
   script:
     - mvn clean compile jib:build
+      -Djib.to.image=$CI_REGISTRY_IMAGE
       -Djib.to.auth.username=$CI_REGISTRY_USER
       -Djib.to.auth.password=$CI_REGISTRY_PASSWORD
       -Djib.to.tags=$CI_COMMIT_SHORT_SHA,latest
