@@ -17,6 +17,7 @@
     <properties>
         <java.version>14</java.version>
         <java-jwt.version>3.10.2</java-jwt.version>
+        <jib-maven-plugin.version>2.4.0</jib-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -109,7 +110,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
                         <image>openjdk:14-jdk-slim</image>
