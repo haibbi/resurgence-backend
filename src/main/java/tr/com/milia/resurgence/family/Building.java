@@ -12,8 +12,15 @@ public enum Building implements LocaleEnum {
 	VILLA(50, 250_000_000),
 	COMPLEX(100, 1_000_000_000);
 
+	static {
+		HOME.next = APARTMENT;
+		APARTMENT.next = VILLA;
+		VILLA.next = COMPLEX;
+	}
+
 	private final long size;
 	private final long price;
+	private Building next;
 
 	Building(long size, long price) {
 		this.size = size;
@@ -26,5 +33,10 @@ public enum Building implements LocaleEnum {
 
 	public long getPrice() {
 		return price;
+	}
+
+	public Building getNext() {
+		if (next == null) throw new BuildingGrowthException();
+		return next;
 	}
 }

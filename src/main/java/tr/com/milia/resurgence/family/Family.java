@@ -95,8 +95,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 	}
 
 	void upgradeBuilding() {
-		Building nextBuilding = Building.values()[building.ordinal() + 1];
-		build(nextBuilding);
+		build(building.getNext());
 	}
 
 	@Transient
