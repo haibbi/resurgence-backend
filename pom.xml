@@ -18,6 +18,7 @@
         <java.version>14</java.version>
         <java-jwt.version>3.10.3</java-jwt.version>
         <jib-maven-plugin.version>2.4.0</jib-maven-plugin.version>
+        <logbook.version>2.1.0</logbook.version>
     </properties>
 
     <dependencies>
@@ -65,6 +66,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-spring-boot-starter</artifactId>
+            <version>${logbook.version}</version>
         </dependency>
 
         <!-- Security -->
