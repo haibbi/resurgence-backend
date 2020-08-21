@@ -1,6 +1,5 @@
 package tr.com.milia.resurgence.family;
 
-import com.google.firebase.cloud.StorageClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -8,21 +7,16 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
-import tr.com.milia.resurgence.firebase.FirebaseConfiguration;
+import tr.com.milia.resurgence.FileUtils;
+import tr.com.milia.resurgence.firebase.FirebaseService;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,14 +28,14 @@ public class FamilyService {
 
 	private final FamilyRepository repository;
 	private final PlayerService playerService;
-	private final FirebaseConfiguration firebaseConfiguration;
+	private final FirebaseService firebaseService;
 
 	public FamilyService(FamilyRepository repository,
 						 PlayerService playerService,
-						 FirebaseConfiguration firebaseConfiguration) {
+						 FirebaseService firebaseService) {
 		this.repository = repository;
 		this.playerService = playerService;
-		this.firebaseConfiguration = firebaseConfiguration;
+		this.firebaseService = firebaseService;
 	}
 
 	@Transactional
@@ -174,26 +168,8 @@ public class FamilyService {
 
 		if (!family.getBoss().getName().equals(boss)) throw new FamilyAccessDeniedException();
 
-		var storageClient = StorageClient.getInstance();
-		var bucket = storageClient.bucket();
-		var contentType = file.getContentType();
-		var stream = file.getInputStream();
-
-		var split = StringUtils.split(contentType, "/");
-		Assert.state(Objects.requireNonNull(split).length == 2,
-			"Invalid content type " + contentType);
-		var type = split[1];
-		var filename = "family-image/" + family.getName() + "." + type;
-
-		bucket.create(filename, stream, contentType);
-
-		String filepath = URLEncoder.encode(filename, StandardCharsets.UTF_8);
-		String uri = UriComponentsBuilder.newInstance()
-			.scheme("https")
-			.host("firebasestorage.googleapis.com")
-			.pathSegment("v0", "b", firebaseConfiguration.getStorageBucket(), "o", filepath)
-			.queryParam("alt", "media")
-			.build().toUriString();
+		String filename = FileUtils.addExtension(file, "image/family/" + family.getName());
+		String uri = firebaseService.uploadFile(file, filename);
 
 		family.setImage(uri);
 	}
