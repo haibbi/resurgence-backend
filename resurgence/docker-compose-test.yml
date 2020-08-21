@@ -1,15 +1,26 @@
 version: '3'
 services:
   resurgence:
-    image: registry.gitlab.com/milia-dev/backend:fc534106
+    image: registry.gitlab.com/tosk/resurgence/backend:191f7c41
     restart: always
     ports:
-      - "8080:8080"
+      - "443:8080"
     environment:
       spring.datasource.url: jdbc:postgresql://postgres:5432/postgres
       spring.datasource.username: sUpqbm1bH0gHK7QF
       spring.datasource.password: fvTg599LTf366Cw3
       JAVA_TOOL_OPTIONS: "-Xms1G -Xmx1G"
+      spring.security.oauth2.client.registration.google.redirect-uri: https://hezaryar.com/{action}/oauth2/code/{registrationId}
+      spring.profiles.active: prod,log
+      spring.resources.cache.cachecontrol.max-age: "1d"
+      server.tomcat.connection-timeout: "10s"
+      logging.level.org.zalando.logbook: "trace"
+      spring.devtools.restart.enabled: "false"
+      spring.devtools.livereload.enabled: "false"
+      spring.devtools.remote.restart.enabled: "false"
+      resurgence.firebase.credential-file: /firebase-adminsdk.json
+    volumes:
+      - ./firebase-adminsdk.json:/firebase-adminsdk.json
   postgres:
     image: postgres
     restart: always
@@ -34,7 +45,7 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=sUpqbm1bH0gHK7QF
       - POSTGRES_PASSWORD=fvTg599LTf366Cw3
-      - SCHEDULE=@daily
+      - SCHEDULE=@midnight
       - BACKUP_KEEP_DAYS=7
       - BACKUP_KEEP_WEEKS=4
       - BACKUP_KEEP_MONTHS=6
