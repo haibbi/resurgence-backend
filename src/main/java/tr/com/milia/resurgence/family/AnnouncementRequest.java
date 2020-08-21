@@ -12,7 +12,7 @@ class AnnouncementRequest {
 	@Size(max = 200)
 	String content;
 	@NotNull
-	Boolean general;
+	Boolean secret;
 
 	public void setTitle(String title) {
 		this.title = title.trim();
@@ -22,7 +22,7 @@ class AnnouncementRequest {
 		this.content = content.trim();
 	}
 
-	public void setGeneral(Boolean general) {
-		this.general = general;
+	public void setSecret(Boolean secret) {
+		this.secret = secret;
 	}
 }

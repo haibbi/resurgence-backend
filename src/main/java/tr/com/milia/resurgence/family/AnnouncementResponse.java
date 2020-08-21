@@ -5,19 +5,17 @@ import java.time.Instant;
 class AnnouncementResponse {
 	private final Long id;
 	private final String family;
-	private final String player;
 	private final String title;
 	private final String content;
-	private final boolean general;
+	private final boolean secret;
 	private final Instant time;
 
 	public AnnouncementResponse(Announcement announcement) {
 		id = announcement.getId();
 		family = announcement.getFamily().getName();
-		player = announcement.getPlayer().getName();
 		title = announcement.getTitle();
 		content = announcement.getContent();
-		general = announcement.isGeneral();
+		secret = announcement.isSecret();
 		time = announcement.getTime();
 	}
 
@@ -29,10 +27,6 @@ class AnnouncementResponse {
 		return family;
 	}
 
-	public String getPlayer() {
-		return player;
-	}
-
 	public String getTitle() {
 		return title;
 	}
@@ -41,8 +35,8 @@ class AnnouncementResponse {
 		return content;
 	}
 
-	public boolean isGeneral() {
-		return general;
+	public boolean isSecret() {
+		return secret;
 	}
 
 	public Instant getTime() {

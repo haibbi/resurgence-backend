@@ -29,7 +29,7 @@ public class AnnouncementController {
 	@PostMapping
 	public void add(TokenAuthentication authentication, @RequestBody @Validated AnnouncementRequest request) {
 		String player = authentication.getPlayerName();
-		service.add(player, request.title, request.content, request.general);
+		service.add(player, request.title, request.content, request.secret);
 	}
 
 	@PatchMapping("/{id}")
@@ -37,7 +37,7 @@ public class AnnouncementController {
 					 @PathVariable("id") Long id,
 					 @RequestBody @Validated AnnouncementRequest request) {
 		String player = authentication.getPlayerName();
-		service.edit(id, player, request.title, request.content, request.general);
+		service.edit(id, player, request.title, request.content, request.secret);
 	}
 
 	@DeleteMapping("/{id}")

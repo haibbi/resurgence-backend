@@ -21,34 +21,34 @@ public class AnnouncementService {
 	}
 
 	@Transactional
-	public void add(String playerName, String title, String content, boolean general) {
+	public void add(String playerName, String title, String content, boolean secret) {
 		Player player = findPlayer(playerName);
 		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
 		Player boss = family.getBoss();
 
 		if (!boss.equals(player)) throw new FamilyAccessDeniedException();
 
-		Announcement announcement = new Announcement(family, boss, title, content, general);
+		Announcement announcement = new Announcement(family, title, content, secret);
 		repository.save(announcement);
 	}
 
 	@Transactional
-	public void edit(Long id, String playerName, String title, String content, boolean general) {
+	public void edit(Long id, String playerName, String title, String content, boolean secret) {
 		Announcement announcement = repository.findById(id).orElseThrow();
 
-		// only edit who crated it
-		if (!announcement.getPlayer().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+		// only edit who is boss
+		if (!announcement.getFamily().getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
 
 		announcement.setTitle(title);
 		announcement.setContent(content);
-		announcement.setGeneral(general);
+		announcement.setSecret(secret);
 	}
 
 	public void remove(Long id, String playerName) {
 		Announcement announcement = repository.findById(id).orElseThrow();
 
-		// only delete who crated it
-		if (!announcement.getPlayer().getName().equals(playerName)) throw new FamilyAccessDeniedException();
+		// only delete who is boss
+		if (!announcement.getFamily().getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
 
 		repository.deleteById(id);
 	}
@@ -57,7 +57,7 @@ public class AnnouncementService {
 		Player player = findPlayer(playerName);
 
 		return player.getFamily().map(repository::findAllByFamilyOrderByTimeDesc).orElseGet(() ->
-			repository.findAllByFamily_NameAndGeneralIsTrueOrderByTimeDesc(familyName));
+			repository.findAllByFamily_NameAndSecretIsTrueOrderByTimeDesc(familyName));
 	}
 
 	private Player findPlayer(String name) {
