@@ -36,7 +36,6 @@ public enum Building implements LocaleEnum {
 	}
 
 	public Building getNext() {
-		if (next == null) throw new BuildingGrowthException();
 		return next;
 	}
 }

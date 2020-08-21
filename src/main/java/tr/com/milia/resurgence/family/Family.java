@@ -41,6 +41,8 @@ public class Family extends AbstractAggregateRoot<Family> {
 	@Min(0)
 	private long bank;
 
+	private String image;
+
 	public Family() {
 	}
 
@@ -95,7 +97,9 @@ public class Family extends AbstractAggregateRoot<Family> {
 	}
 
 	void upgradeBuilding() {
-		build(building.getNext());
+		Building next = building.getNext();
+		if (next == null) throw new BuildingGrowthException();
+		build(next);
 	}
 
 	@Transient
@@ -178,5 +182,13 @@ public class Family extends AbstractAggregateRoot<Family> {
 
 	public Set<Chief> getChiefs() {
 		return Collections.unmodifiableSet(chiefs);
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 }

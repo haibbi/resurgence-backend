@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.family;
 
+import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Race;
 
@@ -11,9 +12,10 @@ public class FamilyResponse {
 	private final String name;
 	private final String boss;
 	private final String consultant;
-	private final Building building;
+	private final FamilyBuildingResponse building;
 	private final Set<String> members;
 	private final Race race;
+	private final String image;
 	private List<ChiefResponse> chiefs;
 	private Long bank;
 
@@ -21,9 +23,10 @@ public class FamilyResponse {
 		name = family.getName();
 		boss = family.getBoss().getName();
 		consultant = family.getConsultant().map(Player::getName).orElse(null);
-		building = family.getBuilding();
+		building = new FamilyBuildingResponse(family.getBuilding());
 		members = family.getMembers().stream().map(Player::getName).collect(Collectors.toSet());
 		race = family.getRace();
+		image = family.getImage();
 	}
 
 	static FamilyResponse exposed(Family family) {
@@ -49,7 +52,7 @@ public class FamilyResponse {
 		return chiefs;
 	}
 
-	public Building getBuilding() {
+	public FamilyBuildingResponse getBuilding() {
 		return building;
 	}
 
@@ -64,9 +67,14 @@ public class FamilyResponse {
 	public Long getBank() {
 		return bank;
 	}
+
+	public String getImage() {
+		return image;
+	}
 }
 
 class ChiefResponse {
+
 	private final String name;
 	private final Set<String> members;
 
@@ -81,5 +89,46 @@ class ChiefResponse {
 
 	public Set<String> getMembers() {
 		return members;
+	}
+}
+
+class FamilyBuildingResponse implements LocaleEnum {
+
+	private final Building building;
+	private final long size;
+	private final long price;
+
+	FamilyBuildingResponse(Building building) {
+		this.building = building;
+		size = building.getSize();
+		price = building.getPrice();
+	}
+
+	public long getSize() {
+		return size;
+	}
+
+	public long getPrice() {
+		return price;
+	}
+
+	@Override
+	public String[] getCodes() {
+		return building.getCodes();
+	}
+
+	@Override
+	public Object[] getArguments() {
+		return building.getArguments();
+	}
+
+	@Override
+	public String getDefaultMessage() {
+		return building.getDefaultMessage();
+	}
+
+	@Override
+	public String name() {
+		return building.name();
 	}
 }
