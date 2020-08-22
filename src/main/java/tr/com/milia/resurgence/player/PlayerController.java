@@ -28,7 +28,7 @@ public class PlayerController {
 	}
 
 	@GetMapping
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<PlayerInfoResponse> info(Principal principal) {
 		return service.findByUsername(principal.getName())
 			.map(PlayerInfoResponse::new)
@@ -42,8 +42,7 @@ public class PlayerController {
 	}
 
 	@PostMapping
-	public PlayerInfoResponse create(@RequestBody @Validated CreatePlayerRequest request,
-									 Principal principal) {
+	public PlayerInfoResponse create(@RequestBody @Validated CreatePlayerRequest request, Principal principal) {
 		var player = service.create(request.name, principal.getName(), request.race);
 		return new PlayerInfoResponse(player);
 	}

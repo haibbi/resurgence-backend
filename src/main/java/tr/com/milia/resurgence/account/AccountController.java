@@ -1,10 +1,8 @@
 package tr.com.milia.resurgence.account;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tr.com.milia.resurgence.security.TokenAuthentication;
 
 import javax.validation.Valid;
 
@@ -24,4 +22,8 @@ public class AccountController {
 		return ResponseEntity.ok().body(new RegistrationResponse(account));
 	}
 
+	@PatchMapping("/push-token")
+	public void addToken(TokenAuthentication authentication, @RequestBody @Valid PushNotificationTokenRequest request) {
+		accountService.addToken(authentication.getName(), request.token);
+	}
 }

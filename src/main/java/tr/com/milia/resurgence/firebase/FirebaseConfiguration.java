@@ -3,7 +3,6 @@ package tr.com.milia.resurgence.firebase;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +18,8 @@ public class FirebaseConfiguration {
 	private String databaseUrl;
 	private String storageBucket;
 	private String credentialFile;
-	private boolean enabled;
 
 	@Bean(destroyMethod = "delete")
-	@ConditionalOnProperty(prefix = "resurgence.firebase", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
 	FirebaseApp firebaseApp() throws IOException {
 		var file = new File(credentialFile);
 		var inputStream = new FileInputStream(file);
@@ -35,6 +31,11 @@ public class FirebaseConfiguration {
 			.build();
 
 		return FirebaseApp.initializeApp(options);
+	}
+
+	@Bean
+	FirebaseService firebaseService(FirebaseApp app) {
+		return new FirebaseService(this, app);
 	}
 
 	public String getDatabaseUrl() {
@@ -61,11 +62,4 @@ public class FirebaseConfiguration {
 		this.credentialFile = credentialFile;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 }
