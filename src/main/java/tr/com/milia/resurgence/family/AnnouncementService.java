@@ -45,6 +45,7 @@ public class AnnouncementService {
 		announcement.setSecret(secret);
 	}
 
+	@Transactional
 	public void remove(Long id, String playerName) {
 		Announcement announcement = repository.findById(id).orElseThrow();
 
