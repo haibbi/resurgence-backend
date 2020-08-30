@@ -34,10 +34,18 @@ public class FamilyController {
 		return FamilyResponse.exposed(family);
 	}
 
-	@GetMapping
+	@GetMapping({"", "/", "/{family}"})
 	@Transactional
-	public ResponseEntity<FamilyResponse> family(TokenAuthentication authentication) {
+	public ResponseEntity<FamilyResponse> family(
+		TokenAuthentication authentication,
+		@PathVariable(value = "family", required = false) String family
+	) {
 		String playerName = authentication.getPlayerName();
+		if (family != null) {
+			return service.findByName(family).map(FamilyResponse::exposed)
+				.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
+		}
 		return service.findFamilyByPlayerName(playerName)
 			.map(FamilyResponse::exposed)
 			.map(ResponseEntity::ok)

@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.family;
 
+import org.springframework.lang.Nullable;
 import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Race;
@@ -10,28 +11,34 @@ import java.util.stream.Collectors;
 
 public class FamilyResponse {
 	private final String name;
-	private final String boss;
-	private final String consultant;
 	private final FamilyBuildingResponse building;
-	private final Set<String> members;
 	private final Race race;
 	private final String image;
+	private final int size;
+
+	private String boss;
+	private String consultant;
+	private Set<String> members;
 	private List<ChiefResponse> chiefs;
-	private Long bank;
 
 	public FamilyResponse(Family family) {
-		name = family.getName();
-		boss = family.getBoss().getName();
-		consultant = family.getConsultant().map(Player::getName).orElse(null);
-		building = new FamilyBuildingResponse(family.getBuilding());
-		members = family.getMembers().stream().map(Player::getName).collect(Collectors.toSet());
-		race = family.getRace();
-		image = family.getImage();
+		this(family, null);
 	}
 
-	static FamilyResponse exposed(Family family) {
-		FamilyResponse response = new FamilyResponse(family);
-		response.bank = family.getBank();
+	private FamilyResponse(Family family, @Nullable Integer size) {
+		name = family.getName();
+		building = new FamilyBuildingResponse(family.getBuilding());
+		race = family.getRace();
+		image = family.getImage();
+		this.size = size == null ? family.getMembers().size() : size;
+	}
+
+	public static FamilyResponse exposed(Family family) {
+		Set<String> members = family.getMembers().stream().map(Player::getName).collect(Collectors.toSet());
+		FamilyResponse response = new FamilyResponse(family, members.size());
+		response.boss = family.getBoss().getName();
+		response.consultant = family.getConsultant().map(Player::getName).orElse(null);
+		response.members = members;
 		response.chiefs = family.getChiefs().stream().map(ChiefResponse::new).collect(Collectors.toList());
 		return response;
 	}
@@ -64,12 +71,12 @@ public class FamilyResponse {
 		return race;
 	}
 
-	public Long getBank() {
-		return bank;
-	}
-
 	public String getImage() {
 		return image;
+	}
+
+	public int getSize() {
+		return size;
 	}
 }
 

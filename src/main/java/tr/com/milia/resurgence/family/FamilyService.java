@@ -130,15 +130,19 @@ public class FamilyService {
 	}
 
 	@Transactional
-	public void assignMemberToChief(String playerName, String chiefName, String memberName) {
-		Player player = findPlayer(playerName);
-		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
-		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
-		family.findChief(chiefName).ifPresent(chief -> {
-			Player member = findPlayer(memberName);
-			if (member.getChief().isPresent()) throw new MemberAlreadyHaveChiefException();
-			chief.addMember(member);
-		});
+	public void assignMemberToChief(String bossName, String chiefName, String memberName) {
+		Player boss = findPlayer(bossName);
+		Family family = boss.getFamily().orElseThrow(FamilyNotFoundException::new);
+
+		if (!family.getBoss().getName().equals(bossName)) throw new FamilyAccessDeniedException();
+
+		Player member = findPlayer(memberName);
+
+		if (member.getChief().isPresent()) throw new MemberAlreadyHaveChiefException();
+
+		if (member.isChief()) throw new MemberAlreadyChiefException();
+
+		family.findChief(chiefName).ifPresent(chief -> chief.addMember(member));
 
 	}
 
@@ -174,6 +178,11 @@ public class FamilyService {
 		family.setImage(uri);
 	}
 
+	@Transactional
+	public Long bankAccount(String playerName) {
+		return findPlayer(playerName).getFamily().map(Family::getBank).orElseThrow();
+	}
+
 	private Player findPlayer(String playerName) {
 		return playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 	}
@@ -193,7 +202,7 @@ public class FamilyService {
 			long chiefsShare = (long) (totalMoneyGain * .03);
 			long bossesShare = (long) (totalMoneyGain * .02);
 			long diminishing = chiefsShare + bossesShare;
-			log.debug("Total Money: {}, Chief's share: {}, Boss'es Share: {}",
+			log.debug("Total Money: {}, Chief's share: {}, Boss's Share: {}",
 				totalMoneyGain, chiefsShare, bossesShare);
 			chief.getChief().increaseBalance(chiefsShare);
 			chief.getFamily().getBoss().increaseBalance(bossesShare);
@@ -202,7 +211,7 @@ public class FamilyService {
 			// boss take the all revenue
 			long totalMoneyGain = event.getMoneyGain();
 			long bossesShare = (long) (totalMoneyGain * .05);
-			log.debug("Total Money: {}, Boss'es Share: {}", totalMoneyGain, bossesShare);
+			log.debug("Total Money: {}, Boss's Share: {}", totalMoneyGain, bossesShare);
 			player.getFamily().ifPresent(family -> family.getBoss().increaseBalance(bossesShare));
 			player.decreaseBalance(bossesShare);
 		});
