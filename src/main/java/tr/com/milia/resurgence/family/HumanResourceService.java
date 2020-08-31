@@ -1,5 +1,6 @@
 package tr.com.milia.resurgence.family;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.family.Invitation.Direction;
@@ -17,13 +18,16 @@ public class HumanResourceService {
 	private final PlayerService playerService;
 	private final FamilyService familyService;
 	private final InvitationRepository repository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public HumanResourceService(PlayerService playerService,
 								FamilyService familyService,
-								InvitationRepository repository) {
+								InvitationRepository repository,
+								ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
 		this.familyService = familyService;
 		this.repository = repository;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Transactional
@@ -112,7 +116,11 @@ public class HumanResourceService {
 		if (!boss.equals(playerName)) throw new FamilyAccessDeniedException();
 		if (boss.equals(memberName)) throw new BossLeaveException();
 
-		family.removeMember(memberName);
+		Player removedMember = family.removeMember(memberName);
+
+		if (removedMember != null) {
+			eventPublisher.publishEvent(new FamilyMemberFiredEvent(removedMember, family));
+		}
 	}
 
 	@Transactional

@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import tr.com.milia.resurgence.DefaultKeyValueProperties;
 import tr.com.milia.resurgence.FileUtils;
 import tr.com.milia.resurgence.firebase.FirebaseService;
 import tr.com.milia.resurgence.player.Player;
@@ -29,13 +30,16 @@ public class FamilyService {
 	private final FamilyRepository repository;
 	private final PlayerService playerService;
 	private final FirebaseService firebaseService;
+	private final DefaultKeyValueProperties defaultProperties;
 
 	public FamilyService(FamilyRepository repository,
 						 PlayerService playerService,
-						 FirebaseService firebaseService) {
+						 FirebaseService firebaseService,
+						 DefaultKeyValueProperties defaultProperties) {
 		this.repository = repository;
 		this.playerService = playerService;
 		this.firebaseService = firebaseService;
+		this.defaultProperties = defaultProperties;
 	}
 
 	@Transactional
@@ -51,6 +55,7 @@ public class FamilyService {
 		player.decreaseBalance(buildingPrice);
 
 		Family family = new Family(familyName, player, buildingPrice, building);
+		family.setImage(defaultProperties.getFamilyImage());
 
 		return repository.save(family);
 	}
