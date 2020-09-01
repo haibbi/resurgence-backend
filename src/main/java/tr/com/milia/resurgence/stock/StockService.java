@@ -15,7 +15,7 @@ public class StockService {
 
 	private static final Logger log = LoggerFactory.getLogger(StockService.class);
 
-	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
+	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 	private final ApplicationEventPublisher eventPublisher;
 
 	public StockService(ApplicationEventPublisher eventPublisher) {

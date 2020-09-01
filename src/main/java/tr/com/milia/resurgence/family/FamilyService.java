@@ -8,7 +8,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import tr.com.milia.resurgence.DefaultKeyValueProperties;
 import tr.com.milia.resurgence.FileUtils;
 import tr.com.milia.resurgence.firebase.FirebaseService;
 import tr.com.milia.resurgence.player.Player;
@@ -30,20 +29,17 @@ public class FamilyService {
 	private final FamilyRepository repository;
 	private final PlayerService playerService;
 	private final FirebaseService firebaseService;
-	private final DefaultKeyValueProperties defaultProperties;
 
 	public FamilyService(FamilyRepository repository,
 						 PlayerService playerService,
-						 FirebaseService firebaseService,
-						 DefaultKeyValueProperties defaultProperties) {
+						 FirebaseService firebaseService) {
 		this.repository = repository;
 		this.playerService = playerService;
 		this.firebaseService = firebaseService;
-		this.defaultProperties = defaultProperties;
 	}
 
 	@Transactional
-	public Family found(String playerName, String familyName) {
+	public Family found(String playerName, String familyName, MultipartFile file) throws IOException {
 		final Building building = Building.HOME;
 		final long buildingPrice = building.getPrice();
 		final Player player = findPlayer(playerName);
@@ -55,9 +51,15 @@ public class FamilyService {
 		player.decreaseBalance(buildingPrice);
 
 		Family family = new Family(familyName, player, buildingPrice, building);
-		family.setImage(defaultProperties.getFamilyImage());
 
-		return repository.save(family);
+
+		Family saved = repository.save(family);
+
+		String filename = FileUtils.addExtension(file, "image/family/" + family.getName());
+		String uri = firebaseService.uploadFile(file, filename);
+		saved.setImage(uri);
+
+		return saved;
 	}
 
 	public List<Family> findAll() {
