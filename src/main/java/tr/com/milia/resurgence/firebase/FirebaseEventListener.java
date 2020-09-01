@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.account.Account;
 import tr.com.milia.resurgence.account.AccountService;
 import tr.com.milia.resurgence.bank.InterestCompletedEvent;
+import tr.com.milia.resurgence.family.FamilyMemberFiredEvent;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 
@@ -48,14 +49,6 @@ public class FirebaseEventListener {
 
 		Player player = optionalPlayer.get();
 		long amount = event.getAmount();
-		Account account = player.getAccount();
-		Set<String> tokens = account.getPushNotificationTokens();
-
-		if (tokens.isEmpty()) {
-			log.debug("Can not send interest complete notification, account[{}] does not have a push message token.",
-				account.getEmail());
-			return;
-		}
 
 		Locale locale = Locale.ENGLISH; // todo get account or player locale
 
@@ -63,12 +56,44 @@ public class FirebaseEventListener {
 		String body = messageSource.getMessage("push.message.interest.complete.body", new Object[]{amount},
 			locale);
 
+		sendNotification(player, title, body);
+	}
+
+	@Async
+	@Transactional
+	@EventListener(FamilyMemberFiredEvent.class)
+	public void onFamilyMemberFiredEvent(FamilyMemberFiredEvent event) {
+		var optionalPlayer = playerService.findByName(event.getRemovedMember().getName());
+		if (optionalPlayer.isEmpty()) return;
+
+		Player player = optionalPlayer.get();
+
+		Locale locale = Locale.ENGLISH; // todo get account or player locale
+
+		String title = messageSource.getMessage("push.message.fired.from.family.title", null, locale);
+		String body = messageSource.getMessage("push.message.fired.from.family.body",
+			new Object[]{event.getFamily().getName()}, locale);
+
+
+		sendNotification(player, title, body);
+	}
+
+	private void sendNotification(Player player, String title, String body) {
+		Account account = player.getAccount();
+		Set<String> tokens = account.getPushNotificationTokens();
+
+		if (tokens.isEmpty()) {
+			log.warn("Can not send fired from family notification, account[{}] does not have a push message token.",
+				account.getEmail());
+			return;
+		}
+
 		Set<String> tokensToBeDeleted = new HashSet<>();
 		for (String token : tokens) {
 			try {
 				firebaseService.sendSimpleNotificationToUser(token, title, body);
 			} catch (FirebaseMessagingException e) {
-				log.error("Can not send interest complete notification to user[{}].", account.getEmail(), e);
+				log.error("Can not send fired from family notification to user[{}].", account.getEmail(), e);
 				switch (e.getMessagingErrorCode()) {
 					case UNREGISTERED, INVALID_ARGUMENT,
 						SENDER_ID_MISMATCH -> tokensToBeDeleted.add(token);

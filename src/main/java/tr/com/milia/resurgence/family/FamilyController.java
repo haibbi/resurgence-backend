@@ -27,17 +27,35 @@ public class FamilyController {
 
 	@PostMapping("/found/{name}")
 	@Transactional
-	public FamilyResponse found(TokenAuthentication authentication, @PathVariable("name") String familyName) {
-		String playerName = authentication.getPlayerName();
-		Family family = service.found(playerName, familyName);
+	public ResponseEntity<FamilyResponse> found(TokenAuthentication authentication,
+								@RequestParam(value = "file") MultipartFile file,
+								@PathVariable("name") String familyName) {
+		if (file.isEmpty()) return ResponseEntity.badRequest().build();
 
-		return FamilyResponse.exposed(family);
+		String playerName = authentication.getPlayerName();
+		Family family;
+		try {
+			family = service.found(playerName, familyName, file);
+		} catch (IOException e) {
+			log.error("Family image file cannot read", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+
+		return ResponseEntity.ok(FamilyResponse.exposed(family));
 	}
 
-	@GetMapping
+	@GetMapping({"", "/", "/{family}"})
 	@Transactional
-	public ResponseEntity<FamilyResponse> family(TokenAuthentication authentication) {
+	public ResponseEntity<FamilyResponse> family(
+		TokenAuthentication authentication,
+		@PathVariable(value = "family", required = false) String family
+	) {
 		String playerName = authentication.getPlayerName();
+		if (family != null) {
+			return service.findByName(family).map(FamilyResponse::exposed)
+				.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
+		}
 		return service.findFamilyByPlayerName(playerName)
 			.map(FamilyResponse::exposed)
 			.map(ResponseEntity::ok)

@@ -4,7 +4,6 @@ import java.time.Instant;
 
 class AnnouncementResponse {
 	private final Long id;
-	private final String family;
 	private final String title;
 	private final String content;
 	private final boolean secret;
@@ -12,7 +11,6 @@ class AnnouncementResponse {
 
 	public AnnouncementResponse(Announcement announcement) {
 		id = announcement.getId();
-		family = announcement.getFamily().getName();
 		title = announcement.getTitle();
 		content = announcement.getContent();
 		secret = announcement.isSecret();
@@ -21,10 +19,6 @@ class AnnouncementResponse {
 
 	public Long getId() {
 		return id;
-	}
-
-	public String getFamily() {
-		return family;
 	}
 
 	public String getTitle() {

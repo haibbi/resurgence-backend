@@ -1,6 +1,9 @@
 package tr.com.milia.resurgence.family;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.lang.Nullable;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Race;
 
@@ -35,6 +38,7 @@ public class Family extends AbstractAggregateRoot<Family> {
 	private Building building;
 
 	@OneToMany(fetch = FetchType.LAZY)
+	@LazyCollection(LazyCollectionOption.EXTRA)
 	private Set<Player> members;
 
 	@Column(nullable = false)
@@ -80,9 +84,18 @@ public class Family extends AbstractAggregateRoot<Family> {
 		removeConsultantIfPresent(member.getName());
 	}
 
-	void removeMember(String member) {
-		if (members == null) return;
-		members.stream().filter(m -> m.getName().equals(member)).findFirst().ifPresent(this::removeMember);
+	/**
+	 * Remove player from family.
+	 *
+	 * @param member Who will be removed.
+	 * @return {@code Player} if anyone is removed.
+	 */
+	@Nullable
+	Player removeMember(String member) {
+		if (members == null) return null;
+		Optional<Player> playerToBeRemoved = members.stream().filter(m -> m.getName().equals(member)).findFirst();
+		playerToBeRemoved.ifPresent(this::removeMember);
+		return playerToBeRemoved.orElse(null);
 	}
 
 	void deposit(long amount) {
@@ -146,6 +159,10 @@ public class Family extends AbstractAggregateRoot<Family> {
 	void removeConsultantIfPresent(String name) {
 		if (consultant == null) return;
 		if (consultant.getName().equals(name)) consultant = null;
+	}
+
+	public Optional<Chief> getChief(String name) {
+		return chiefs.stream().filter(c -> c.getChief().getName().equals(name)).findFirst();
 	}
 
 	public Long getId() {

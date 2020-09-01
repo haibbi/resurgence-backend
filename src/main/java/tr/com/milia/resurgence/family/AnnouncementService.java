@@ -7,6 +7,7 @@ import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -44,6 +45,7 @@ public class AnnouncementService {
 		announcement.setSecret(secret);
 	}
 
+	@Transactional
 	public void remove(Long id, String playerName) {
 		Announcement announcement = repository.findById(id).orElseThrow();
 
@@ -56,8 +58,10 @@ public class AnnouncementService {
 	public List<Announcement> findAll(String playerName, @Nullable String familyName) {
 		Player player = findPlayer(playerName);
 
-		return player.getFamily().map(repository::findAllByFamilyOrderByTimeDesc).orElseGet(() ->
-			repository.findAllByFamily_NameAndSecretIsTrueOrderByTimeDesc(familyName));
+		return player.getFamily().map(repository::findAllByFamilyOrderByTimeDesc).orElseGet(() -> {
+			if (familyName == null) return Collections.emptyList();
+			return repository.findAllByFamily_NameAndSecretIsFalseOrderByTimeDesc(familyName);
+		});
 	}
 
 	private Player findPlayer(String name) {

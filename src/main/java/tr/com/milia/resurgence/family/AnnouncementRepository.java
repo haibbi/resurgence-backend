@@ -8,6 +8,6 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
 
 	List<Announcement> findAllByFamilyOrderByTimeDesc(Family family);
 
-	List<Announcement> findAllByFamily_NameAndSecretIsTrueOrderByTimeDesc(String familyName);
+	List<Announcement> findAllByFamily_NameAndSecretIsFalseOrderByTimeDesc(String familyName);
 
 }
