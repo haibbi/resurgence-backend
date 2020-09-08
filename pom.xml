@@ -22,7 +22,8 @@
         <jib-maven-plugin.version>2.5.2</jib-maven-plugin.version>
         <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
         <firebase-admin.version>7.0.0</firebase-admin.version>
-        <logbook.version>2.1.0</logbook.version>
+        <!-- https://mvnrepository.com/artifact/org.zalando/logbook-spring-boot-starter -->
+        <logbook.version>2.2.0</logbook.version>
     </properties>
 
     <dependencies>
