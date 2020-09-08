@@ -3,7 +3,7 @@ package tr.com.milia.resurgence.family;
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,14 +29,18 @@ public class HumanResourceController {
 		service.application(player, familyName);
 	}
 
+	@DeleteMapping("/cancel/{id}")
+	public void cancel(TokenAuthentication authentication, @PathVariable("id") Long id) {
+		String player = authentication.getPlayerName();
+		service.cancel(player, id);
+	}
+
 	@GetMapping
 	public List<InvitationResponse> allInvitations(TokenAuthentication authentication) {
 		String player = authentication.getPlayerName();
-		final List<Invitation> invitations = new LinkedList<>();
 
-		invitations.addAll(service.findAllByPlayer(player));
-		invitations.addAll(service.findAllByFamily(player));
-
+		List<Invitation> invitations = service.allInvitation(player);
+		invitations.sort(Comparator.comparing(Invitation::getTime).reversed());
 		return invitations.stream()
 			.map(InvitationResponse::new)
 			.collect(Collectors.toList());

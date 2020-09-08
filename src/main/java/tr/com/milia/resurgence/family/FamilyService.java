@@ -7,11 +7,15 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import tr.com.milia.resurgence.FileUtils;
+import tr.com.milia.resurgence.firebase.FirebaseService;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,14 +28,18 @@ public class FamilyService {
 
 	private final FamilyRepository repository;
 	private final PlayerService playerService;
+	private final FirebaseService firebaseService;
 
-	public FamilyService(FamilyRepository repository, PlayerService playerService) {
+	public FamilyService(FamilyRepository repository,
+						 PlayerService playerService,
+						 FirebaseService firebaseService) {
 		this.repository = repository;
 		this.playerService = playerService;
+		this.firebaseService = firebaseService;
 	}
 
 	@Transactional
-	public Family found(String playerName, String familyName) {
+	public Family found(String playerName, String familyName, MultipartFile file) throws IOException {
 		final Building building = Building.HOME;
 		final long buildingPrice = building.getPrice();
 		final Player player = findPlayer(playerName);
@@ -44,7 +52,14 @@ public class FamilyService {
 
 		Family family = new Family(familyName, player, buildingPrice, building);
 
-		return repository.save(family);
+
+		Family saved = repository.save(family);
+
+		String filename = FileUtils.addExtension(file, "image/family/" + family.getName());
+		String uri = firebaseService.uploadFile(file, filename);
+		saved.setImage(uri);
+
+		return saved;
 	}
 
 	public List<Family> findAll() {
@@ -122,15 +137,19 @@ public class FamilyService {
 	}
 
 	@Transactional
-	public void assignMemberToChief(String playerName, String chiefName, String memberName) {
-		Player player = findPlayer(playerName);
-		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
-		if (!family.getBoss().getName().equals(playerName)) throw new FamilyAccessDeniedException();
-		family.findChief(chiefName).ifPresent(chief -> {
-			Player member = findPlayer(memberName);
-			if (member.getChief().isPresent()) throw new MemberAlreadyHaveChiefException();
-			chief.addMember(member);
-		});
+	public void assignMemberToChief(String bossName, String chiefName, String memberName) {
+		Player boss = findPlayer(bossName);
+		Family family = boss.getFamily().orElseThrow(FamilyNotFoundException::new);
+
+		if (!family.getBoss().getName().equals(bossName)) throw new FamilyAccessDeniedException();
+
+		Player member = findPlayer(memberName);
+
+		if (member.getChief().isPresent()) throw new MemberAlreadyHaveChiefException();
+
+		if (member.isChief()) throw new MemberAlreadyChiefException();
+
+		family.findChief(chiefName).ifPresent(chief -> chief.addMember(member));
 
 	}
 
@@ -154,6 +173,23 @@ public class FamilyService {
 		repository.deleteById(family.getId());
 	}
 
+	@Transactional
+	public void editImage(String boss, MultipartFile file) throws IOException {
+		Family family = findFamilyByPlayerName(boss).orElseThrow();
+
+		if (!family.getBoss().getName().equals(boss)) throw new FamilyAccessDeniedException();
+
+		String filename = FileUtils.addExtension(file, "image/family/" + family.getName());
+		String uri = firebaseService.uploadFile(file, filename);
+
+		family.setImage(uri);
+	}
+
+	@Transactional
+	public Long bankAccount(String playerName) {
+		return findPlayer(playerName).getFamily().map(Family::getBank).orElseThrow();
+	}
+
 	private Player findPlayer(String playerName) {
 		return playerService.findByName(playerName).orElseThrow(PlayerNotFound::new);
 	}
@@ -173,7 +209,7 @@ public class FamilyService {
 			long chiefsShare = (long) (totalMoneyGain * .03);
 			long bossesShare = (long) (totalMoneyGain * .02);
 			long diminishing = chiefsShare + bossesShare;
-			log.debug("Total Money: {}, Chief's share: {}, Boss'es Share: {}",
+			log.debug("Total Money: {}, Chief's share: {}, Boss's Share: {}",
 				totalMoneyGain, chiefsShare, bossesShare);
 			chief.getChief().increaseBalance(chiefsShare);
 			chief.getFamily().getBoss().increaseBalance(bossesShare);
@@ -182,7 +218,7 @@ public class FamilyService {
 			// boss take the all revenue
 			long totalMoneyGain = event.getMoneyGain();
 			long bossesShare = (long) (totalMoneyGain * .05);
-			log.debug("Total Money: {}, Boss'es Share: {}", totalMoneyGain, bossesShare);
+			log.debug("Total Money: {}, Boss's Share: {}", totalMoneyGain, bossesShare);
 			player.getFamily().ifPresent(family -> family.getBoss().increaseBalance(bossesShare));
 			player.decreaseBalance(bossesShare);
 		});

@@ -22,6 +22,12 @@ public class FamilyBankController {
 		this.logService = logService;
 	}
 
+	@GetMapping
+	public FamilyBankResponse bank(TokenAuthentication authentication) {
+		Long account = service.bankAccount(authentication.getPlayerName());
+		return new FamilyBankResponse(account);
+	}
+
 	@PostMapping("/{operation:deposit|withdraw}/{amount}")
 	public void deposit(TokenAuthentication authentication,
 						@PathVariable("operation") String operation,

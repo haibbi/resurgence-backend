@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface FamilyBankLogRepository extends JpaRepository<FamilyBankLog, Long> {
 
-	List<FamilyBankLog> findAllByFamilyOrderByDateDesc(String family);
+	List<FamilyBankLog> findAllByFamilyOrderByDateDesc(Family family);
 
 }

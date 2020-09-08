@@ -2,8 +2,10 @@ package tr.com.milia.resurgence.account;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.RandomUtils;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -40,4 +42,14 @@ public class AccountService {
 		accountRepository.save(account);
 	}
 
+	@Transactional
+	public void addToken(String accountEmail, String token) {
+		Account account = findByEmail(accountEmail).orElseThrow();
+		account.addPushNotificationToken(token);
+	}
+
+	@Transactional
+	public void removeToken(Account account, Collection<String> tokens) {
+		tokens.forEach(account::removePushNotificationToken);
+	}
 }

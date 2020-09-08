@@ -13,8 +13,8 @@ public class FamilyBankLog {
 	@Column(nullable = false, updatable = false)
 	private String member;
 
-	@Column(nullable = false, updatable = false)
-	private String family;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Family family;
 
 	@Column(nullable = false, updatable = false)
 	private long amount;
@@ -29,7 +29,7 @@ public class FamilyBankLog {
 	public FamilyBankLog() {
 	}
 
-	public FamilyBankLog(String member, String family, long amount, Reason reason) {
+	public FamilyBankLog(String member, Family family, long amount, Reason reason) {
 		this.member = member;
 		this.family = family;
 		this.amount = amount;
@@ -45,7 +45,7 @@ public class FamilyBankLog {
 		return member;
 	}
 
-	public String getFamily() {
+	public Family getFamily() {
 		return family;
 	}
 

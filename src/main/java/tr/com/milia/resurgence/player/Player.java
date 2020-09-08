@@ -114,6 +114,10 @@ public class Player extends AbstractAggregateRoot<Player> {
 		return experience;
 	}
 
+	public boolean isChief() {
+		return family.getChief(name).isPresent();
+	}
+
 	public Long getId() {
 		return id;
 	}

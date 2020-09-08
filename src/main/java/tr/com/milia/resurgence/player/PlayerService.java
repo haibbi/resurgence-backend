@@ -6,9 +6,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import tr.com.milia.resurgence.FileUtils;
 import tr.com.milia.resurgence.account.AccountService;
+import tr.com.milia.resurgence.firebase.FirebaseService;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -17,10 +22,12 @@ public class PlayerService {
 
 	private final PlayerRepository repository;
 	private final AccountService accountService;
+	private final FirebaseService firebaseService;
 
-	public PlayerService(PlayerRepository repository, AccountService accountService) {
+	public PlayerService(PlayerRepository repository, AccountService accountService, FirebaseService firebaseService) {
 		this.repository = repository;
 		this.accountService = accountService;
+		this.firebaseService = firebaseService;
 	}
 
 	public Optional<Player> findByName(String name) {
@@ -52,4 +59,13 @@ public class PlayerService {
 		player.gainEXP(result.getExperienceGain());
 	}
 
+	@Transactional
+	public void editImage(String playerName, MultipartFile file) throws IOException {
+		Player player = findByName(playerName).orElseThrow();
+
+		String filename = FileUtils.addExtension(file, "image/player/" + player.getName());
+		String uri = firebaseService.uploadFile(file, filename);
+
+		player.setImage(uri);
+	}
 }

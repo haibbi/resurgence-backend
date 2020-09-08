@@ -1,6 +1,8 @@
 package tr.com.milia.resurgence.family;
 
-public enum Reason {
+import tr.com.milia.resurgence.i18n.LocaleEnum;
+
+public enum Reason implements LocaleEnum {
 	DEPOSIT(true),
 	WITHDRAW(false),
 	BUILDING(false);

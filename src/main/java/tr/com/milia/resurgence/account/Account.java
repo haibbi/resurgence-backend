@@ -1,6 +1,9 @@
 package tr.com.milia.resurgence.account;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Account {
@@ -19,17 +22,19 @@ public class Account {
 	@Enumerated(value = EnumType.STRING)
 	private Status status;
 
-	public Account() {
-	}
+	@ElementCollection
+	@CollectionTable(name = "account_push_notification_tokens")
+	@Column(name = "token")
+	private Set<String> pushNotificationTokens;
 
-	public Account(String email) {
-		this.email = email;
+	public Account() {
 	}
 
 	public Account(String email, String password, Status status) {
 		this.email = email;
 		this.password = password;
 		this.status = status;
+		pushNotificationTokens = new HashSet<>();
 	}
 
 	public Long getId() {
@@ -46,5 +51,17 @@ public class Account {
 
 	public Status getStatus() {
 		return status;
+	}
+
+	public Set<String> getPushNotificationTokens() {
+		return Collections.unmodifiableSet(pushNotificationTokens);
+	}
+
+	public void addPushNotificationToken(String token) {
+		this.pushNotificationTokens.add(token);
+	}
+
+	public void removePushNotificationToken(String token) {
+		this.pushNotificationTokens.remove(token);
 	}
 }

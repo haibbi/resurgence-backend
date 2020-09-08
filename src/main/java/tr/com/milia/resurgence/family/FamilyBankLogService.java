@@ -37,9 +37,8 @@ public class FamilyBankLogService {
 	public List<FamilyBankLog> findAllLogs(String playerName) {
 		Player player = findPlayer(playerName);
 		Family family = player.getFamily().orElseThrow(FamilyNotFoundException::new);
-		String familyName = family.getName();
 
-		return repository.findAllByFamilyOrderByDateDesc(familyName);
+		return repository.findAllByFamilyOrderByDateDesc(family);
 	}
 
 	private Player findPlayer(String player) {
