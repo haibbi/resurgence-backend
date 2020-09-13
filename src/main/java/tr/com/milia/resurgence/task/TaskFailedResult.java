@@ -11,4 +11,9 @@ public class TaskFailedResult extends TaskResult {
 		super(player, task, usedItems);
 	}
 
+	@Override
+	public boolean isSucceed() {
+		return false;
+	}
+
 }

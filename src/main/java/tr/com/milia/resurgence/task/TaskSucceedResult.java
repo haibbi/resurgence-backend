@@ -58,4 +58,9 @@ public class TaskSucceedResult extends TaskResult {
 
 		return this;
 	}
+
+	@Override
+	public boolean isSucceed() {
+		return true;
+	}
 }

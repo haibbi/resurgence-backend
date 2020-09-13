@@ -5,11 +5,7 @@ import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.skill.Skill;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.time.Duration.ofDays;
 import static java.time.Duration.ofSeconds;
@@ -69,7 +65,36 @@ public enum Task implements LocaleEnum {
 		10_000,
 		ofDays(1),
 		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
-		Map.of(Item.Category.VEHICLE, 1L));
+		Map.of(Item.Category.VEHICLE, 1L)),
+
+	BANK_LEADER(50,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		100_000,
+		10_000,
+		ofDays(1),
+		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 1L, Item.Category.BULLET, 200L)),
+
+	BANK_DRIVER(50,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		100_000,
+		10_000,
+		ofDays(1),
+		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
+		Map.of(Item.Category.VEHICLE, 1L)),
+
+	BANK_WEAPON_MASTER(50,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		100_000,
+		10_000,
+		ofDays(1),
+		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 2L, Item.Category.BULLET, 400L)),
+
+	;
 
 	public static final Set<Task> SMUGGLING_TASKS = Set.of(
 		Task.BEER_SMUGGLING
@@ -77,7 +102,10 @@ public enum Task implements LocaleEnum {
 
 	public static final Set<Task> MULTI_PLAYER_TASKS = Set.of(
 		Task.HEIST_LEADER,
-		Task.HEIST_DRIVER
+		Task.HEIST_DRIVER,
+		Task.BANK_LEADER,
+		Task.BANK_WEAPON_MASTER,
+		Task.BANK_DRIVER
 	);
 
 	public static final Set<Task> SOLO_TASKS;
