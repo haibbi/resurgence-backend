@@ -17,7 +17,7 @@ public class TaskLogService {
 		this.repository = repository;
 	}
 
-	void checkPerform(Player player, Task task) {
+	public void checkPerform(Player player, Task task) {
 		repository.findFirstByTaskAndCreatedByOrderByCreatedDateDesc(task, player).ifPresent(taskLog -> {
 			if (!taskLog.isExpired()) throw new TaskCoolDownException(taskLog.durationToLeft());
 		});
