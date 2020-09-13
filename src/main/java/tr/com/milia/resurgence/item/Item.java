@@ -35,18 +35,7 @@ public enum Item implements LocaleEnum {
 	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
 
 	public static final Set<Item> PASSIVE = Set.of(JOE);
-	public static final Set<Item> FORBIDDEN_TO_BUY;
-
-	static {
-		FORBIDDEN_TO_BUY = Task.SMUGGLING_TASKS.stream()
-			.map(Task::getDrop)
-			.map(Map::keySet)
-			.flatMap(Collection::stream)
-			.collect(Collectors.toCollection(HashSet::new));
-		FORBIDDEN_TO_BUY.add(MONEY);
-		FORBIDDEN_TO_BUY.add(BULLET);
-		FORBIDDEN_TO_BUY.add(AGENT);
-	}
+	private static Set<Item> FORBIDDEN_TO_BUY;
 
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;
@@ -74,6 +63,20 @@ public enum Item implements LocaleEnum {
 			.filter(e -> useOnly.contains(e.getKey())) // filter skills
 			.mapToInt(e -> e.getValue() * quality.getFactor()) // multiply by quality
 			.sum();
+	}
+
+	public static Set<Item> getForbiddenToBuy() {
+		if (FORBIDDEN_TO_BUY != null) return FORBIDDEN_TO_BUY;
+
+		FORBIDDEN_TO_BUY = Task.SMUGGLING_TASKS.stream()
+			.map(Task::getDrop)
+			.map(Map::keySet)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toCollection(HashSet::new));
+		FORBIDDEN_TO_BUY.add(MONEY);
+		FORBIDDEN_TO_BUY.add(BULLET);
+		FORBIDDEN_TO_BUY.add(AGENT);
+		return FORBIDDEN_TO_BUY;
 	}
 
 	public Set<Category> getCategory() {

@@ -10,15 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
-import tr.com.milia.resurgence.task.DropDetail;
-import tr.com.milia.resurgence.task.TaskResult;
-import tr.com.milia.resurgence.task.TaskStartedEvent;
-import tr.com.milia.resurgence.task.TaskSucceedResult;
+import tr.com.milia.resurgence.task.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static tr.com.milia.resurgence.item.Item.FORBIDDEN_TO_BUY;
+import static tr.com.milia.resurgence.item.Item.getForbiddenToBuy;
 
 @Service
 public class PlayerItemService {
@@ -53,7 +52,7 @@ public class PlayerItemService {
 
 	@Transactional
 	public void buyItem(String playerName, Item item, long quantity) {
-		if (FORBIDDEN_TO_BUY.contains(item)) throw new ForbiddenItemSoldException();
+		if (getForbiddenToBuy().contains(item)) throw new ForbiddenItemSoldException();
 
 		Player player = findPlayer(playerName);
 		long totalPrice = item.getPrice() * quantity;
@@ -90,23 +89,31 @@ public class PlayerItemService {
 	@EventListener(value = TaskStartedEvent.class, condition = "#event.checkSelectedItem")
 	public void onTaskStartedEvent(TaskStartedEvent event) {
 		var player = event.getPlayer();
-		var requiredItemCategory = event.getTask().getRequiredItemCategory();
-		var selectedItems = event.getSelectedItems();
+		var task = event.getTask();
+		var selectedItems = event.getSelectedItems().entrySet()
+			.stream()
+			.map(e -> new SelectedItem(e.getKey(), e.getValue()))
+			.collect(Collectors.toSet());
+		checkItem(player, task, selectedItems);
+	}
 
-		requiredItemCategory.forEach((category, requiredCount) -> {
+	public void checkItem(Player player, Task task, Set<SelectedItem> selectedItem) {
+		var requiredItemCategory = task.getRequiredItemCategory();
 
+		for (Map.Entry<Item.Category, Long> entry : requiredItemCategory.entrySet()) {
+			Item.Category category = entry.getKey();
+			Long requiredCount = entry.getValue();
 			// Total number of selected item with filtered by required category
-			long selectedCategoryItemCount = selectedItems.entrySet().stream()
-				.filter(e -> e.getKey().getCategory().contains(category)) // The categories of the selected material
+			long selectedCategoryItemCount = selectedItem.stream()
+				.filter(si -> si.getItem().getCategory().contains(category)) // The categories of the selected material
 				// are filtered with the required category.
-				.filter(e -> haveItem(player, e.getKey(), e.getValue())) // Control of the player's selected item
-				.mapToLong(Map.Entry::getValue)
+				.filter(si -> haveItem(player, si.getItem(), si.getQuantity())) // Control of the player's selected item
+				.mapToLong(SelectedItem::getQuantity)
 				.sum();
 
 			if (selectedCategoryItemCount != requiredCount)
 				throw new RequiredItemException(category);
-
-		});
+		}
 	}
 
 	@EventListener(TaskResult.class)
