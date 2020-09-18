@@ -1,13 +1,15 @@
 package tr.com.milia.resurgence.task.multiplayer;
 
+import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.task.Task;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public enum MultiPlayerTask {
+public enum MultiPlayerTask implements LocaleEnum {
 
 	HEIST(List.of(
 		new Group(Position.LEADER, Task.HEIST_LEADER, 1),
@@ -29,6 +31,10 @@ public enum MultiPlayerTask {
 			throw new IllegalArgumentException("Group must have a one leader");
 		}
 
+		if (groups.stream().map(g -> g.task).map(Task::getDuration).distinct().count() != 1) {
+			throw new IllegalArgumentException("All tasks must have same duration");
+		}
+
 		this.positionTasks = groups.stream().collect(Collectors.toMap(g -> g.position, g -> g.task));
 		this.quorum = groups.stream().collect(Collectors.toMap(g -> g.position, g -> g.quorum));
 	}
@@ -38,14 +44,18 @@ public enum MultiPlayerTask {
 	}
 
 	public int quorum(Position position) {
-		return quorum.get(position);
+		return quorum.getOrDefault(position, 0);
 	}
 
 	public Set<Position> positions() {
 		return positionTasks.keySet();
 	}
 
-	public enum Position {
+	public Duration duration() {
+		return positionTasks.get(Position.LEADER).getDuration();
+	}
+
+	public enum Position implements LocaleEnum {
 		LEADER(true), DRIVER, WEAPON_MASTER;
 
 		private final boolean leader;

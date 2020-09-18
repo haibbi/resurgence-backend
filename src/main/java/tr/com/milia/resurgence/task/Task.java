@@ -20,7 +20,7 @@ public enum Task implements LocaleEnum {
 		Set.of(SNEAK),
 		5_000,
 		10_000,
-		ofSeconds(1),
+		ofSeconds(5),
 		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
 		Collections.emptyMap()),
 
@@ -29,7 +29,7 @@ public enum Task implements LocaleEnum {
 		Set.of(SNEAK),
 		50_000,
 		1_000,
-		ofSeconds(0),
+		ofSeconds(30),
 		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
 		Map.of(Item.Category.WEAPON, 1L)),
 

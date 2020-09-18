@@ -1,8 +1,8 @@
 package tr.com.milia.resurgence.task.multiplayer;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.item.PlayerItemService;
@@ -14,6 +14,7 @@ import tr.com.milia.resurgence.security.TokenAuthentication;
 import tr.com.milia.resurgence.task.*;
 
 import javax.validation.Valid;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +28,18 @@ public class PlanController {
 	private final TaskService taskService;
 	private final PlayerItemService playerItemService;
 	private final TaskLogService taskLogService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public PlanController(PlayerService playerService,
 						  TaskService taskService,
 						  PlayerItemService playerItemService,
-						  TaskLogService taskLogService) {
+						  TaskLogService taskLogService,
+						  ApplicationEventPublisher eventPublisher) {
 		this.playerService = playerService;
 		this.taskService = taskService;
 		this.playerItemService = playerItemService;
 		this.taskLogService = taskLogService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@PostMapping("/{task}")
@@ -45,11 +49,19 @@ public class PlanController {
 		@RequestBody @Valid MultiPlayerTaskRequest request
 	) {
 		Player leader = findPlayer(authentication.getPlayerName());
+
+		Duration leftTime = taskLogService.leftTime(leader, task);
+		if (!leftTime.isZero()) {
+			throw new TaskCoolDownException(leftTime);
+		}
+
+		playerItemService.checkItem(leader, task.task(MultiPlayerTask.Position.LEADER), request.selectedItems);
+
 		Plan plan = new Plan(task, leader.getName(), request.selectedItems);
-		return new PlanResponse(leader.getName(), plan);
+		return new PlanResponse(plan);
 	}
 
-	@PostMapping("/add/{position}/{member}")
+	@PostMapping("/{position}/{member}")
 	public void add(
 		TokenAuthentication authentication,
 		@PathVariable("position") MultiPlayerTask.Position position,
@@ -57,6 +69,12 @@ public class PlanController {
 	) {
 		Plan plan = Plan.findLeader(authentication.getPlayerName()).orElseThrow();
 		Player member = findPlayer(memberName);
+
+		Duration leftTime = taskLogService.leftTime(member, plan.getTask());
+		if (!leftTime.isZero()) {
+			throw TaskCoolDownException.multiplayer(leftTime);
+		}
+
 		plan.add(position, member.getName());
 	}
 
@@ -67,6 +85,7 @@ public class PlanController {
 		plan.check();
 
 		// first check player have item and cool down
+		// todo consider throwing error
 		List<AbstractMultiplayerTaskResultResponse> results = new ArrayList<>();
 		for (Plan.Member member : plan.getMembers()) {
 			Player player = findPlayer(member.getName());
@@ -92,6 +111,8 @@ public class PlanController {
 
 			TaskResult result = taskService.perform(member.getTask(), member.getName(), selectedItemMap);
 			results.add(new MultiplayerTaskSucceededResultResponse(member.getName(), result));
+			eventPublisher.publishEvent(new MultiplayerTaskResultEvent(
+				member.getName(), leader, member.getPosition(), result));
 		}
 
 		plan.remove(leader);
@@ -105,31 +126,46 @@ public class PlanController {
 		@PathVariable(value = "member", required = false) String memberName
 	) {
 		if (memberName == null) {
-			memberName = authentication.getPlayerName();
+			// player remove themself
+			String member = authentication.getPlayerName();
+			Plan.find(member).ifPresent(plan -> plan.remove(member));
+		} else {
+			// leader remove member
+			Plan.findLeader(authentication.getPlayerName()).ifPresent(plan -> plan.remove(memberName));
 		}
-		Plan plan = Plan.findLeader(authentication.getPlayerName()).orElseThrow();
-		plan.remove(memberName);
 	}
 
 	@PatchMapping("/ready")
 	public void ready(TokenAuthentication authentication, @RequestBody MultiPlayerTaskRequest request) {
-		Plan.find(authentication.getPlayerName())
-			.ifPresent(plan -> plan.ready(authentication.getPlayerName(), request.selectedItems));
+		String member = authentication.getPlayerName();
+		Plan.find(member).ifPresent(plan -> {
+
+			Player player = findPlayer(member);
+			Task task = plan.getMembers().stream()
+				.filter(m -> m.getName().equals(member))
+				.findAny()
+				.map(Plan.Member::getTask)
+				.orElseThrow();
+
+			playerItemService.checkItem(player, task, request.selectedItems);
+
+			plan.ready(member, request.selectedItems);
+		});
 	}
 
 	@GetMapping
 	public ResponseEntity<PlanResponse> active(TokenAuthentication authentication) {
-		Player leader = findPlayer(authentication.getPlayerName());
-		return Plan.find(leader.getName())
-			.map(p -> new PlanResponse(leader.getName(), p))
+		String member = authentication.getPlayerName();
+		return Plan.find(member)
+			.map(PlanResponse::new)
 			.map(ResponseEntity::ok)
 			.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@GetMapping("/all")
 	public List<PlanResponse> all() {
-		return Plan.getPlans().entrySet().stream()
-			.map(e -> new PlanResponse(e.getKey(), e.getValue()))
+		return Plan.getPlans().values().stream()
+			.map(PlanResponse::new)
 			.collect(Collectors.toList());
 	}
 

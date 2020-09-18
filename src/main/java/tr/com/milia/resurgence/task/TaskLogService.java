@@ -3,9 +3,13 @@ package tr.com.milia.resurgence.task;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import tr.com.milia.resurgence.player.Player;
+import tr.com.milia.resurgence.task.multiplayer.MultiPlayerTask;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskLogService {
@@ -27,6 +31,13 @@ public class TaskLogService {
 		return repository.findFirstByTaskAndCreatedByOrderByCreatedDateDesc(task, player)
 			.filter(taskLog -> !taskLog.isExpired())
 			.map(TaskLog::durationToLeft);
+	}
+
+	public Duration leftTime(Player player, MultiPlayerTask task) {
+		Set<Task> tasks = task.positions().stream().map(task::task).collect(Collectors.toSet());
+		return repository.findFirstByTaskInAndCreatedByAndCreatedDateAfterOrderByCreatedDateDesc(
+			tasks, player, Instant.now().minus(task.duration())
+		).map(TaskLog::durationToLeft).orElse(Duration.ZERO);
 	}
 
 	@EventListener(TaskStartedEvent.class)

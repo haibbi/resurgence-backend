@@ -101,6 +101,10 @@ public class Plan {
 		return members;
 	}
 
+	protected String leader() {
+		return members.stream().filter(m -> m.position.isLeader()).findAny().map(Member::getName).orElseThrow();
+	}
+
 	public static class Member {
 		private final MultiPlayerTask.Position position;
 		private final Task task;

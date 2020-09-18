@@ -1,7 +1,7 @@
 package tr.com.milia.resurgence.task.multiplayer;
 
 import tr.com.milia.resurgence.task.SelectedItem;
-import tr.com.milia.resurgence.task.Task;
+import tr.com.milia.resurgence.task.TaskResponse;
 
 import java.util.List;
 import java.util.Set;
@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 class PlanResponse {
 	private final String leader;
-	private final MultiPlayerTask task;
+	private final MultiPlayerTaskResponse task;
 	private final List<Member> members;
 
-	public PlanResponse(String leader, Plan plan) {
-		this.leader = leader;
-		task = plan.getTask();
+	public PlanResponse(Plan plan) {
+		this.leader = plan.leader();
+		task = new MultiPlayerTaskResponse(plan.getTask(), 0);
 		members = plan.getMembers().stream().map(Member::new).collect(Collectors.toList());
 	}
 
@@ -22,7 +22,7 @@ class PlanResponse {
 		return leader;
 	}
 
-	public MultiPlayerTask getTask() {
+	public MultiPlayerTaskResponse getTask() {
 		return task;
 	}
 
@@ -32,14 +32,14 @@ class PlanResponse {
 
 	static class Member {
 		private final MultiPlayerTask.Position position;
-		private final Task task;
+		private final TaskResponse task;
 		private final String name;
 		private final Plan.Member.Status status;
 		private final Set<SelectedItem> selectedItems;
 
 		public Member(Plan.Member member) {
 			this.position = member.getPosition();
-			this.task = member.getTask();
+			this.task = new TaskResponse(member.getTask(), null);
 			this.name = member.getName();
 			this.status = member.getStatus();
 			this.selectedItems = member.getSelectedItems();
@@ -49,7 +49,7 @@ class PlanResponse {
 			return position;
 		}
 
-		public Task getTask() {
+		public TaskResponse getTask() {
 			return task;
 		}
 

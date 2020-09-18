@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import tr.com.milia.resurgence.bank.InterestCompletedEvent;
 import tr.com.milia.resurgence.family.FamilyMemberFiredEvent;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
+import tr.com.milia.resurgence.task.multiplayer.MultiplayerTaskResultEvent;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -29,6 +31,7 @@ public class FirebaseEventListener {
 	private final AccountService accountService;
 	private final PlayerService playerService;
 	private final MessageSource messageSource;
+	private final MessageSource enumMessageSource;
 
 	public FirebaseEventListener(FirebaseService firebaseService,
 								 AccountService accountService,
@@ -38,6 +41,10 @@ public class FirebaseEventListener {
 		this.accountService = accountService;
 		this.playerService = playerService;
 		this.messageSource = messageSource;
+		ResourceBundleMessageSource enumMessageSource = new ResourceBundleMessageSource();
+		enumMessageSource.setDefaultEncoding("UTF-8");
+		enumMessageSource.setBasename("enum/messages");
+		this.enumMessageSource = enumMessageSource;
 	}
 
 	@Async
@@ -74,6 +81,37 @@ public class FirebaseEventListener {
 		String body = messageSource.getMessage("push.message.fired.from.family.body",
 			new Object[]{event.getFamily().getName()}, locale);
 
+
+		sendNotification(player, title, body);
+	}
+
+	@Async
+	@Transactional
+	@EventListener(MultiplayerTaskResultEvent.class)
+	public void onTaskResult(MultiplayerTaskResultEvent event) {
+		var optionalPlayer = playerService.findByName(event.getPlayer());
+		if (optionalPlayer.isEmpty()) return;
+
+		Player player = optionalPlayer.get();
+
+		Locale locale = Locale.ENGLISH; // todo get account or player locale
+
+		final String title;
+		final String body;
+
+		if (event.getResult().isSucceed()) {
+			title = messageSource.getMessage("push.message.task.succeed.title", null, locale);
+			body = messageSource.getMessage("push.message.task.succeed.body", new Object[]{
+				enumMessageSource.getMessage(event.getPosition(), locale),
+				event.getLeader()
+			}, locale);
+		} else {
+			title = messageSource.getMessage("push.message.task.failed.title", null, locale);
+			body = messageSource.getMessage("push.message.task.failed.body", new Object[]{
+				enumMessageSource.getMessage(event.getPosition(), locale),
+				event.getLeader()
+			}, locale);
+		}
 
 		sendNotification(player, title, body);
 	}
