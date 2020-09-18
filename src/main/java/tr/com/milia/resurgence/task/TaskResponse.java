@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class TaskResponse implements LocaleEnum {
+public class TaskResponse implements LocaleEnum {
 
 	private final Task task;
 	private final Difficulty difficulty;

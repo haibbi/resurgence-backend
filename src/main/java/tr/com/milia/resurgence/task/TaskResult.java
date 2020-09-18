@@ -19,9 +19,7 @@ public abstract class TaskResult {
 		this.usedItems = usedItems;
 	}
 
-	public boolean isSucceed() {
-		return this instanceof TaskSucceedResult;
-	}
+	public abstract boolean isSucceed();
 
 	public Player getPlayer() {
 		return player;
