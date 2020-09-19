@@ -203,6 +203,14 @@ public class FamilyService {
 	public void onTaskSucceedResult(TaskSucceedResult event) {
 		log.debug("Task Succeed Result {}", event);
 		Player player = event.getPlayer();
+
+		Optional<Family> optionalFamily = player.getFamily();
+		if (optionalFamily.isEmpty()) {
+			log.debug("Player have not a family. Passing family shares.");
+			return;
+		}
+		final Family family = optionalFamily.get();
+
 		player.getChief().ifPresentOrElse(chief -> {
 			// boss and chief share revenue
 			long totalMoneyGain = event.getMoneyGain();
@@ -212,14 +220,14 @@ public class FamilyService {
 			log.debug("Total Money: {}, Chief's share: {}, Boss's Share: {}",
 				totalMoneyGain, chiefsShare, bossesShare);
 			chief.getChief().increaseBalance(chiefsShare);
-			chief.getFamily().getBoss().increaseBalance(bossesShare);
+			family.getBoss().increaseBalance(bossesShare);
 			player.decreaseBalance(diminishing);
 		}, () -> {
 			// boss take the all revenue
 			long totalMoneyGain = event.getMoneyGain();
 			long bossesShare = (long) (totalMoneyGain * .05);
 			log.debug("Total Money: {}, Boss's Share: {}", totalMoneyGain, bossesShare);
-			player.getFamily().ifPresent(family -> family.getBoss().increaseBalance(bossesShare));
+			family.getBoss().increaseBalance(bossesShare);
 			player.decreaseBalance(bossesShare);
 		});
 	}
