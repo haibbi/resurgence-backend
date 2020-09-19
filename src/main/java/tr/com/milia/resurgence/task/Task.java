@@ -7,8 +7,7 @@ import tr.com.milia.resurgence.skill.Skill;
 import java.time.Duration;
 import java.util.*;
 
-import static java.time.Duration.ofDays;
-import static java.time.Duration.ofSeconds;
+import static java.time.Duration.*;
 import static java.util.Collections.emptySet;
 import static tr.com.milia.resurgence.skill.Skill.SNEAK;
 
@@ -18,19 +17,37 @@ public enum Task implements LocaleEnum {
 	SHOPLIFTING(50,
 		Set.of(SNEAK),
 		Set.of(SNEAK),
-		5_000,
-		10_000,
-		ofSeconds(5),
-		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
+		1_000,
+		1_000,
+		ofSeconds(10),
+		Map.of(Item.KNIFE, DropDetail.of(1, .50)),
 		Collections.emptyMap()),
+
+	HOUSE_ROBBERY(75,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		5_000,
+		2_000,
+		ofMinutes(1),
+		Map.of(Item.GLOCK, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 1L)),
+
+	PARKING_LOT_ROBBERY(100,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		1_000,
+		5_000,
+		ofMinutes(2),
+		Map.of(Item.FORD_FIESTA, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 1L)),
 
 	BANK_RUBBERY(150,
 		Set.of(SNEAK),
 		Set.of(SNEAK),
 		50_000,
-		1_000,
-		ofSeconds(30),
-		Map.of(Item.KNIFE, DropDetail.of(1, .10)),
+		5_000,
+		ofMinutes(2),
+		Collections.emptyMap(),
 		Map.of(Item.Category.WEAPON, 1L)),
 
 	BEER_SMUGGLING(

@@ -1,5 +1,7 @@
 package tr.com.milia.resurgence.task;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.lang.Nullable;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 public class TaskService {
+
+	private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
 	protected final ApplicationEventPublisher eventPublisher;
 	private final double PH = .10;
@@ -44,6 +48,11 @@ public class TaskService {
 	}
 
 	protected TaskResult performInternal(Task task, Player player, Map<Item, Long> selectedItems) {
+		TaskInfo.Builder info = TaskInfo.Builder.newBuilder()
+			.task(task)
+			.player(player.getName())
+			.selectedItems(SelectedItem.fromMap(selectedItems));
+
 		var playerSkills = player.getSkills();
 
 		// todo level'den geleni ekle
@@ -58,6 +67,7 @@ public class TaskService {
 					.doubleValue();
 			})
 			.sum();
+		info.skillContribution(sum);
 
 		// item contribution
 		sum += selectedItems.entrySet().stream()
@@ -67,18 +77,22 @@ public class TaskService {
 				return item.getSkillsContribution(task.getAuxiliary()) * quantity;
 			})
 			.sum();
+		info.itemContribution(sum);
 
 		// passive item contribution
 		sum += player.getItems().stream()
 			.filter(playerItem -> Item.PASSIVE.contains(playerItem.getItem()))
 			.mapToLong(p -> p.getItem().getSkillsContribution(task.getAuxiliary()))
 			.sum();
+		info.passiveItemContribution(sum);
 
 		double success = sum / task.getDifficulty();
 
 		double random = RandomUtils.random();
 
+		info.successRatio(success).randomRatio(random);
 		if (random > success) {
+			log.debug(info.succeed(false).build().toString());
 			return new TaskFailedResult(player, task, selectedItems);
 		}
 
@@ -93,6 +107,7 @@ public class TaskService {
 			.filter(d -> RandomUtils.random() <= d.getValue().getRatio())
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+		log.debug(info.gainRatio(gainRatio).succeed(true).build().toString());
 		return new TaskSucceedResult(player, task, experienceGain, moneyGain, gainedSkills, drop, selectedItems);
 	}
 
