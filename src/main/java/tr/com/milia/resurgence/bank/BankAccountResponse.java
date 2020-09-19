@@ -8,6 +8,10 @@ class BankAccountResponse {
 		amount = account.getAmount();
 	}
 
+	public BankAccountResponse(long amount) {
+		this.amount = amount;
+	}
+
 	public Long getAmount() {
 		return amount;
 	}

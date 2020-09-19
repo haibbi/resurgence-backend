@@ -1,6 +1,5 @@
 package tr.com.milia.resurgence.bank;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
@@ -15,11 +14,11 @@ public class BankAccountController {
 	}
 
 	@GetMapping
-	public ResponseEntity<BankAccountResponse> account(TokenAuthentication authentication) {
+	public BankAccountResponse account(TokenAuthentication authentication) {
 		String player = authentication.getPlayerName();
-		return service.findAccount(player).map(BankAccountResponse::new)
-			.map(ResponseEntity::ok)
-			.orElse(ResponseEntity.notFound().build());
+		return service.findAccount(player)
+			.map(BankAccountResponse::new)
+			.orElseGet(() -> new BankAccountResponse(0L));
 	}
 
 	@PostMapping("/{amount}")
