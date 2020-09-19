@@ -15,9 +15,6 @@ services:
       spring.resources.cache.cachecontrol.max-age: "1d"
       server.tomcat.connection-timeout: "10s"
       logging.level.org.zalando.logbook: "trace"
-      spring.devtools.restart.enabled: "false"
-      spring.devtools.livereload.enabled: "false"
-      spring.devtools.remote.restart.enabled: "false"
       resurgence.firebase.credential-file: /firebase-adminsdk.json
     volumes:
       - ./firebase-adminsdk.json:/firebase-adminsdk.json
@@ -25,7 +22,7 @@ services:
     image: postgres
     restart: always
     ports:
-      - "5432"
+      - "0.0.0.0:5432:5432"
     environment:
       POSTGRES_USER: sUpqbm1bH0gHK7QF
       POSTGRES_PASSWORD: fvTg599LTf366Cw3
