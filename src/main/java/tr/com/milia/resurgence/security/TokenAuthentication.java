@@ -27,12 +27,12 @@ public class TokenAuthentication extends AbstractAuthenticationToken {
 	}
 
 	@Override
-	public Object getCredentials() {
+	public DecodedJWT getCredentials() {
 		return jwt;
 	}
 
 	@Override
-	public Object getPrincipal() {
+	public String getPrincipal() {
 		return jwt.getSubject();
 	}
 
