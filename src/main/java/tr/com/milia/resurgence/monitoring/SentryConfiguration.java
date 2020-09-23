@@ -1,4 +1,4 @@
-package tr.com.milia.resurgence.sentry;
+package tr.com.milia.resurgence.monitoring;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

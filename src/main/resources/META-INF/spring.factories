@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-tr.com.milia.resurgence.cron.CronAutoConfiguration
+tr.com.milia.resurgence.cron.CronAutoConfiguration, \
+tr.com.milia.resurgence.monitoring.HibernateMetricsAutoConfiguration
