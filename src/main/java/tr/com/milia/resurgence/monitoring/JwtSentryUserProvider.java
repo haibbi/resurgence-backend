@@ -1,4 +1,4 @@
-package tr.com.milia.resurgence.sentry;
+package tr.com.milia.resurgence.monitoring;
 
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.DecodedJWT;
