@@ -24,6 +24,7 @@ public enum Item implements LocaleEnum {
 
 	// Vehicle
 	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE)),
+	MUSTANG(100_000, emptyMap(), Quality.RARE, Set.of(Category.VEHICLE)),
 
 	// Guards
 	JOE(100_000, Map.of(Skill.GUN_MASTERY, 10), Quality.COMMON, Set.of(Category.GUARD)),
