@@ -30,7 +30,7 @@ public enum Title implements LocaleEnum {
 		this.exp = exp;
 	}
 
-	public static Title find(int exp, boolean isCapo, boolean isFather, boolean isMale) {
+	public static Title find(int exp, boolean isCapo, boolean isBoss, boolean isMale) {
 		return Arrays.stream(Title.values())
 			.filter(title -> {
 				if (isMale) return title != DELIVERY_GIRL && title != FIRST_LADY;
@@ -41,7 +41,7 @@ public enum Title implements LocaleEnum {
 				return true;
 			})
 			.filter(title -> {
-				if (isFather) return title != CAPODECINA && title != BRUGLIONE;
+				if (isBoss) return title != CAPODECINA && title != BRUGLIONE;
 				return true;
 			})
 			.filter(title -> exp <= title.exp)
