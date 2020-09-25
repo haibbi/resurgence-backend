@@ -9,7 +9,7 @@ public enum InterestRates {
 	LOW(InterestRate.of(100_001, 1_000_000, .4)),
 	MEDIUM(InterestRate.of(1_000_001, 10_000_000, .3)),
 	HIGH(InterestRate.of(10_000_001, 100_000_000, .2)),
-	HIGHEST(InterestRate.of(100_000_000, 1_000_000_000, .1));
+	HIGHEST(InterestRate.of(100_000_001, 1_000_000_000, .1));
 
 	private final InterestRate rate;
 
