@@ -47,14 +47,6 @@ public class TaskController {
 			.filter(Task::isSolo)
 			.map(task -> {
 				Duration duration = taskLogService.leftTime(player, task).orElse(Duration.ZERO);
-
-
-				int nanosPart = duration.toNanosPart();
-				if (nanosPart != 0) {
-					duration = duration.plusNanos(Duration.ofSeconds(1).getNano() - nanosPart);
-				}
-
-
 				return new TaskResponse(task, duration);
 			}).collect(Collectors.toList());
 	}

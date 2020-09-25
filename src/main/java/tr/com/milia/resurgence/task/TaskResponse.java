@@ -10,36 +10,44 @@ import java.util.stream.Collectors;
 
 public class TaskResponse implements LocaleEnum {
 
+	private static final String LOCATION_FORMAT = "static/task/%s.png";
+
 	private final Task task;
 	private final Difficulty difficulty;
 	private final Set<Skill> auxiliary;
 	private final Set<Skill> skillGain;
 	private final long moneyGain;
 	private final int experienceGain;
-	private final Duration duration;
-	private final Duration left;
+	private final long durationMills;
 	private final Set<DropResponse> drop;
 	private final Set<RequiredItemCategoryResponse> requiredItemCategory;
+	private final String image;
+	private final Long leftMillis;
+
+	public TaskResponse(Task task) {
+		this(task, Duration.ZERO);
+	}
 
 	public TaskResponse(Task task, Duration left) {
 		this.task = task;
-		this.difficulty = Difficulty.valueOf(task.getDifficulty());
-		this.auxiliary = task.getAuxiliary();
-		this.skillGain = task.getSkillGain();
-		this.moneyGain = task.getMoneyGain();
-		this.experienceGain = task.getExperienceGain();
-		this.duration = task.getDuration();
-		this.left = left;
-		this.drop = task.getDrop()
+		difficulty = Difficulty.valueOf(task.getDifficulty());
+		auxiliary = task.getAuxiliary();
+		skillGain = task.getSkillGain();
+		moneyGain = task.getMoneyGain();
+		experienceGain = task.getExperienceGain();
+		durationMills = task.getDuration().toMillis();
+		leftMillis = left.toMillis();
+		drop = task.getDrop()
 			.entrySet()
 			.stream()
 			.map(e -> new DropResponse(e.getKey(), e.getValue()))
 			.collect(Collectors.toSet());
-		this.requiredItemCategory = task.getRequiredItemCategory()
+		requiredItemCategory = task.getRequiredItemCategory()
 			.entrySet()
 			.stream()
 			.map(e -> new RequiredItemCategoryResponse(e.getKey(), e.getValue()))
 			.collect(Collectors.toSet());
+		image = String.format(LOCATION_FORMAT, task.name());
 	}
 
 	public Difficulty getDifficulty() {
@@ -62,12 +70,12 @@ public class TaskResponse implements LocaleEnum {
 		return experienceGain;
 	}
 
-	public Duration getDuration() {
-		return duration;
+	public long getDurationMills() {
+		return durationMills;
 	}
 
-	public Duration getLeft() {
-		return left;
+	public Long getLeftMillis() {
+		return leftMillis;
 	}
 
 	public Set<DropResponse> getDrop() {
@@ -76,6 +84,10 @@ public class TaskResponse implements LocaleEnum {
 
 	public Set<RequiredItemCategoryResponse> getRequiredItemCategory() {
 		return requiredItemCategory;
+	}
+
+	public String getImage() {
+		return image;
 	}
 
 	@Override

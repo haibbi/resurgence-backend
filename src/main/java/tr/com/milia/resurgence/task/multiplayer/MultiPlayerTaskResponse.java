@@ -35,7 +35,7 @@ public class MultiPlayerTaskResponse implements LocaleEnum {
 	}
 
 	public TaskResponse getLeaderTask() {
-		return new TaskResponse(task.task(MultiPlayerTask.Position.LEADER), null);
+		return new TaskResponse(task.task(MultiPlayerTask.Position.LEADER));
 	}
 
 	@Override

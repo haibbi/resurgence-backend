@@ -39,7 +39,7 @@ class PlanResponse {
 
 		public Member(Plan.Member member) {
 			this.position = member.getPosition();
-			this.task = new TaskResponse(member.getTask(), null);
+			this.task = new TaskResponse(member.getTask());
 			this.name = member.getName();
 			this.status = member.getStatus();
 			this.selectedItems = member.getSelectedItems();
