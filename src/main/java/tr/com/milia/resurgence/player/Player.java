@@ -150,6 +150,10 @@ public class Player extends AbstractAggregateRoot<Player> {
 		return honor;
 	}
 
+	public int getUsableHonor() {
+		return usableHonor;
+	}
+
 	public Set<PlayerSkill> getSkills() {
 		return skills == null ? Collections.emptySet() : Collections.unmodifiableSet(skills);
 	}

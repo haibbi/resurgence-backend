@@ -36,6 +36,15 @@ public class PlayerController {
 			.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
+	@GetMapping("/{name}")
+	@Transactional(readOnly = true)
+	public ResponseEntity<PlayerInfoResponse> info(@PathVariable("name") String name) {
+		return service.findByName(name)
+			.map(p -> new PlayerInfoResponse(p, true))
+			.map(ResponseEntity::ok)
+			.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
 	@GetMapping("/races")
 	public List<Race> races() {
 		return Arrays.asList(Race.values());
