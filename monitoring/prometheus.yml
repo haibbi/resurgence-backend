@@ -32,3 +32,7 @@ scrape_configs:
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: [ '192.168.1.101:8080' ]
+
+  - job_name: 'resurgence-chat'
+    static_configs:
+      - targets: ['192.168.1.101:6222']
