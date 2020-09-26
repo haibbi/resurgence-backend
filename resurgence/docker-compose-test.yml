@@ -14,7 +14,6 @@ services:
       spring.profiles.active: prod,log
       spring.resources.cache.cachecontrol.max-age: "1d"
       server.tomcat.connection-timeout: "10s"
-      logging.level.org.zalando.logbook: "trace"
       resurgence.firebase.credential-file: /firebase-adminsdk.json
     volumes:
       - ./firebase-adminsdk.json:/firebase-adminsdk.json
