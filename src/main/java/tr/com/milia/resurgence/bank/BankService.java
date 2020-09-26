@@ -57,7 +57,7 @@ public class BankService {
 
 		long total = amount + (long) (amount * ratio);
 
-		scheduleInterest(playerName, total);
+		scheduleInterest(playerName, total, amount);
 
 		return total;
 	}
@@ -75,8 +75,9 @@ public class BankService {
 
 			JobDataMap data = interest.getJobDataMap();
 			long amount = data.getLong("amount");
+			long deposit = data.getLong("deposit");
 
-			return Optional.of(new InterestAccount(amount, nextFireTime));
+			return Optional.of(new InterestAccount(amount, deposit, nextFireTime));
 		} catch (SchedulerException e) {
 			log.warn("Something wrong while fetching interest account", e);
 			return Optional.empty();
@@ -125,13 +126,14 @@ public class BankService {
 			.ifPresent(player -> player.increaseBalance(event.getAmount()));
 	}
 
-	private void scheduleInterest(String playerName, long amount) {
+	private void scheduleInterest(String playerName, long amount, long deposit) {
 		JobKey jobId = new JobKey(playerName, INTEREST_JOB_GROUP_NAME);
 
 		JobDetail jobDetail = JobBuilder.newJob(InterestJob.class)
 			.withIdentity(jobId)
 			.usingJobData("playerName", playerName)
 			.usingJobData("amount", amount)
+			.usingJobData("deposit", deposit)
 			.build();
 
 		Duration duration = Duration.of(1, ChronoUnit.DAYS);
