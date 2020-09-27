@@ -47,8 +47,8 @@ public enum Task implements LocaleEnum {
 		50_000,
 		5_000,
 		ofMinutes(2),
-		Collections.emptyMap(),
-		Map.of(Item.Category.WEAPON, 1L)),
+		Map.of(Item.SHOTGUN, DropDetail.of(1, .10)),
+		Map.of(Item.Category.WEAPON, 1L, Item.Category.BULLET, 50L)),
 
 	BEER_SMUGGLING(
 		100,

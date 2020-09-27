@@ -2,15 +2,15 @@ package tr.com.milia.resurgence.item;
 
 public class PlayerItemResponse {
 
-	private final Item item;
+	private final ItemResponse item;
 	private final long quantity;
 
 	public PlayerItemResponse(PlayerItem playerItem) {
-		item = playerItem.getItem();
+		item = new ItemResponse(playerItem.getItem());
 		quantity = playerItem.getQuantity();
 	}
 
-	public Item getItem() {
+	public ItemResponse getItem() {
 		return item;
 	}
 

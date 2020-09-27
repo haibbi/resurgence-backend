@@ -21,6 +21,7 @@ public enum Item implements LocaleEnum {
 	// Weapon
 	KNIFE(0, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.WEAPON)),
 	GLOCK(100, emptyMap(), Quality.COMMON, Set.of(Category.WEAPON)),
+	SHOTGUN(1000, emptyMap(), Quality.RARE, Set.of(Category.WEAPON)),
 
 	// Vehicle
 	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE)),
