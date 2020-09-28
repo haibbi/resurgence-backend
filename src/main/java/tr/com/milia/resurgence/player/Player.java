@@ -10,6 +10,7 @@ import tr.com.milia.resurgence.skill.PlayerSkill;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 	@OneToMany(mappedBy = "player")
 	private Set<PlayerSkill> skills;
 
-	@OneToMany(mappedBy = "player")
+	@OneToMany(mappedBy = "id.player")
 	private Set<PlayerItem> items;
 
 	@Enumerated(value = EnumType.STRING)
@@ -172,5 +173,19 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public Optional<Chief> getChief() {
 		return Optional.ofNullable(chief);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Player player = (Player) o;
+		return Objects.equals(id, player.id) &&
+			name.equals(player.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name);
 	}
 }

@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface PlayerItemRepository extends JpaRepository<PlayerItem, Long> {
 
-	Optional<PlayerItem> findByPlayerAndItem(Player player, Item item);
+	Optional<PlayerItem> findById_PlayerAndId_Item(Player player, Item item);
 
-	Optional<PlayerItem> findByPlayerAndItemAndQuantityGreaterThanEqual(Player player, Item item, long quantity);
+	Optional<PlayerItem> findById_PlayerAndId_ItemAndQuantityGreaterThanEqual(Player player, Item item, long quantity);
 
-	List<PlayerItem> findAllByPlayer(Player player);
+	List<PlayerItem> findAllById_Player(Player player);
 
 }

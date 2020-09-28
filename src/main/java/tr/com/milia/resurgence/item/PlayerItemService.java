@@ -34,7 +34,7 @@ public class PlayerItemService {
 
 	@Transactional
 	public void addItem(Player player, Item item, long quantity) {
-		repository.findByPlayerAndItem(player, item).ifPresentOrElse(
+		repository.findById_PlayerAndId_Item(player, item).ifPresentOrElse(
 			playerItem -> playerItem.add(quantity),
 			() -> repository.save(new PlayerItem(player, item, quantity))
 		);
@@ -43,7 +43,7 @@ public class PlayerItemService {
 	@Transactional
 	public void sellItem(String playerName, Item item, long quantity) {
 		Player player = findPlayer(playerName);
-		PlayerItem playerItem = repository.findByPlayerAndItem(player, item).orElseThrow(ItemNotFoundException::new);
+		PlayerItem playerItem = repository.findById_PlayerAndId_Item(player, item).orElseThrow(ItemNotFoundException::new);
 
 		playerItem.remove(quantity);
 		long totalPrice = item.getPrice() * quantity;
@@ -62,12 +62,12 @@ public class PlayerItemService {
 
 	public List<PlayerItem> findAllPlayerItem(String playerName) {
 		Player player = findPlayer(playerName);
-		return repository.findAllByPlayer(player);
+		return repository.findAllById_Player(player);
 	}
 
 	@Transactional
 	public void removeItem(Player player, Item item, long quantity) {
-		PlayerItem playerItem = repository.findByPlayerAndItem(player, item).orElseThrow(ItemNotFoundException::new);
+		PlayerItem playerItem = repository.findById_PlayerAndId_Item(player, item).orElseThrow(ItemNotFoundException::new);
 		playerItem.remove(quantity);
 	}
 
@@ -130,7 +130,7 @@ public class PlayerItemService {
 
 	private boolean haveItem(Player player, Item item, long quantity) {
 		if (quantity == 0) return true;
-		return repository.findByPlayerAndItemAndQuantityGreaterThanEqual(player, item, quantity).isPresent();
+		return repository.findById_PlayerAndId_ItemAndQuantityGreaterThanEqual(player, item, quantity).isPresent();
 	}
 
 }

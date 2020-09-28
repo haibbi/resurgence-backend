@@ -5,20 +5,11 @@ import tr.com.milia.resurgence.player.Player;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 
-// todo id'si player + item olabilir
 @Entity
 public class PlayerItem {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Player player;
-
-	@Enumerated(value = EnumType.STRING)
-	@Column(nullable = false, updatable = false)
-	private Item item;
+	@EmbeddedId
+	private PlayerItemId id;
 
 	@Min(0)
 	@Column(nullable = false)
@@ -29,8 +20,7 @@ public class PlayerItem {
 
 	public PlayerItem(Player player, Item item, long quantity) {
 		if (quantity < 0) throw new IllegalStateException();
-		this.player = player;
-		this.item = item;
+		this.id = new PlayerItemId(player, item);
 		this.quantity = quantity;
 	}
 
@@ -48,6 +38,6 @@ public class PlayerItem {
 	}
 
 	public Item getItem() {
-		return item;
+		return id.getItem();
 	}
 }
