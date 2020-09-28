@@ -121,8 +121,8 @@ public class FirebaseEventListener {
 		Set<String> tokens = account.getPushNotificationTokens();
 
 		if (tokens.isEmpty()) {
-			log.warn("Can not send fired from family notification, account[{}] does not have a push message token.",
-				account.getEmail());
+			log.warn("Can not send notification, account[{}] does not have a push message token. title[{}] body[{}]",
+				account.getEmail(), title, body);
 			return;
 		}
 
@@ -131,7 +131,8 @@ public class FirebaseEventListener {
 			try {
 				firebaseService.sendSimpleNotificationToUser(token, title, body);
 			} catch (FirebaseMessagingException e) {
-				log.error("Can not send fired from family notification to user[{}].", account.getEmail(), e);
+				log.error("Can not send notification to user[{}]. title[{}] body[{}]",
+					account.getEmail(), title, body, e);
 				switch (e.getMessagingErrorCode()) {
 					case UNREGISTERED, INVALID_ARGUMENT,
 						SENDER_ID_MISMATCH -> tokensToBeDeleted.add(token);
