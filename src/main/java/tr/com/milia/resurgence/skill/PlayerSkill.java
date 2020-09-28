@@ -11,16 +11,8 @@ import java.math.RoundingMode;
 @Entity
 public class PlayerSkill implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Player player;
-
-	@Enumerated(value = EnumType.STRING)
-	@Column(nullable = false, updatable = false)
-	private Skill skill;
+	@EmbeddedId
+	private PlayerSkillId id;
 
 	@Column(nullable = false)
 	@Max(100)
@@ -30,8 +22,7 @@ public class PlayerSkill implements Serializable {
 	}
 
 	public PlayerSkill(Player player, Skill skill, double expertise) {
-		this.player = player;
-		this.skill = skill;
+		this.id = new PlayerSkillId(player, skill);
 		this.expertise = BigDecimal.valueOf(expertise);
 	}
 
@@ -41,12 +32,8 @@ public class PlayerSkill implements Serializable {
 		expertise = result;
 	}
 
-	public Player getPlayer() {
-		return player;
-	}
-
 	public Skill getSkill() {
-		return skill;
+		return id.getSkill();
 	}
 
 	public BigDecimal getExpertise() {
@@ -54,7 +41,7 @@ public class PlayerSkill implements Serializable {
 	}
 
 	public BigDecimal skillContribution() {
-		return expertise.multiply(BigDecimal.valueOf(skill.contribution()))
+		return expertise.multiply(BigDecimal.valueOf(id.getSkill().contribution()))
 			.divide(BigDecimal.valueOf(100), 2, RoundingMode.CEILING);
 	}
 

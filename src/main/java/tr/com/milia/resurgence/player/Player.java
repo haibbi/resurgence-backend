@@ -47,7 +47,7 @@ public class Player extends AbstractAggregateRoot<Player> {
 	@Min(0)
 	private int experience;
 
-	@OneToMany(mappedBy = "player")
+	@OneToMany(mappedBy = "id.player")
 	private Set<PlayerSkill> skills;
 
 	@OneToMany(mappedBy = "id.player")

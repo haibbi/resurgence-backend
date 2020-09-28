@@ -31,7 +31,7 @@ public class SkillService {
 	public void onTaskSucceedResult(TaskSucceedResult result) {
 		log.debug("Task Succeed Result {}", result);
 		var player = result.getPlayer();
-		result.getSkillGain().forEach(skill -> repository.findByPlayerAndSkill(player, skill).ifPresentOrElse(
+		result.getSkillGain().forEach(skill -> repository.findById_PlayerAndId_Skill(player, skill).ifPresentOrElse(
 			playerSkill -> playerSkill.learn(0.1),
 			() -> repository.save(new PlayerSkill(player, skill, 0.1))
 		));
