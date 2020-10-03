@@ -59,7 +59,7 @@ public class FamilyController {
 		return service.findFamilyByPlayerName(playerName)
 			.map(FamilyResponse::exposed)
 			.map(ResponseEntity::ok)
-			.orElse(ResponseEntity.notFound().build());
+			.orElse(ResponseEntity.noContent().build());
 	}
 
 	@GetMapping("/all")

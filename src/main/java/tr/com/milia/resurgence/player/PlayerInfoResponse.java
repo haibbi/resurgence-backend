@@ -42,7 +42,7 @@ class PlayerInfoResponse {
 				.map(Player::getName)
 				.anyMatch(s -> s.equals(nickname));
 		}
-		title = Title.find(player.getExperience(), isCapo, isBoss, false);
+		title = Title.find(player.getExperience(), isCapo, isBoss, true);
 		if (!restricted) {
 			experience = player.getExperience();
 			usableHonor = player.getUsableHonor();
