@@ -43,15 +43,14 @@ public final class JwtSentryUserProvider implements SentryUserProvider {
 				if (principal instanceof TokenAuthentication) {
 					TokenAuthentication authentication = (TokenAuthentication) principal;
 					user.setId(authentication.getName());
-					user.setUsername(authentication.getName());
+					user.setUsername(authentication.getPlayerName());
 					user.setEmail(authentication.getName());
 
 					DecodedJWT jwt = authentication.getCredentials();
 					user.setOthers(Map.of(
 						PublicClaims.JWT_ID, jwt.getId(),
 						Claims.REFRESH_TOKEN_ID, jwt.getClaim(Claims.REFRESH_TOKEN_ID).asString(),
-						Claims.ROLE, Arrays.toString(jwt.getClaim(Claims.ROLE).asArray(String.class)),
-						Claims.PLAYER, authentication.getPlayerName()
+						Claims.ROLE, Arrays.toString(jwt.getClaim(Claims.ROLE).asArray(String.class))
 					));
 				}
 			}

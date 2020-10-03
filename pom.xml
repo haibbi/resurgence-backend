@@ -17,15 +17,15 @@
     <properties>
         <java.version>14</java.version>
         <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
-        <java-jwt.version>3.10.3</java-jwt.version>
+        <java-jwt.version>3.11.0</java-jwt.version>
         <!-- https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
         <jib-maven-plugin.version>2.5.2</jib-maven-plugin.version>
         <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
         <firebase-admin.version>7.0.0</firebase-admin.version>
         <!-- https://mvnrepository.com/artifact/org.zalando/logbook-spring-boot-starter -->
-        <logbook.version>2.2.0</logbook.version>
-        <!-- https://bintray.com/getsentry/sentry-java/io.sentry:sentry-spring-boot-starter -->
-        <sentry.version>3.0.0-beta.1</sentry.version>
+        <logbook.version>2.2.1</logbook.version>
+        <!-- https://mvnrepository.com/artifact/io.sentry/sentry-spring-boot-starter -->
+        <sentry.version>3.0.0</sentry.version>
     </properties>
 
     <dependencies>
@@ -158,53 +158,6 @@
                     <optional>true</optional>
                 </dependency>
             </dependencies>
-        </profile>
-        <profile>
-            <id>repo</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>central</id>
-                    <name>Central Repository</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                <repository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-getsentry-sentry-java</id>
-                    <name>bintray</name>
-                    <url>https://dl.bintray.com/getsentry/sentry-java</url>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>central</id>
-                    <name>Central Repository</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <releases>
-                        <updatePolicy>never</updatePolicy>
-                    </releases>
-                </pluginRepository>
-                <pluginRepository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-getsentry-sentry-java</id>
-                    <name>bintray-plugins</name>
-                    <url>https://dl.bintray.com/getsentry/sentry-java</url>
-                </pluginRepository>
-            </pluginRepositories>
         </profile>
     </profiles>
 
