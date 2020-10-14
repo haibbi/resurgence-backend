@@ -28,10 +28,9 @@ public class MultiplayerTaskController {
 	public List<MultiPlayerTaskResponse> all(TokenAuthentication authentication) {
 		Player player = playerService.findByName(authentication.getPlayerName()).orElseThrow();
 
-		return Arrays.stream(MultiPlayerTask.values()).map(task -> {
-			long leftTime = taskLogService.leftTime(player, task).toMillis();
-			return new MultiPlayerTaskResponse(task, leftTime);
-		}).collect(Collectors.toList());
+		return Arrays.stream(MultiPlayerTask.values())
+			.map(task -> new MultiPlayerTaskResponse(task, taskLogService.leftTime(player, task)))
+			.collect(Collectors.toList());
 	}
 
 }

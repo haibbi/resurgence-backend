@@ -1,6 +1,8 @@
 package tr.com.milia.resurgence.item;
 
-public enum Quality {
+import tr.com.milia.resurgence.i18n.LocaleEnum;
+
+public enum Quality implements LocaleEnum {
 
 	/**
 	 * Worthless item quality

@@ -3,7 +3,11 @@ package tr.com.milia.resurgence.item;
 import org.springframework.web.bind.annotation.*;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +42,29 @@ public class NPCController {
 		service.sellItem(player, item, quantity);
 	}
 
-	@PostMapping("/{item}/{quantity}")
-	public void buy(TokenAuthentication authentication,
-					@PathVariable("item") Item item,
-					@PathVariable("quantity") long quantity) {
+	@PostMapping
+	public void buy(TokenAuthentication authentication, @RequestBody @Valid List<ItemBuyRequest> request) {
 		String player = authentication.getPlayerName();
-		service.buyItem(player, item, quantity);
+		service.buyItem(player, request.stream().collect(Collectors.toMap(r -> r.item, r -> r.quantity)));
 	}
 
+	@GetMapping("/counter")
+	public List<ItemResponse> counter() {
+		return Item.sellable().stream()
+			.sorted(Comparator.comparingLong(Item::getPrice))
+			.map(ItemResponse::new).collect(Collectors.toList());
+	}
+}
+
+class ItemBuyRequest {
+	@NotNull Item item;
+	@Positive long quantity;
+
+	public void setItem(Item item) {
+		this.item = item;
+	}
+
+	public void setQuantity(long quantity) {
+		this.quantity = quantity;
+	}
 }

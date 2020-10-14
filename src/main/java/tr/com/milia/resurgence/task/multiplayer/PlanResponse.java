@@ -3,6 +3,7 @@ package tr.com.milia.resurgence.task.multiplayer;
 import tr.com.milia.resurgence.task.SelectedItem;
 import tr.com.milia.resurgence.task.TaskResponse;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ class PlanResponse {
 
 	public PlanResponse(Plan plan) {
 		this.leader = plan.leader();
-		task = new MultiPlayerTaskResponse(plan.getTask(), 0);
+		task = new MultiPlayerTaskResponse(plan.getTask(), Duration.ZERO);
 		members = plan.getMembers().stream().map(Member::new).collect(Collectors.toList());
 	}
 

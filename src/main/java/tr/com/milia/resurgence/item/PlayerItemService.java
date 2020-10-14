@@ -12,6 +12,7 @@ import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,13 +52,13 @@ public class PlayerItemService {
 	}
 
 	@Transactional
-	public void buyItem(String playerName, Item item, long quantity) {
-		if (getForbiddenToBuy().contains(item)) throw new ForbiddenItemSoldException();
+	public void buyItem(String playerName, Map<Item, Long> items) {
+		if (!Collections.disjoint(getForbiddenToBuy(), items.keySet())) throw new ForbiddenItemSoldException();
 
 		Player player = findPlayer(playerName);
-		long totalPrice = item.getPrice() * quantity;
+		long totalPrice = items.entrySet().stream().mapToLong(e -> e.getKey().getPrice() * e.getValue()).sum();
 		player.decreaseBalance(totalPrice);
-		addItem(player, item, quantity);
+		items.forEach((item, quantity) -> addItem(player, item, quantity));
 	}
 
 	public List<PlayerItem> findAllPlayerItem(String playerName) {

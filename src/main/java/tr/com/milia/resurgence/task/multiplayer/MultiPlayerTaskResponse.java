@@ -3,39 +3,24 @@ package tr.com.milia.resurgence.task.multiplayer;
 import tr.com.milia.resurgence.i18n.LocaleEnum;
 import tr.com.milia.resurgence.task.TaskResponse;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
 import java.util.Set;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
-public class MultiPlayerTaskResponse implements LocaleEnum {
+class MultiPlayerTaskResponse implements LocaleEnum {
 
 	private final MultiPlayerTask task;
-	private final Set<MultiPlayerTask.Position> positions;
-	/**
-	 * Left seconds
-	 */
-	private final long left;
+	private final Set<PositionResponse> positions;
 
-	public MultiPlayerTaskResponse(MultiPlayerTask task, long left) {
+	public MultiPlayerTaskResponse(MultiPlayerTask task, Duration left) {
 		this.task = task;
-		this.positions = task.positions();
-		this.left = left;
+		this.positions = task.positions().stream()
+			.map(p -> new PositionResponse(task, p, left))
+			.collect(Collectors.toSet());
 	}
 
-	public List<MultiPlayerTask.Position> getPositions() {
-		// todo refactor
-		List<MultiPlayerTask.Position> result = new ArrayList<>();
-		positions.forEach(position -> IntStream.range(0, task.quorum(position)).forEach(i -> result.add(position)));
-		return result;
-	}
-
-	public long getLeft() {
-		return left;
-	}
-
-	public TaskResponse getLeaderTask() {
-		return new TaskResponse(task.task(MultiPlayerTask.Position.LEADER));
+	public Set<PositionResponse> getPositions() {
+		return positions;
 	}
 
 	@Override
@@ -56,5 +41,51 @@ public class MultiPlayerTaskResponse implements LocaleEnum {
 	@Override
 	public String name() {
 		return task.name();
+	}
+
+	static class PositionResponse implements LocaleEnum {
+		private final MultiPlayerTask.Position position;
+		private final TaskResponse task;
+		private final int quorum;
+		private final boolean leader;
+
+		public PositionResponse(MultiPlayerTask task, MultiPlayerTask.Position position, Duration left) {
+			this.position = position;
+			this.task = new TaskResponse(task.task(position), left);
+			this.quorum = task.quorum(position);
+			this.leader = position.isLeader();
+		}
+
+		public TaskResponse getTask() {
+			return task;
+		}
+
+		public int getQuorum() {
+			return quorum;
+		}
+
+		public boolean isLeader() {
+			return leader;
+		}
+
+		@Override
+		public String[] getCodes() {
+			return position.getCodes();
+		}
+
+		@Override
+		public Object[] getArguments() {
+			return position.getArguments();
+		}
+
+		@Override
+		public String getDefaultMessage() {
+			return position.getDefaultMessage();
+		}
+
+		@Override
+		public String name() {
+			return position.name();
+		}
 	}
 }

@@ -111,8 +111,11 @@ public class PlanController {
 
 			TaskResult result = taskService.perform(member.getTask(), member.getName(), selectedItemMap);
 			results.add(new MultiplayerTaskSucceededResultResponse(member.getName(), result));
-			eventPublisher.publishEvent(new MultiplayerTaskResultEvent(
-				member.getName(), leader, member.getPosition(), result));
+
+			if (!leader.equals(member.getName())) { // do not send notification to leader
+				eventPublisher.publishEvent(new MultiplayerTaskResultEvent(
+					member.getName(), leader, member.getPosition(), result));
+			}
 		}
 
 		plan.remove(leader);

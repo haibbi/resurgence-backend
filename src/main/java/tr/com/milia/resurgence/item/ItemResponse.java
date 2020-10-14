@@ -11,12 +11,14 @@ public class ItemResponse implements LocaleEnum {
 	private final Set<Item.Category> category;
 	private final long price;
 	private final String image;
+	private final Quality quality;
 
 	public ItemResponse(Item item) {
 		this.item = item;
 		category = item.getCategory();
 		price = item.getPrice();
 		image = String.format(LOCATION_FORMAT, item.name());
+		quality = item.getQuality();
 	}
 
 	public Set<Item.Category> getCategory() {
@@ -29,6 +31,10 @@ public class ItemResponse implements LocaleEnum {
 
 	public String getImage() {
 		return image;
+	}
+
+	public Quality getQuality() {
+		return quality;
 	}
 
 	@Override

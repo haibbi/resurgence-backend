@@ -17,9 +17,8 @@ public class StockConfiguration {
 		StockService stockService = new StockService(eventPublisher);
 
 		stockService.schedule(Duration.ofSeconds(10), Item.BEER, .5);
-		stockService.schedule(Duration.ofSeconds(30), Item.GLOCK, .5);
-		stockService.schedule(Duration.ofMinutes(1), Item.FORD_FIESTA, .5);
 		stockService.schedule(Duration.ofMinutes(5), Item.HOUSE, .1);
+		Item.sellable().forEach(item -> stockService.schedule(Duration.ofMinutes(5), item, .25));
 
 		return stockService;
 	}
