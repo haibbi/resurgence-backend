@@ -19,9 +19,9 @@
         <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
         <java-jwt.version>3.11.0</java-jwt.version>
         <!-- https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
-        <jib-maven-plugin.version>2.5.2</jib-maven-plugin.version>
+        <jib-maven-plugin.version>2.6.0</jib-maven-plugin.version>
         <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
-        <firebase-admin.version>7.0.0</firebase-admin.version>
+        <firebase-admin.version>7.0.1</firebase-admin.version>
         <!-- https://mvnrepository.com/artifact/org.zalando/logbook-spring-boot-starter -->
         <logbook.version>2.2.1</logbook.version>
         <!-- https://mvnrepository.com/artifact/io.sentry/sentry-spring-boot-starter -->
