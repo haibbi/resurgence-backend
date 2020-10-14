@@ -4,7 +4,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tr.com.milia.resurgence.security.TokenAuthentication;
@@ -12,7 +11,6 @@ import tr.com.milia.resurgence.security.TokenAuthentication;
 import java.security.Principal;
 import java.util.Map;
 
-@Component
 public class WebSocketEventHandler {
 
 	private final SimpMessagingTemplate template;
