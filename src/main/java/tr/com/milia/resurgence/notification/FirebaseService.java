@@ -1,4 +1,4 @@
-package tr.com.milia.resurgence.firebase;
+package tr.com.milia.resurgence.notification;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.cloud.StorageClient;

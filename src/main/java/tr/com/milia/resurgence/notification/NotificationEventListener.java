@@ -1,4 +1,4 @@
-package tr.com.milia.resurgence.firebase;
+package tr.com.milia.resurgence.notification;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import org.slf4j.Logger;
@@ -23,24 +23,27 @@ import java.util.Locale;
 import java.util.Set;
 
 @Component
-public class FirebaseEventListener {
+public class NotificationEventListener {
 
-	private static final Logger log = LoggerFactory.getLogger(FirebaseEventListener.class);
+	private static final Logger log = LoggerFactory.getLogger(NotificationEventListener.class);
 
 	private final FirebaseService firebaseService;
 	private final AccountService accountService;
 	private final PlayerService playerService;
 	private final MessageSource messageSource;
 	private final MessageSource enumMessageSource;
+	private final MessageService messageService;
 
-	public FirebaseEventListener(FirebaseService firebaseService,
-								 AccountService accountService,
-								 PlayerService playerService,
-								 @Qualifier("defaultMessageSource") MessageSource messageSource) {
+	public NotificationEventListener(FirebaseService firebaseService,
+									 AccountService accountService,
+									 PlayerService playerService,
+									 @Qualifier("defaultMessageSource") MessageSource messageSource,
+									 MessageService messageService) {
 		this.firebaseService = firebaseService;
 		this.accountService = accountService;
 		this.playerService = playerService;
 		this.messageSource = messageSource;
+		this.messageService = messageService;
 		ResourceBundleMessageSource enumMessageSource = new ResourceBundleMessageSource();
 		enumMessageSource.setDefaultEncoding("UTF-8");
 		enumMessageSource.setBasename("enum/messages");
@@ -117,6 +120,7 @@ public class FirebaseEventListener {
 	}
 
 	private void sendNotification(Player player, String title, String body) {
+		messageService.send(player, title, body);
 		Account account = player.getAccount();
 		Set<String> tokens = account.getPushNotificationTokens();
 

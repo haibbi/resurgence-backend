@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tr.com.milia.resurgence.FileUtils;
-import tr.com.milia.resurgence.firebase.FirebaseService;
+import tr.com.milia.resurgence.notification.FirebaseService;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerNotFound;
 import tr.com.milia.resurgence.player.PlayerService;

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tr.com.milia.resurgence.FileUtils;
 import tr.com.milia.resurgence.account.AccountService;
-import tr.com.milia.resurgence.firebase.FirebaseService;
+import tr.com.milia.resurgence.notification.FirebaseService;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.io.IOException;
