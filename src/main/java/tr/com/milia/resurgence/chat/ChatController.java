@@ -2,30 +2,42 @@ package tr.com.milia.resurgence.chat;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+@Controller
 public class ChatController {
 
-	private final SimpMessagingTemplate template;
 
-	public ChatController(SimpMessagingTemplate template) {
-		this.template = template;
+	private final TopicService service;
+
+	public ChatController(TopicService service) {
+		this.service = service;
 	}
 
-	@MessageMapping("/{topic}")
-	public void greeting(Message message,
-						 TokenAuthentication authentication,
-						 @DestinationVariable("topic") String topic) {
-		Map<String, Object> headers = new LinkedHashMap<>();
-		headers.put("player", authentication.getPlayerName());
-
-		message.setType(Type.MESSAGE);
-
-		template.convertAndSend("/topic/" + topic, message, headers);
+	@MessageMapping("/subscriptions")
+	public void subscriptions(TokenAuthentication tokenAuthentication) {
+		String playerName = tokenAuthentication.getPlayerName();
+		service.sendSubscriptions(playerName);
 	}
 
+	@MessageMapping("/players/{player}")
+	public void filterPlayers(TokenAuthentication tokenAuthentication, @DestinationVariable("player") String player) {
+		service.filterAndSendPlayer(tokenAuthentication.getPlayerName(), player);
+	}
+
+	@MessageMapping("/send/{topic}")
+	public void greeting(
+		String message,
+		TokenAuthentication authentication,
+		@DestinationVariable("topic") String topic
+	) {
+		service.sendMessage(authentication.getPlayerName(), topic, message);
+	}
+
+	@MessageMapping("/p2p/{peer}")
+	public void p2p(TokenAuthentication authentication, @DestinationVariable("peer") String peer) {
+		String currentPlayer = authentication.getPlayerName();
+		service.createP2PTopic(currentPlayer, peer);
+	}
 }

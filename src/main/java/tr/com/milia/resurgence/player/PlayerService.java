@@ -14,6 +14,7 @@ import tr.com.milia.resurgence.notification.FirebaseService;
 import tr.com.milia.resurgence.task.TaskSucceedResult;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,6 +49,10 @@ public class PlayerService {
 
 		player.created();
 		return repository.save(player);
+	}
+
+	public List<Player> filterByName(String playerName) {
+		return repository.findAllByNameContains(playerName);
 	}
 
 	@EventListener(TaskSucceedResult.class)
