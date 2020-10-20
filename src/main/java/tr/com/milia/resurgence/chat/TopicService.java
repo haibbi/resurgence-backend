@@ -1,7 +1,5 @@
 package tr.com.milia.resurgence.chat;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,25 +12,27 @@ import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
 
-	private static final Logger log = LoggerFactory.getLogger(TopicService.class);
-
 	private static final String ONLINE_USERS_DESTINATION = "/online-players";
 	private static final String PLAYERS_DESTINATION = "/players";
-	private static final String TOPIC_DESTINATION = "/topic";
 	private static final String SUBSCRIPTION_DESTINATION = "/subscriptions";
 
 	private static final Set<Topic> DEFAULT_TOPICS = ConcurrentHashMap.newKeySet();
 	private static final Map<String, Topic> TOPICS = new ConcurrentHashMap<>();
 
 	private final Set<String> onlineUsers = ConcurrentHashMap.newKeySet();
+	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
 
 	private final SimpMessagingTemplate template;
 	private final PlayerService playerService;
@@ -105,7 +105,6 @@ public class TopicService {
 		Objects.requireNonNull(message);
 
 		if (!topic.startsWith("/")) topic = "/" + topic;
-//		log.info("Message sent user[{}] topic[{}] message[{}]", user, topic, message);
 		template.convertAndSendToUser(user, topic, message);
 	}
 
@@ -125,8 +124,8 @@ public class TopicService {
 			String playerName = authentication.getPlayerName();
 			onlineUsers.add(playerName);
 			DEFAULT_TOPICS.forEach(t -> t.subscribe(playerName));
-			sendOnlineUsers();
-//			sendOnlineUsers(playerName);
+			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
+			schedule(this::sendOnlineUsers, Duration.ofSeconds(3));
 		}
 	}
 
@@ -137,7 +136,8 @@ public class TopicService {
 			TokenAuthentication authentication = (TokenAuthentication) user;
 			String playerName = authentication.getPlayerName();
 			onlineUsers.remove(playerName);
-			sendOnlineUsers();
+			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
+			schedule(this::sendOnlineUsers, Duration.ofSeconds(3));
 		}
 	}
 
@@ -155,13 +155,13 @@ public class TopicService {
 
 		if (Pattern.matches("/user/.*/(grp|p2p).*", topic)) {
 			String topicName = topic.replaceFirst("/user/.*/", "");
-//			log.info("Load all message to user.");
-			sendMessages(playerName, topicName);
+			schedule(() -> sendMessages(playerName, topicName), Duration.ofSeconds(1));
+			schedule(() -> sendMessages(playerName, topicName), Duration.ofSeconds(3));
 		}
 
 		if (Pattern.matches("/user/.*/online-players", topic)) {
-			log.info("Sending online player info");
-			sendOnlineUsers(playerName);
+			schedule(() -> sendOnlineUsers(playerName), Duration.ofSeconds(1));
+			schedule(() -> sendOnlineUsers(playerName), Duration.ofSeconds(3));
 		}
 	}
 
@@ -172,5 +172,9 @@ public class TopicService {
 			.map(p -> new Subscription(Topic.p2pName(currentPlayer, p), p))
 			.collect(Collectors.toList());
 		template.convertAndSendToUser(currentPlayer, PLAYERS_DESTINATION, playerNames);
+	}
+
+	void schedule(Runnable command, Duration duration) {
+		executor.schedule(command, duration.toMillis(), TimeUnit.MILLISECONDS);
 	}
 }

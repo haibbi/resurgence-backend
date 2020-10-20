@@ -25,7 +25,7 @@
         <!-- https://mvnrepository.com/artifact/org.zalando/logbook-spring-boot-starter -->
         <logbook.version>2.2.1</logbook.version>
         <!-- https://mvnrepository.com/artifact/io.sentry/sentry-spring-boot-starter -->
-        <sentry.version>3.0.0</sentry.version>
+        <sentry.version>3.1.1</sentry.version>
     </properties>
 
     <dependencies>
