@@ -125,7 +125,6 @@ public class TopicService {
 			onlineUsers.add(playerName);
 			DEFAULT_TOPICS.forEach(t -> t.subscribe(playerName));
 			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
-			schedule(this::sendOnlineUsers, Duration.ofSeconds(3));
 		}
 	}
 
@@ -137,7 +136,6 @@ public class TopicService {
 			String playerName = authentication.getPlayerName();
 			onlineUsers.remove(playerName);
 			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
-			schedule(this::sendOnlineUsers, Duration.ofSeconds(3));
 		}
 	}
 
