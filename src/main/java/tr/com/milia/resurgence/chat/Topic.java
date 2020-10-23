@@ -1,7 +1,7 @@
 package tr.com.milia.resurgence.chat;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Topic {
@@ -11,19 +11,24 @@ public class Topic {
 
 	private final String name;
 	private final Set<String> subscriptions = new HashSet<>();
-	private final ConcurrentLinkedQueue<Message> messages = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedDeque<Message> messages = new ConcurrentLinkedDeque<>();
 	private final AtomicLong sequenceGenerator = new AtomicLong(0);
 
 	private Topic(String name) {
 		this.name = Objects.requireNonNull(name);
 	}
 
-	Topic(String name, Set<String> subscriptions, List<Message> messages, long lastSeq) {
+	public Topic(String name, Set<String> subscriptions, List<Message> messages) {
 		this(name);
 		this.subscriptions.addAll(subscriptions);
 		messages.sort(Message::compareTo);
 		this.messages.addAll(messages);
-		this.sequenceGenerator.set(lastSeq);
+		long lastSequence = 0;
+		try {
+			lastSequence = this.messages.getLast().getSequence();
+		} catch (NoSuchElementException ignored) {
+		}
+		this.sequenceGenerator.set(lastSequence);
 	}
 
 	static Topic p2p(String peer1, String peer2) {
@@ -100,11 +105,15 @@ public class Topic {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Topic topic = (Topic) o;
-		return name.equals(topic.name);
+		return name.equals(topic.name) &&
+			subscriptions.equals(topic.subscriptions) &&
+			messages.equals(topic.messages) &&
+			sequenceGenerator.equals(topic.sequenceGenerator);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		int messagesHashCode = Arrays.hashCode(messages.toArray());
+		return Objects.hash(name, subscriptions, sequenceGenerator.get(), messagesHashCode);
 	}
 }

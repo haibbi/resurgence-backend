@@ -1,16 +1,22 @@
 package tr.com.milia.resurgence.chat;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import tr.com.milia.resurgence.chat.persistence.PersistenceService;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.*;
@@ -24,25 +30,46 @@ import java.util.stream.Collectors;
 @Service
 public class TopicService {
 
+	private static final Logger log = LoggerFactory.getLogger(TopicService.class);
+
+	private static final String PERSISTING_PERIOD = "PT15M";
 	private static final String ONLINE_USERS_DESTINATION = "/online-players";
 	private static final String PLAYERS_DESTINATION = "/players";
 	private static final String SUBSCRIPTION_DESTINATION = "/subscriptions";
 
-	private static final Set<Topic> DEFAULT_TOPICS = ConcurrentHashMap.newKeySet();
+	private static final Set<Topic> DEFAULT_TOPICS = Set.of(Topic.group("general"));
 	private static final Map<String, Topic> TOPICS = new ConcurrentHashMap<>();
+	private static int TOPICS_HASH_CODE;
 
 	private final Set<String> onlineUsers = ConcurrentHashMap.newKeySet();
 	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
 
 	private final SimpMessagingTemplate template;
 	private final PlayerService playerService;
+	private final PersistenceService persistenceService;
 
-	public TopicService(SimpMessagingTemplate template, PlayerService playerService) {
+	public TopicService(SimpMessagingTemplate template, PlayerService playerService, PersistenceService persistenceService) {
 		this.template = template;
 		this.playerService = playerService;
-		Topic general = Topic.group("general");
-		TOPICS.put(general.getName(), general);
-		DEFAULT_TOPICS.add(general);
+		this.persistenceService = persistenceService;
+	}
+
+	@PostConstruct
+	public void init() {
+		persistenceService.read().forEach(t -> TOPICS.put(t.getName(), t));
+
+		for (Topic topic : DEFAULT_TOPICS) {
+			if (!TOPICS.containsKey(topic.getName())) {
+				TOPICS.put(topic.getName(), topic);
+			}
+		}
+
+		TOPICS_HASH_CODE = TOPICS.hashCode();
+	}
+
+	@PreDestroy
+	public void destroy() {
+		persist();
 	}
 
 	Collection<Message> messages(String user, String topicName) {
@@ -174,5 +201,16 @@ public class TopicService {
 
 	void schedule(Runnable command, Duration duration) {
 		executor.schedule(command, duration.toMillis(), TimeUnit.MILLISECONDS);
+	}
+
+	@Scheduled(fixedRateString = PERSISTING_PERIOD)
+	private void persist() {
+		int hashCode = TOPICS.hashCode();
+		if (hashCode == TOPICS_HASH_CODE) {
+			log.debug("No need to persist topics. Hash code is same");
+			return;
+		}
+		TOPICS_HASH_CODE = hashCode;
+		TOPICS.values().forEach(persistenceService::persist);
 	}
 }
