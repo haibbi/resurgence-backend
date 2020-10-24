@@ -37,7 +37,7 @@ public class TopicService {
 	private static final String PLAYERS_DESTINATION = "/players";
 	private static final String SUBSCRIPTION_DESTINATION = "/subscriptions";
 
-	private static final Set<Topic> DEFAULT_TOPICS = Set.of(Topic.group("general"));
+	private static final Set<String> DEFAULT_TOPICS = Set.of("general");
 	private static final Map<String, Topic> TOPICS = new ConcurrentHashMap<>();
 	private static int TOPICS_HASH_CODE;
 
@@ -58,9 +58,10 @@ public class TopicService {
 	public void init() {
 		persistenceService.read().forEach(t -> TOPICS.put(t.getName(), t));
 
-		for (Topic topic : DEFAULT_TOPICS) {
-			if (!TOPICS.containsKey(topic.getName())) {
-				TOPICS.put(topic.getName(), topic);
+		for (String topic : DEFAULT_TOPICS) {
+			if (!TOPICS.containsKey(Topic.GROUP_TOPIC_PREFIX + topic)) {
+				Topic groupTopic = Topic.group(topic);
+				TOPICS.put(groupTopic.getName(), groupTopic);
 			}
 		}
 
@@ -150,7 +151,11 @@ public class TopicService {
 			TokenAuthentication authentication = (TokenAuthentication) user;
 			String playerName = authentication.getPlayerName();
 			onlineUsers.add(playerName);
-			DEFAULT_TOPICS.forEach(t -> t.subscribe(playerName));
+			DEFAULT_TOPICS.stream()
+				.map(s -> Topic.GROUP_TOPIC_PREFIX + s)
+				.map(TOPICS::get)
+				.filter(Objects::nonNull)
+				.forEach(t -> t.subscribe(playerName));
 			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
 		}
 	}

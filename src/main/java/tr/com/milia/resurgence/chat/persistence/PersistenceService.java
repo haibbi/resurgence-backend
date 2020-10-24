@@ -3,6 +3,8 @@ package tr.com.milia.resurgence.chat.persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.chat.Topic;
@@ -19,9 +21,11 @@ public class PersistenceService {
 	private static final Logger log = LoggerFactory.getLogger(PersistenceService.class);
 
 	private final TopicRepository repository;
+	private final MessageRepository messageRepository;
 
-	public PersistenceService(TopicRepository repository) {
+	public PersistenceService(TopicRepository repository, MessageRepository messageRepository) {
 		this.repository = repository;
+		this.messageRepository = messageRepository;
 	}
 
 	public void persist(Topic toSave) {
@@ -51,9 +55,11 @@ public class PersistenceService {
 				.map(Subscription::getId)
 				.map(SubscriptionId::getName)
 				.collect(Collectors.toSet());
-			List<tr.com.milia.resurgence.chat.Message> messages = t.getMessages().stream()
-				.map(m -> new tr.com.milia.resurgence.chat.Message(m.getSequence(),
-					m.getContent(), m.getFrom(), m.getTime()))
+			List<tr.com.milia.resurgence.chat.Message> messages = messageRepository
+				.findAll(PageRequest.of(0, 24, Sort.by("id.sequence").descending()))
+				.get()
+				.map(m -> new tr.com.milia.resurgence.chat.Message(
+					m.getSequence(), m.getContent(), m.getFrom(), m.getTime()))
 				.collect(Collectors.toList());
 			return new Topic(t.getName(), subscriptions, messages);
 		}).collect(Collectors.toSet());
