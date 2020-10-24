@@ -203,7 +203,7 @@ public class TopicService {
 		executor.schedule(command, duration.toMillis(), TimeUnit.MILLISECONDS);
 	}
 
-	@Scheduled(fixedRateString = PERSISTING_PERIOD)
+	@Scheduled(initialDelayString = PERSISTING_PERIOD, fixedRateString = PERSISTING_PERIOD)
 	private void persist() {
 		int hashCode = TOPICS.hashCode();
 		if (hashCode == TOPICS_HASH_CODE) {
