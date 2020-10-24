@@ -59,7 +59,7 @@ public class PersistenceService {
 				.map(SubscriptionId::getName)
 				.collect(Collectors.toSet());
 			List<tr.com.milia.resurgence.chat.Message> messages = messageRepository
-				.findAll(PageRequest.of(0, 24, Sort.by("id.sequence").descending()))
+				.findAllById_Topic_Name(t.getName(), PageRequest.of(0, 24, Sort.by("id.sequence").descending()))
 				.get()
 				.map(m -> new tr.com.milia.resurgence.chat.Message(
 					m.getSequence(), m.getContent(), m.getFrom(), m.getTime()))
