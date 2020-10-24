@@ -1,44 +1,69 @@
 package tr.com.milia.resurgence.chat;
 
-import java.util.UUID;
+import java.time.Instant;
+import java.util.Objects;
 
-public class Message {
+public class Message implements Comparable<Message> {
 
-	private final UUID id;
-	private String content;
-	private Type type;
+	private final long sequence;
+	private final String content;
+	private final String from;
+	private final Instant time;
 
-	public Message(String content) {
-		this(content, Type.MESSAGE);
+	public Message(long sequence, String content, String from) {
+		this(sequence, content, from, Instant.now());
 	}
 
-	public Message(Type type) {
-		this(null, type);
+	public Message(long sequence, String content, String from, Instant time) {
+		this.sequence = sequence;
+		this.content = content;
+		this.from = from;
+		this.time = time;
 	}
 
-	public Message(String content, Type type) {
-		id = UUID.randomUUID();
-		this.type = type;
-		setContent(content);
-	}
-
-	public UUID getId() {
-		return id;
+	public long getSequence() {
+		return sequence;
 	}
 
 	public String getContent() {
 		return content;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public String getFrom() {
+		return from;
 	}
 
-	public Type getType() {
-		return type;
+	public Instant getTime() {
+		return time;
 	}
 
-	public void setType(Type type) {
-		this.type = type;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Message message = (Message) o;
+		return sequence == message.sequence &&
+			Objects.equals(content, message.content) &&
+			Objects.equals(from, message.from) &&
+			time.equals(message.time);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sequence, content, from, time);
+	}
+
+	@Override
+	public int compareTo(Message o) {
+		return Long.compare(sequence, o.sequence);
+	}
+
+	@Override
+	public String toString() {
+		return "Message{" +
+			"sequence=" + sequence +
+			", content='" + content + '\'' +
+			", from='" + from + '\'' +
+			'}';
 	}
 }

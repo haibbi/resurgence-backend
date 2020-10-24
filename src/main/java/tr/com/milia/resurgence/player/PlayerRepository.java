@@ -2,6 +2,7 @@ package tr.com.milia.resurgence.player;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 interface PlayerRepository extends JpaRepository<Player, Long> {
@@ -10,4 +11,5 @@ interface PlayerRepository extends JpaRepository<Player, Long> {
 
 	Optional<Player> findByName(String name);
 
+	List<Player> findAllByNameContains(String name);
 }
