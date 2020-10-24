@@ -21,13 +21,6 @@ public class Topic {
 	)
 	private Set<Subscription> subscriptions = new HashSet<>();
 
-	@OneToMany(
-		cascade = CascadeType.ALL,
-		orphanRemoval = true,
-		mappedBy = "id.topic"
-	)
-	private Set<Message> messages = new HashSet<>();
-
 	public Topic() {
 	}
 
@@ -49,14 +42,6 @@ public class Topic {
 
 	public void setSubscriptions(Set<Subscription> subscriptions) {
 		this.subscriptions = subscriptions;
-	}
-
-	public Set<Message> getMessages() {
-		return messages;
-	}
-
-	public void setMessages(Set<Message> messages) {
-		this.messages = messages;
 	}
 
 	@Override

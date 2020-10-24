@@ -74,7 +74,6 @@ public class Topic {
 
 	Message generateMessage(String from, String text) {
 		Message message = new Message(this.sequenceGenerator.incrementAndGet(), text, from);
-		if (messages.size() > 24) this.messages.removeFirst();
 		this.messages.addLast(message);
 		return message;
 	}
@@ -116,5 +115,11 @@ public class Topic {
 	public int hashCode() {
 		int messagesHashCode = Arrays.hashCode(messages.toArray());
 		return Objects.hash(name, subscriptions, sequenceGenerator.get(), messagesHashCode);
+	}
+
+	public void drainMessages() {
+		while (this.messages.size() > 24) {
+			this.messages.removeFirst();
+		}
 	}
 }

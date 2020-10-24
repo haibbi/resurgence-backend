@@ -42,9 +42,12 @@ public class PersistenceService {
 			.collect(Collectors.toSet());
 
 		topic.setSubscriptions(subscriptions);
-		topic.setMessages(messages);
 
 		repository.save(topic);
+		messageRepository.saveAll(messages);
+
+		toSave.drainMessages();
+
 		log.debug("Topic[{}] persisting completed.", toSave.getName());
 	}
 
