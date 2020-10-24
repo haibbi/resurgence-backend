@@ -23,7 +23,7 @@
         <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
         <firebase-admin.version>7.0.1</firebase-admin.version>
         <!-- https://mvnrepository.com/artifact/org.zalando/logbook-spring-boot-starter -->
-        <logbook.version>2.2.1</logbook.version>
+        <logbook.version>2.3.0</logbook.version>
         <!-- https://mvnrepository.com/artifact/io.sentry/sentry-spring-boot-starter -->
         <sentry.version>3.1.1</sentry.version>
     </properties>
