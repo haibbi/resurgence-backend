@@ -2,12 +2,14 @@ package tr.com.milia.resurgence.player;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 import tr.com.milia.resurgence.security.TokenAuthentication;
 
 import java.io.IOException;
@@ -68,5 +70,15 @@ public class PlayerController {
 			log.error("Player image file cannot read", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
+	}
+
+	@GetMapping("/image/{player}")
+	public ResponseEntity<Void> image(@PathVariable("player") String player) {
+		String playerImageURL = service.findByName(player).map(Player::getImage)
+			.orElseGet(() -> UriComponentsBuilder.fromPath("/static/player/default_image.png").toUriString());
+
+		return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+			.header(HttpHeaders.LOCATION, playerImageURL)
+			.build();
 	}
 }
