@@ -29,8 +29,11 @@ public enum Task implements LocaleEnum {
 		5_000,
 		2_000,
 		ofMinutes(1),
-		Map.of(Item.GLOCK, DropDetail.of(1, .10)),
-		Map.of(Item.Category.WEAPON, 1L)),
+		Map.of(
+			Item.GLOCK, DropDetail.of(1, .10),
+			Item.BULLET, DropDetail.of(5, .50)
+		),
+		Map.of(Item.Category.MELEE, 1L)),
 
 	PARKING_LOT_ROBBERY(100,
 		Set.of(SNEAK),
@@ -49,6 +52,18 @@ public enum Task implements LocaleEnum {
 		ofMinutes(2),
 		Map.of(Item.SHOTGUN, DropDetail.of(1, .10)),
 		Map.of(Item.Category.WEAPON, 1L, Item.Category.BULLET, 50L)),
+
+	FEDERAL_RESERVE(201,
+		Set.of(SNEAK),
+		Set.of(SNEAK),
+		105_000,
+		10_000,
+		ofMinutes(15),
+		Map.of(
+			Item.SHOTGUN, DropDetail.of(1, .80),
+			Item.BULLET, DropDetail.of(15, .50)
+		),
+		Map.of(Item.Category.WEAPON, 2L, Item.Category.VEHICLE, 1L)),
 
 	BEER_SMUGGLING(
 		100,
