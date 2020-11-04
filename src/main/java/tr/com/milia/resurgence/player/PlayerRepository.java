@@ -11,5 +11,5 @@ interface PlayerRepository extends JpaRepository<Player, Long> {
 
 	Optional<Player> findByName(String name);
 
-	List<Player> findAllByNameContains(String name);
+	List<Player> findAllByNameContainsIgnoreCase(String name);
 }

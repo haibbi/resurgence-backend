@@ -52,7 +52,7 @@ public class PlayerService {
 	}
 
 	public List<Player> filterByName(String playerName) {
-		return repository.findAllByNameContains(playerName);
+		return repository.findAllByNameContainsIgnoreCase(playerName);
 	}
 
 	@EventListener(TaskSucceedResult.class)
