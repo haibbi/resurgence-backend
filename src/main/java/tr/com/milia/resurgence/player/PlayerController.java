@@ -74,11 +74,16 @@ public class PlayerController {
 
 	@GetMapping("/image/{player}")
 	public ResponseEntity<Void> image(@PathVariable("player") String player) {
-		String playerImageURL = service.findByName(player).map(Player::getImage)
-			.orElseGet(() -> UriComponentsBuilder.fromPath("/static/player/default_image.png").toUriString());
+		final String playerImageURL = service.findByName(player).map(p -> {
+			if (p.getImage() == null)
+				return raceImageLocation(p.getRace());
+			return p.getImage();
+		}).orElseGet(() -> raceImageLocation(Race.COSA_NOSTRA)); // default cosa nostra image
 
-		return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-			.header(HttpHeaders.LOCATION, playerImageURL)
-			.build();
+		return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header(HttpHeaders.LOCATION, playerImageURL).build();
+	}
+
+	private String raceImageLocation(Race race) {
+		return UriComponentsBuilder.fromPath(String.format("/static/player/%s-256.png", race.name())).toUriString();
 	}
 }
