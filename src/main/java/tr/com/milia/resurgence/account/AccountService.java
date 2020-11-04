@@ -44,8 +44,7 @@ public class AccountService {
 
 	@Transactional
 	public void addToken(String accountEmail, String token) {
-		Account account = findByEmail(accountEmail).orElseThrow();
-		account.addPushNotificationToken(token);
+		findByEmail(accountEmail).ifPresent(account -> account.addPushNotificationToken(token));
 	}
 
 	@Transactional
