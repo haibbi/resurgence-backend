@@ -2,6 +2,7 @@ package tr.com.milia.resurgence.chat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -36,6 +37,7 @@ public class TopicService {
 	private static final String ONLINE_USERS_DESTINATION = "/online-players";
 	private static final String PLAYERS_DESTINATION = "/players";
 	private static final String SUBSCRIPTION_DESTINATION = "/subscriptions";
+	private static final String NOTE_DESTINATION = "/unread";
 
 	private static final Set<String> DEFAULT_TOPICS = Set.of("general");
 	private static final Map<String, Topic> TOPICS = new ConcurrentHashMap<>();
@@ -47,11 +49,16 @@ public class TopicService {
 	private final SimpMessagingTemplate template;
 	private final PlayerService playerService;
 	private final PersistenceService persistenceService;
+	private final ApplicationEventPublisher eventPublisher;
 
-	public TopicService(SimpMessagingTemplate template, PlayerService playerService, PersistenceService persistenceService) {
+	public TopicService(SimpMessagingTemplate template,
+						PlayerService playerService,
+						PersistenceService persistenceService,
+						ApplicationEventPublisher eventPublisher) {
 		this.template = template;
 		this.playerService = playerService;
 		this.persistenceService = persistenceService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@PostConstruct
@@ -84,11 +91,11 @@ public class TopicService {
 		return topic.getMessages();
 	}
 
-	Collection<Subscription> subscriptions(String user) {
+	Collection<SubscriptionResponse> subscriptions(String user) {
 		Objects.requireNonNull(user);
 		return TOPICS.values().stream()
 			.filter(t -> t.hasSubscription(user))
-			.map(t -> new Subscription(t.getName(), t.subscriptionName(user)))
+			.map(t -> new SubscriptionResponse(t.getName(), t.subscriptionName(user), t.unread(user)))
 			.collect(Collectors.toList());
 	}
 
@@ -110,8 +117,8 @@ public class TopicService {
 	}
 
 	void sendSubscriptions(String user) {
-		Collection<Subscription> subscriptions = subscriptions(user);
-		template.convertAndSendToUser(user, SUBSCRIPTION_DESTINATION, subscriptions);
+		Collection<SubscriptionResponse> subscriptionResponses = subscriptions(user);
+		template.convertAndSendToUser(user, SUBSCRIPTION_DESTINATION, subscriptionResponses);
 	}
 
 	public void sendMessage(String playerName, String topicName, String text) {
@@ -120,7 +127,17 @@ public class TopicService {
 		if (!topic.hasSubscription(playerName)) return;
 
 		Message message = topic.generateMessage(playerName, text);
-		topic.getSubscriptions().forEach(s -> sendMessageInternal(s, topicName, message));
+		topic.getSubscriptions().forEach(s -> {
+			final String user = s.getName();
+			sendMessageInternal(user, topicName, message);
+
+			template.convertAndSendToUser(user, NOTE_DESTINATION,
+				Map.of("topic", topic.getName(), "unread", topic.unread(user)));
+
+			if (!topic.isGroup() && !onlineUsers.contains(user)) {
+				eventPublisher.publishEvent(new ChatMessageEvent(playerName, user, text));
+			}
+		});
 	}
 
 	public void sendMessages(String playerName, final String topicName) {
@@ -196,10 +213,10 @@ public class TopicService {
 	}
 
 	public void filterAndSendPlayer(String currentPlayer, String playerName) {
-		List<Subscription> playerNames = playerService.filterByName(playerName).stream()
+		List<SubscriptionResponse> playerNames = playerService.filterByName(playerName).stream()
 			.map(Player::getName)
 			.filter(pn -> !currentPlayer.equals(pn))
-			.map(p -> new Subscription(Topic.p2pName(currentPlayer, p), p))
+			.map(p -> new SubscriptionResponse(Topic.p2pName(currentPlayer, p), p, false))
 			.collect(Collectors.toList());
 		template.convertAndSendToUser(currentPlayer, PLAYERS_DESTINATION, playerNames);
 	}
@@ -217,5 +234,15 @@ public class TopicService {
 		}
 		TOPICS_HASH_CODE = hashCode;
 		TOPICS.values().forEach(persistenceService::persist);
+	}
+
+	public void read(String user, String topicName) {
+		Topic topic = TOPICS.get(topicName);
+		if (topic == null) return;
+		if (!topic.hasSubscription(user)) return;
+
+		topic.read(user);
+		template.convertAndSendToUser(user, NOTE_DESTINATION,
+			Map.of("topic", topic.getName(), "unread", topic.unread(user)));
 	}
 }

@@ -34,7 +34,7 @@ public class PersistenceService {
 			new tr.com.milia.resurgence.chat.persistence.Topic(toSave.getName());
 
 		final Set<Subscription> subscriptions = toSave.getSubscriptions().stream()
-			.map(s -> new Subscription(topic, s))
+			.map(s -> new Subscription(topic, s.getName(), s.getRead()))
 			.collect(Collectors.toSet());
 
 		final Set<Message> messages = toSave.getMessages().stream()
@@ -54,9 +54,8 @@ public class PersistenceService {
 	@Transactional
 	public Collection<Topic> read() {
 		return repository.findAll().stream().map(t -> {
-			Set<String> subscriptions = t.getSubscriptions().stream()
-				.map(Subscription::getId)
-				.map(SubscriptionId::getName)
+			Set<tr.com.milia.resurgence.chat.Subscription> subscriptions = t.getSubscriptions().stream()
+				.map(s -> new tr.com.milia.resurgence.chat.Subscription(s.getId().getName(), s.getSequence()))
 				.collect(Collectors.toSet());
 			List<tr.com.milia.resurgence.chat.Message> messages = messageRepository
 				.findAllById_Topic_Name(t.getName(), PageRequest.of(0, 24, Sort.by("id.sequence").descending()))

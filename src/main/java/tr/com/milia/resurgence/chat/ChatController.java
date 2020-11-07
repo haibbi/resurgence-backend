@@ -27,7 +27,7 @@ public class ChatController {
 	}
 
 	@MessageMapping("/send/{topic}")
-	public void greeting(
+	public void send(
 		String message,
 		TokenAuthentication authentication,
 		@DestinationVariable("topic") String topic
@@ -39,5 +39,10 @@ public class ChatController {
 	public void p2p(TokenAuthentication authentication, @DestinationVariable("peer") String peer) {
 		String currentPlayer = authentication.getPlayerName();
 		service.createP2PTopic(currentPlayer, peer);
+	}
+
+	@MessageMapping("/read/{topic}")
+	public void read(TokenAuthentication authentication, @DestinationVariable("topic") String topic) {
+		service.read(authentication.getPlayerName(), topic);
 	}
 }

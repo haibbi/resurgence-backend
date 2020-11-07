@@ -12,14 +12,21 @@ public class Subscription implements Serializable {
 	@EmbeddedId
 	private SubscriptionId id;
 
+	private long sequence;
+
 	public Subscription() {
 	}
 
-	public Subscription(Topic topic, String name) {
+	public Subscription(Topic topic, String name, long sequence) {
 		this.id = new SubscriptionId(topic, name);
+		this.sequence = sequence;
 	}
 
 	public SubscriptionId getId() {
 		return id;
+	}
+
+	public long getSequence() {
+		return sequence;
 	}
 }

@@ -10,7 +10,7 @@ public class Topic {
 	public static final String GROUP_TOPIC_PREFIX = "grp";
 
 	private final String name;
-	private final Set<String> subscriptions = new HashSet<>();
+	private final Set<Subscription> subscriptions = new HashSet<>();
 	private final ConcurrentLinkedDeque<Message> messages = new ConcurrentLinkedDeque<>();
 	private final AtomicLong sequenceGenerator = new AtomicLong(0);
 
@@ -18,7 +18,7 @@ public class Topic {
 		this.name = Objects.requireNonNull(name);
 	}
 
-	public Topic(String name, Set<String> subscriptions, List<Message> messages) {
+	public Topic(String name, Set<Subscription> subscriptions, List<Message> messages) {
 		this(name);
 		this.subscriptions.addAll(subscriptions);
 		messages.sort(Message::compareTo);
@@ -27,6 +27,7 @@ public class Topic {
 		try {
 			lastSequence = this.messages.getLast().getSequence();
 		} catch (NoSuchElementException ignored) {
+			// ignored
 		}
 		this.sequenceGenerator.set(lastSequence);
 	}
@@ -61,15 +62,15 @@ public class Topic {
 	}
 
 	void subscribe(String subscription) {
-		subscriptions.add(subscription);
+		subscriptions.add(new Subscription(subscription));
 	}
 
 	void unsubscribe(String subscription) {
-		subscriptions.remove(subscription);
+		subscriptions.remove(new Subscription(subscription));
 	}
 
 	boolean hasSubscription(String subscription) {
-		return subscriptions.contains(subscription);
+		return subscriptions.contains(new Subscription(subscription));
 	}
 
 	Message generateMessage(String from, String text) {
@@ -81,8 +82,8 @@ public class Topic {
 	String subscriptionName(String user) {
 		if (name.startsWith(GROUP_TOPIC_PREFIX)) return name.substring(GROUP_TOPIC_PREFIX.length());
 		if (name.startsWith(P2P_TOPIC_PREFIX) && subscriptions.size() == 2) {
-			for (String subscription : subscriptions) {
-				if (!subscription.equals(user)) return subscription;
+			for (Subscription subscription : subscriptions) {
+				if (!subscription.getName().equals(user)) return subscription.getName();
 			}
 		}
 		return name;
@@ -96,7 +97,7 @@ public class Topic {
 		return name;
 	}
 
-	public Set<String> getSubscriptions() {
+	public Set<Subscription> getSubscriptions() {
 		return Collections.unmodifiableSet(subscriptions);
 	}
 
@@ -121,5 +122,24 @@ public class Topic {
 		while (this.messages.size() > 24) {
 			this.messages.removeFirst();
 		}
+	}
+
+	public boolean isGroup() {
+		return name.startsWith(GROUP_TOPIC_PREFIX);
+	}
+
+
+	boolean unread(String user) {
+		return sequenceGenerator.get() > subscriptions.stream()
+			.filter(s -> s.getName().equals(user))
+			.map(Subscription::getRead)
+			.findFirst()
+			.orElse(0L);
+	}
+
+	public void read(String user) {
+		subscriptions.stream()
+			.filter(s -> s.getName().equals(user))
+			.forEach(s -> s.setRead(sequenceGenerator.get()));
 	}
 }

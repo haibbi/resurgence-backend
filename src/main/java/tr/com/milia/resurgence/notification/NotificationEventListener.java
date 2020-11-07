@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.account.Account;
 import tr.com.milia.resurgence.account.AccountService;
 import tr.com.milia.resurgence.bank.InterestCompletedEvent;
+import tr.com.milia.resurgence.chat.ChatMessageEvent;
 import tr.com.milia.resurgence.family.FamilyMemberFiredEvent;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.PlayerService;
@@ -67,6 +68,7 @@ public class NotificationEventListener {
 			locale);
 
 		sendNotification(player, title, body);
+		messageService.send(player, title, body);
 	}
 
 	@Async
@@ -86,6 +88,7 @@ public class NotificationEventListener {
 
 
 		sendNotification(player, title, body);
+		messageService.send(player, title, body);
 	}
 
 	@Async
@@ -117,10 +120,18 @@ public class NotificationEventListener {
 		}
 
 		sendNotification(player, title, body);
+		messageService.send(player, title, body);
+	}
+
+	@Async
+	@Transactional
+	@EventListener(ChatMessageEvent.class)
+	public void on(ChatMessageEvent event) {
+		playerService.findByName(event.getTo())
+			.ifPresent(player -> sendNotification(player, event.getFrom(), event.getContent()));
 	}
 
 	private void sendNotification(Player player, String title, String body) {
-		messageService.send(player, title, body);
 		Account account = player.getAccount();
 		Set<String> tokens = account.getPushNotificationTokens();
 
