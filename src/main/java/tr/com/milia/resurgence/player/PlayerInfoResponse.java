@@ -1,9 +1,7 @@
 package tr.com.milia.resurgence.player;
 
-import tr.com.milia.resurgence.family.Chief;
 import tr.com.milia.resurgence.family.Family;
 
-import java.util.Collection;
 import java.util.Optional;
 
 class PlayerInfoResponse {
@@ -29,20 +27,7 @@ class PlayerInfoResponse {
 		honor = player.getHonor();
 		Optional<Family> optionalFamily = player.getFamily();
 		family = optionalFamily.map(Family::getName).orElse(null);
-		boolean isBoss = optionalFamily.map(Family::getBoss)
-			.map(Player::getName)
-			.stream()
-			.anyMatch(n -> n.equals(nickname));
-		boolean isCapo = false;
-		if (!isBoss) {
-			isCapo = optionalFamily.map(Family::getChiefs)
-				.stream()
-				.flatMap(Collection::stream)
-				.map(Chief::getChief)
-				.map(Player::getName)
-				.anyMatch(s -> s.equals(nickname));
-		}
-		title = Title.find(player.getExperience(), isCapo, isBoss, true);
+		title = player.getTitle();
 		if (!restricted) {
 			experience = player.getExperience();
 			usableHonor = player.getUsableHonor();

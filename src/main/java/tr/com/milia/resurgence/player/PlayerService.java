@@ -62,6 +62,7 @@ public class PlayerService {
 		var player = result.getPlayer();
 		player.increaseBalance(result.getMoneyGain());
 		player.gainEXP(result.getExperienceGain());
+		repository.save(player);
 	}
 
 	@Transactional

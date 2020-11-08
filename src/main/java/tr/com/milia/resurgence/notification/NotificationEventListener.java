@@ -16,6 +16,7 @@ import tr.com.milia.resurgence.bank.InterestCompletedEvent;
 import tr.com.milia.resurgence.chat.ChatMessageEvent;
 import tr.com.milia.resurgence.family.FamilyMemberFiredEvent;
 import tr.com.milia.resurgence.player.Player;
+import tr.com.milia.resurgence.player.PlayerLevelUpEvent;
 import tr.com.milia.resurgence.player.PlayerService;
 import tr.com.milia.resurgence.task.multiplayer.MultiplayerTaskResultEvent;
 
@@ -27,6 +28,7 @@ import java.util.Set;
 public class NotificationEventListener {
 
 	private static final Logger log = LoggerFactory.getLogger(NotificationEventListener.class);
+	private static final Locale LOCALE = new Locale("tr", "TR");
 
 	private final FirebaseService firebaseService;
 	private final AccountService accountService;
@@ -61,7 +63,7 @@ public class NotificationEventListener {
 		Player player = optionalPlayer.get();
 		long amount = event.getAmount();
 
-		Locale locale = Locale.ENGLISH; // todo get account or player locale
+		Locale locale = LOCALE; // todo get account or player locale
 
 		String title = messageSource.getMessage("push.message.interest.complete.title", null, locale);
 		String body = messageSource.getMessage("push.message.interest.complete.body", new Object[]{amount},
@@ -80,7 +82,7 @@ public class NotificationEventListener {
 
 		Player player = optionalPlayer.get();
 
-		Locale locale = Locale.ENGLISH; // todo get account or player locale
+		Locale locale = LOCALE; // todo get account or player locale
 
 		String title = messageSource.getMessage("push.message.fired.from.family.title", null, locale);
 		String body = messageSource.getMessage("push.message.fired.from.family.body",
@@ -100,7 +102,7 @@ public class NotificationEventListener {
 
 		Player player = optionalPlayer.get();
 
-		Locale locale = Locale.ENGLISH; // todo get account or player locale
+		Locale locale = LOCALE; // todo get account or player locale
 
 		final String title;
 		final String body;
@@ -129,6 +131,23 @@ public class NotificationEventListener {
 	public void on(ChatMessageEvent event) {
 		playerService.findByName(event.getTo())
 			.ifPresent(player -> sendNotification(player, event.getFrom(), event.getContent()));
+	}
+
+	@Async
+	@Transactional
+	@EventListener(PlayerLevelUpEvent.class)
+	public void on(PlayerLevelUpEvent event) {
+		final Player player = playerService.findByName(event.getPlayerName()).orElseThrow();
+
+		final Locale locale = LOCALE; // todo get account or player locale
+
+		final String playerNewTitle = enumMessageSource.getMessage(event.getNewTitle(), locale);
+
+		final String title = messageSource.getMessage("push.message.level.up.title", null, locale);
+		final String body = messageSource.getMessage("push.message.level.up.body", new Object[]{playerNewTitle}, locale);
+
+		messageService.send(player, title, body);
+		sendNotification(player, title, body);
 	}
 
 	private void sendNotification(Player player, String title, String body) {

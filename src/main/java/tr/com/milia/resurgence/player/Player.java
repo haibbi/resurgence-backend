@@ -9,10 +9,7 @@ import tr.com.milia.resurgence.skill.PlayerSkill;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Player extends AbstractAggregateRoot<Player> {
@@ -108,7 +105,13 @@ public class Player extends AbstractAggregateRoot<Player> {
 	}
 
 	public void gainEXP(int value) {
+		final Title oldTitle = getTitle();
 		experience += value;
+		final Title newTitle = getTitle();
+
+		if (oldTitle != newTitle) {
+			registerEvent(new PlayerLevelUpEvent(name, newTitle));
+		}
 	}
 
 	public int getExperience() {
@@ -173,6 +176,24 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public Optional<Chief> getChief() {
 		return Optional.ofNullable(chief);
+	}
+
+	public Title getTitle() {
+		Optional<Family> family = getFamily();
+		boolean isBoss = family.map(Family::getBoss)
+			.map(Player::getName)
+			.stream()
+			.anyMatch(n -> n.equals(name));
+		boolean isCapo = false;
+		if (!isBoss) {
+			isCapo = family.map(Family::getChiefs)
+				.stream()
+				.flatMap(Collection::stream)
+				.map(Chief::getChief)
+				.map(Player::getName)
+				.anyMatch(s -> s.equals(name));
+		}
+		return Title.find(experience, isCapo, isBoss, true);
 	}
 
 	@Override
