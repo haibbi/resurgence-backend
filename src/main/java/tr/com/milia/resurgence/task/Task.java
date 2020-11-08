@@ -51,7 +51,7 @@ public enum Task implements LocaleEnum {
 		5_000,
 		ofMinutes(2),
 		Map.of(Item.SHOTGUN, DropDetail.of(1, .10)),
-		Map.of(Item.Category.WEAPON, 1L, Item.Category.BULLET, 50L)),
+		Map.of(Item.Category.WEAPON, 1L, Item.Category.BULLET, 5L)),
 
 	FEDERAL_RESERVE(201,
 		Set.of(SNEAK),
