@@ -29,7 +29,7 @@ public class ItemService {
 		Item item = event.getItem();
 		long change = event.getChange();
 		long newPrice = initialPrices.get(item) + change;
-		log.debug(item.name() + " price change. old/new/change {}/{}/{}", item.getPrice(), newPrice, change);
+		log.trace(item.name() + " price change. old/new/change {}/{}/{}", item.getPrice(), newPrice, change);
 		updateItemPrice(item, newPrice);
 	}
 

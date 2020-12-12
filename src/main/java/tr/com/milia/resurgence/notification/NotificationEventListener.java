@@ -155,7 +155,7 @@ public class NotificationEventListener {
 		Set<String> tokens = account.getPushNotificationTokens();
 
 		if (tokens.isEmpty()) {
-			log.warn("Can not send notification, account[{}] does not have a push message token. title[{}] body[{}]",
+			log.info("Can not send notification, account[{}] does not have a push message token. title[{}] body[{}]",
 				account.getEmail(), title, body);
 			return;
 		}
@@ -165,7 +165,7 @@ public class NotificationEventListener {
 			try {
 				firebaseService.sendSimpleNotificationToUser(token, title, body);
 			} catch (FirebaseMessagingException e) {
-				log.error("Can not send notification to user[{}]. title[{}] body[{}]",
+				log.warn("Can not send notification to user[{}]. title[{}] body[{}]",
 					account.getEmail(), title, body, e);
 				switch (e.getMessagingErrorCode()) {
 					case UNREGISTERED, INVALID_ARGUMENT,
