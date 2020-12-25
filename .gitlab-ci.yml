@@ -1,4 +1,4 @@
-image: maven:3-jdk-14
+image: maven:3.6.3-openjdk-15
 
 cache:
   paths:
@@ -8,24 +8,18 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2"
 
 stages:
-  - test
   - build_image
-
-test:
-  stage: test
-  script:
-    - mvn test
 
 build_image:
   stage: build_image
-  services:
-    - docker:dind
   variables:
-    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+    DOCKER_TLS_VERIFY: 0
     DOCKER_DRIVER: overlay2
   script:
-    - mvn clean compile jib:build
-      -Djib.to.image=$CI_REGISTRY_IMAGE
-      -Djib.to.auth.username=$CI_REGISTRY_USER
-      -Djib.to.auth.password=$CI_REGISTRY_PASSWORD
-      -Djib.to.tags=$CI_COMMIT_SHORT_SHA,latest
+    - mvn spring-boot:build-image
+      -Dspring-boot.build-image.imageName=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      -DpublishRegistryUrl=https://registry.gitlab.com/tosk/resurgence/backend
+      -DpublishRegistryUsername=$CI_REGISTRY_USER
+      -DpublishRegistryPassword=$CI_REGISTRY_PASSWORD
+      -Dspring-boot.build-image.publish=true
