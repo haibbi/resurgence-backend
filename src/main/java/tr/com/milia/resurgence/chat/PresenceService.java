@@ -26,12 +26,20 @@ public class PresenceService {
 	}
 
 	public void save(Presence presence) {
-		executor.execute(() -> onlineStateRepository.save(
-			new OnlineState(presence)));
+		executor.execute(() -> {
+			onlineStateRepository.save(new OnlineState(presence));
+			if (!presence.isOnline()) {
+				sendPresenceInfo();
+			}
+		});
 	}
 
 	@EventListener(value = TopicSubscribeEvent.class, condition = "#event.userStat")
 	public void on(TopicSubscribeEvent event) {
+		sendPresenceInfo();
+	}
+
+	private void sendPresenceInfo() {
 		var onlineUsers = new LinkedList<String>();
 
 		var allUserStats = onlineStateRepository.findTopByName()
