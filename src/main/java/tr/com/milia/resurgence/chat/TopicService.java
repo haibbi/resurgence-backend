@@ -50,15 +50,18 @@ public class TopicService {
 	private final PlayerService playerService;
 	private final PersistenceService persistenceService;
 	private final ApplicationEventPublisher eventPublisher;
+	private final PresenceService presenceService;
 
 	public TopicService(SimpMessagingTemplate template,
 						PlayerService playerService,
 						PersistenceService persistenceService,
-						ApplicationEventPublisher eventPublisher) {
+						ApplicationEventPublisher eventPublisher,
+						PresenceService presenceService) {
 		this.template = template;
 		this.playerService = playerService;
 		this.persistenceService = persistenceService;
 		this.eventPublisher = eventPublisher;
+		this.presenceService = presenceService;
 	}
 
 	@PostConstruct
@@ -174,6 +177,7 @@ public class TopicService {
 				.filter(Objects::nonNull)
 				.forEach(t -> t.subscribe(playerName));
 			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
+			presenceService.save(Presence.online(playerName));
 		}
 	}
 
@@ -185,6 +189,7 @@ public class TopicService {
 			String playerName = authentication.getPlayerName();
 			onlineUsers.remove(playerName);
 			schedule(this::sendOnlineUsers, Duration.ofSeconds(1));
+			presenceService.save(Presence.offline(playerName));
 		}
 	}
 
