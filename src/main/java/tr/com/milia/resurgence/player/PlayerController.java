@@ -7,7 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import tr.com.milia.resurgence.security.TokenAuthentication;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/player")
@@ -29,20 +36,16 @@ public class PlayerController {
 		this.service = service;
 	}
 
-	@GetMapping
+	@GetMapping({"", "/", "/{name}"})
 	@Transactional(readOnly = true)
-	public ResponseEntity<PlayerInfoResponse> info(Principal principal) {
-		return service.findByUsername(principal.getName())
-			.map(PlayerInfoResponse::new)
-			.map(ResponseEntity::ok)
-			.orElseGet(() -> ResponseEntity.notFound().build());
-	}
-
-	@GetMapping("/{name}")
-	@Transactional(readOnly = true)
-	public ResponseEntity<PlayerInfoResponse> info(@PathVariable("name") String name) {
-		return service.findByName(name)
-			.map(p -> new PlayerInfoResponse(p, true))
+	public ResponseEntity<PlayerInfoResponse> info(
+		@PathVariable(value = "name", required = false) Optional<String> name,
+		TokenAuthentication authentication
+	) {
+		final String currentUser = authentication.getPlayerName();
+		final String requested = name.orElse(currentUser);
+		return service.findByName(requested)
+			.map(p -> new PlayerInfoResponse(p, !requested.equals(currentUser)))
 			.map(ResponseEntity::ok)
 			.orElseGet(() -> ResponseEntity.notFound().build());
 	}

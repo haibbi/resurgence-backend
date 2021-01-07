@@ -11,6 +11,7 @@ class PlayerInfoResponse {
 	private final int honor;
 	private final Title title;
 	private final String family;
+	private final Wealth wealth;
 	private Long balance;
 	private Integer health;
 	private Integer usableHonor;
@@ -34,6 +35,7 @@ class PlayerInfoResponse {
 			health = player.getHealth();
 			balance = player.getBalance();
 		}
+		wealth = Wealth.findByBalance(player.getBalance());
 	}
 
 	public String getNickname() {
@@ -58,6 +60,10 @@ class PlayerInfoResponse {
 
 	public String getFamily() {
 		return family;
+	}
+
+	public Wealth getWealth() {
+		return wealth;
 	}
 
 	public Long getBalance() {

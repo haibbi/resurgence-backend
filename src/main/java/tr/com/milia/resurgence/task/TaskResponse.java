@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class TaskResponse implements LocaleEnum {
 
-	private static final String LOCATION_FORMAT = "static/task/%s.png";
+	public static final String LOCATION_FORMAT = "static/task/%s.png";
 
 	private final Task task;
 	private final Difficulty difficulty;
