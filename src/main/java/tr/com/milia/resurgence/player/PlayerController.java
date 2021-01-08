@@ -42,7 +42,12 @@ public class PlayerController {
 		@PathVariable(value = "name", required = false) Optional<String> name,
 		TokenAuthentication authentication
 	) {
-		final String currentUser = authentication.getPlayerName();
+		final String currentUser;
+		try {
+			currentUser = authentication.getPlayerName();
+		} catch (PlayerNotFound e) {
+			return ResponseEntity.notFound().build();
+		}
 		final String requested = name.orElse(currentUser);
 		return service.findByName(requested)
 			.map(p -> new PlayerInfoResponse(p, !requested.equals(currentUser)))
