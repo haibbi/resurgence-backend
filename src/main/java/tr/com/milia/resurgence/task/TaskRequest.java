@@ -8,4 +8,8 @@ class TaskRequest {
 	public void setSelectedItems(Set<SelectedItem> selectedItems) {
 		this.selectedItems = selectedItems;
 	}
+
+	public Set<SelectedItem> getSelectedItems() {
+		return selectedItems;
+	}
 }

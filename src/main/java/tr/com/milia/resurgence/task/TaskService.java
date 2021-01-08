@@ -15,6 +15,7 @@ import tr.com.milia.resurgence.player.PlayerService;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,40 +54,7 @@ public class TaskService {
 			.player(player.getName())
 			.selectedItems(SelectedItem.fromMap(selectedItems));
 
-		var playerSkills = player.getSkills();
-
-		// todo level'den geleni ekle
-		// skill contribution
-		double sum = playerSkills.stream()
-			.filter(playerSkill -> task.getAuxiliary().contains(playerSkill.getSkill()))
-			.mapToDouble(playerSkill -> {
-				BigDecimal expertise = playerSkill.getExpertise();
-				double contribution = playerSkill.getSkill().contribution();
-				return expertise.multiply(BigDecimal.valueOf(contribution))
-					.divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
-					.doubleValue();
-			})
-			.sum();
-		info.skillContribution(sum);
-
-		// item contribution
-		sum += selectedItems.entrySet().stream()
-			.mapToLong(selectedItem -> {
-				Item item = selectedItem.getKey();
-				Long quantity = selectedItem.getValue();
-				return item.getSkillsContribution(task.getAuxiliary()) * quantity;
-			})
-			.sum();
-		info.itemContribution(sum);
-
-		// passive item contribution
-		sum += player.getItems().stream()
-			.filter(playerItem -> Item.PASSIVE.contains(playerItem.getItem()))
-			.mapToLong(p -> p.getItem().getSkillsContribution(task.getAuxiliary()))
-			.sum();
-		info.passiveItemContribution(sum);
-
-		double success = sum / task.getDifficulty();
+		double success = successRatio(task, player, SelectedItem.fromMap(selectedItems));
 
 		double random = RandomUtils.random();
 
@@ -113,6 +81,40 @@ public class TaskService {
 
 	protected Player findPlayer(String name) {
 		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
+	}
+
+	public double successRatio(Task task, Player player, Collection<SelectedItem> selectedItems) {
+		var playerSkills = player.getSkills();
+
+		// todo level'den geleni ekle
+		// skill contribution
+		double sum = playerSkills.stream()
+			.filter(playerSkill -> task.getAuxiliary().contains(playerSkill.getSkill()))
+			.mapToDouble(playerSkill -> {
+				BigDecimal expertise = playerSkill.getExpertise();
+				double contribution = playerSkill.getSkill().contribution();
+				return expertise.multiply(BigDecimal.valueOf(contribution))
+					.divide(BigDecimal.valueOf(100), RoundingMode.CEILING)
+					.doubleValue();
+			})
+			.sum();
+
+		// item contribution
+		sum += selectedItems.stream()
+			.mapToLong(selectedItem -> {
+				Item item = selectedItem.getItem();
+				long quantity = selectedItem.getQuantity();
+				return item.getSkillsContribution(task.getAuxiliary()) * quantity;
+			})
+			.sum();
+
+		// passive item contribution
+		sum += player.getItems().stream()
+			.filter(playerItem -> Item.PASSIVE.contains(playerItem.getItem()))
+			.mapToLong(p -> p.getItem().getSkillsContribution(task.getAuxiliary()))
+			.sum();
+
+		return sum / task.getDifficulty();
 	}
 
 }
