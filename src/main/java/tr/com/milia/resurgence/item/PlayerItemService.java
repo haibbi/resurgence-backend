@@ -125,6 +125,11 @@ public class PlayerItemService {
 		usedItems.forEach((item, count) -> removeItem(player, item, count));
 	}
 
+	@Transactional
+	public boolean use(Player player, Item item) {
+		return repository.findById_PlayerAndId_Item(player, item).map(pi -> pi.use(player)).orElseThrow();
+	}
+
 	private Player findPlayer(String name) {
 		return playerService.findByName(name).orElseThrow(PlayerNotFound::new);
 	}

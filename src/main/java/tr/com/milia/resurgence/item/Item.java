@@ -1,6 +1,7 @@
 package tr.com.milia.resurgence.item;
 
 import tr.com.milia.resurgence.i18n.LocaleEnum;
+import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.skill.Skill;
 import tr.com.milia.resurgence.task.Task;
 
@@ -12,31 +13,44 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
+import static tr.com.milia.resurgence.item.Item.Category.*;
+import static tr.com.milia.resurgence.item.Quality.*;
+import static tr.com.milia.resurgence.skill.Skill.*;
 
 public enum Item implements LocaleEnum {
 
 	// Money
-	MONEY(1, emptyMap(), Quality.WORTHLESS, Set.of(Category.MONEY)),
+	MONEY(1, emptyMap(), WORTHLESS, Set.of(Category.MONEY)),
 
 	// Melee
-	KNIFE(0, Map.of(Skill.SNEAK, 15), Quality.COMMON, Set.of(Category.MELEE)),
+	KNIFE(0, Map.of(SNEAK, 15), COMMON, Set.of(MELEE)),
 
 	// Weapon
-	GLOCK(100, Map.of(Skill.SNEAK, 20), Quality.COMMON, Set.of(Category.WEAPON)),
-	SHOTGUN(1000, Map.of(Skill.SNEAK, 25), Quality.RARE, Set.of(Category.WEAPON)),
+	GLOCK(100, Map.of(SNEAK, 20), COMMON, Set.of(WEAPON)),
+	SHOTGUN(1000, Map.of(SNEAK, 25), RARE, Set.of(WEAPON)),
+
+	// Bullet
+	BULLET(300, emptyMap(), COMMON, Set.of(Category.BULLET)),
 
 	// Vehicle
-	FORD_FIESTA(10_000, emptyMap(), Quality.COMMON, Set.of(Category.VEHICLE)),
-	MUSTANG(100_000, emptyMap(), Quality.RARE, Set.of(Category.VEHICLE)),
+	FORD_FIESTA(10_000, emptyMap(), COMMON, Set.of(VEHICLE)),
+	MUSTANG(100_000, emptyMap(), RARE, Set.of(VEHICLE)),
 
 	// Guards
-	JOE(100_000, Map.of(Skill.GUN_MASTERY, 10), Quality.COMMON, Set.of(Category.GUARD)),
+	JOE(100_000, Map.of(GUN_MASTERY, 10), COMMON, Set.of(GUARD)),
+
+	// Health
+	ASPIRIN(10_000, emptyMap(), WORTHLESS, Set.of(HEALTH), (player) -> {
+		if (player.isHealthy()) return false;
+		player.increaseHealth(10);
+		return true;
+	}),
 
 	// No Category
-	BEER(500, emptyMap(), Quality.WORTHLESS, emptySet()),
-	BULLET(300, emptyMap(), Quality.COMMON, Set.of(Category.BULLET)),
-	AGENT(50_000, Map.of(Skill.TRACING, 10), Quality.COMMON, emptySet()),
-	HOUSE(25_000, emptyMap(), Quality.WORTHLESS, emptySet());
+	BEER(500, emptyMap(), WORTHLESS, emptySet()),
+	AGENT(50_000, Map.of(TRACING, 10), COMMON, emptySet()),
+	HOUSE(25_000, emptyMap(), WORTHLESS, emptySet()),
+	;
 
 	public static final Set<Item> PASSIVE = Set.of(JOE);
 	private static Set<Item> FORBIDDEN_TO_BUY;
@@ -45,13 +59,19 @@ public enum Item implements LocaleEnum {
 	private final Map<Skill, Integer> skills;
 	private final Quality quality;
 	private final Set<Category> category;
+	private final UsableItem usable;
 	private long price;
 
 	Item(long price, Map<Skill, Integer> skills, Quality quality, Set<Category> category) {
+		this(price, skills, quality, category, null);
+	}
+
+	Item(long price, Map<Skill, Integer> skills, Quality quality, Set<Category> category, UsableItem usable) {
 		this.price = price;
 		this.skills = skills;
 		this.quality = quality;
 		this.category = category;
+		this.usable = usable;
 	}
 
 	public static Set<Item> getForbiddenToBuy() {
@@ -92,6 +112,10 @@ public enum Item implements LocaleEnum {
 			.sum();
 	}
 
+	Map<Skill, Integer> getSkills() {
+		return skills;
+	}
+
 	public Set<Category> getCategory() {
 		return category;
 	}
@@ -100,19 +124,21 @@ public enum Item implements LocaleEnum {
 		return quality;
 	}
 
+	public boolean isUsable() {
+		return usable != null;
+	}
+
+	public boolean use(Player player) {
+		return this.isUsable() && this.usable.useItem(player);
+	}
+
 	public enum Category implements LocaleEnum {
-
 		MELEE,
-
 		WEAPON,
-
 		VEHICLE,
-
 		MONEY,
-
 		BULLET,
-
 		GUARD,
-
+		HEALTH,
 	}
 }

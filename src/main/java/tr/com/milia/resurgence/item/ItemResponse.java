@@ -1,7 +1,9 @@
 package tr.com.milia.resurgence.item;
 
 import tr.com.milia.resurgence.i18n.LocaleEnum;
+import tr.com.milia.resurgence.skill.Skill;
 
+import java.util.Map;
 import java.util.Set;
 
 public class ItemResponse implements LocaleEnum {
@@ -12,13 +14,17 @@ public class ItemResponse implements LocaleEnum {
 	private final long price;
 	private final String image;
 	private final Quality quality;
+	private final Map<Skill, Integer> skills;
+	private final boolean usable;
 
 	public ItemResponse(Item item) {
 		this.item = item;
-		category = item.getCategory();
-		price = item.getPrice();
-		image = String.format(LOCATION_FORMAT, item.name());
-		quality = item.getQuality();
+		this.category = item.getCategory();
+		this.price = item.getPrice();
+		this.image = String.format(LOCATION_FORMAT, item.name());
+		this.quality = item.getQuality();
+		this.skills = item.getSkills();
+		this.usable = item.isUsable();
 	}
 
 	public Set<Item.Category> getCategory() {
@@ -35,6 +41,14 @@ public class ItemResponse implements LocaleEnum {
 
 	public Quality getQuality() {
 		return quality;
+	}
+
+	public Map<Skill, Integer> getSkills() {
+		return skills;
+	}
+
+	public boolean isUsable() {
+		return usable;
 	}
 
 	@Override

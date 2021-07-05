@@ -150,6 +150,20 @@ public class Player extends AbstractAggregateRoot<Player> {
 		return health;
 	}
 
+	public void increaseHealth(int value) {
+		this.health += value;
+		if (this.health > 100) this.health = 100;
+	}
+
+	public void decreaseHealth(int value) {
+		this.health -= value;
+		if (this.health < 0) this.health = 0;
+	}
+
+	public boolean isHealthy() {
+		return this.health >= 100;
+	}
+
 	public int getHonor() {
 		return honor;
 	}

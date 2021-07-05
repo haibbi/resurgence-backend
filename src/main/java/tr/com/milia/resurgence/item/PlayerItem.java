@@ -2,7 +2,9 @@ package tr.com.milia.resurgence.item;
 
 import tr.com.milia.resurgence.player.Player;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 import javax.validation.constraints.Min;
 
 @Entity
@@ -40,4 +42,16 @@ public class PlayerItem {
 	public Item getItem() {
 		return id.getItem();
 	}
+
+	boolean isUsable() {
+		return id.getItem().isUsable() && quantity > 0;
+	}
+
+	boolean use(Player player) {
+		if (!isUsable()) return false;
+		boolean used = id.getItem().use(player);
+		if (used) quantity--;
+		return used;
+	}
+
 }

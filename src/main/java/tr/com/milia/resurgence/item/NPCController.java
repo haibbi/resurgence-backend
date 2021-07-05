@@ -30,6 +30,7 @@ public class NPCController {
 		return service.findAllPlayerItem(player).stream()
 			.filter(item -> item.getQuantity() > 0)
 			.filter(item -> !Collections.disjoint(item.getItem().getCategory(), categories))
+			.sorted(Comparator.comparing(PlayerItem::getItem))
 			.map(PlayerItemResponse::new)
 			.collect(Collectors.toList());
 	}
