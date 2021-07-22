@@ -132,7 +132,7 @@ public enum Task implements LocaleEnum {
 		Task.BEER_SMUGGLING
 	);
 
-	public static final Set<Task> MULTI_PLAYER_TASKS = Set.of(
+	private static final Set<Task> MULTI_PLAYER_TASKS = Set.of(
 		Task.HEIST_LEADER,
 		Task.HEIST_DRIVER,
 		Task.BANK_LEADER,
@@ -140,7 +140,7 @@ public enum Task implements LocaleEnum {
 		Task.BANK_DRIVER
 	);
 
-	public static final Set<Task> SOLO_TASKS;
+	private static final Set<Task> SOLO_TASKS;
 
 	static {
 		SOLO_TASKS = new HashSet<>(Arrays.asList(values()));
