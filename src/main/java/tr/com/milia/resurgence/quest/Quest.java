@@ -3,6 +3,7 @@ package tr.com.milia.resurgence.quest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tr.com.milia.resurgence.item.Item;
+import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.player.Player;
 import tr.com.milia.resurgence.player.Title;
 import tr.com.milia.resurgence.skill.PlayerSkill;
@@ -14,6 +15,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public record Quest(
 	Title titleRequirement,
@@ -22,9 +24,9 @@ public record Quest(
 	Set<TimeRangeRequirement> timeRangeRequirements,
 
 	Set<ItemCompleteRequirement> itemCompleteRequirements,
-	Set<ConsumeItemCompleteRequirement> consumeItemCompleteRequirements,
+	Set<ItemCompleteRequirement> consumeItemCompleteRequirements,
 	Set<TaskCompleteRequirement> taskCompleteRequirements,
-	Set<QuestCompleteRequirement> questCompleteRequirements,
+	Set<Quests> questCompleteRequirements,
 
 	ExperienceReward experienceReward,
 	Set<ItemReward> itemRewards
@@ -44,7 +46,7 @@ public record Quest(
 		if (titleRequirement.compareTo(player.getTitle()) > 0) return false;
 
 
-		Map<Skill, BigDecimal> playerSkills = player.getSkills().stream()
+		var playerSkills = player.getSkills().stream()
 			.collect(Collectors.toMap(PlayerSkill::getSkill, PlayerSkill::getExpertise));
 
 		if (log.isDebugEnabled())
@@ -74,25 +76,53 @@ public record Quest(
 			if (!trr.start().isBefore(now) || !trr.end().isAfter(now)) return false;
 		}
 
+		if (log.isDebugEnabled())
+			log.debug("Quest is locked for player[{}].", player.getName());
+
+		return true;
+	}
+
+	boolean canComplete(Player player, Set<Quests> completedQuests, Map<Task, Long> completedTasks) {
+		var itemRequirement = Stream.concat(
+			itemCompleteRequirements.stream(),
+			consumeItemCompleteRequirements.stream()
+		).collect(Collectors.groupingBy(
+			ItemCompleteRequirement::item,
+			Collectors.summingInt(ItemCompleteRequirement::quantity)
+		));
+
+		var playerItems = player.getItems()
+			.stream()
+			.collect(Collectors.toMap(PlayerItem::getItem, PlayerItem::getQuantity));
+
+		for (var entry : itemRequirement.entrySet()) {
+			var item = entry.getKey();
+			var requiredQuantity = entry.getValue();
+
+			Long exist = playerItems.get(item);
+			if (exist == null || exist < requiredQuantity) return false;
+		}
+
+		if (!completedQuests.containsAll(questCompleteRequirements)) return false;
+
+		for (var tcr : taskCompleteRequirements) {
+			var completedCount = completedTasks.get(tcr.task());
+			if (completedCount == null || completedCount < tcr.times()) return false;
+		}
+
 		return true;
 	}
 
 }
 
 // Requirements
-record TitleRequirement(Title title) { }
 record SkillRequirement(Skill skill, BigDecimal expertise) { }
-record QuestRequirement(Quests quest) { }
 record TimeRangeRequirement(Instant start, Instant end) { }
 
 // Complete Requirements
 record ItemCompleteRequirement(Item item, int quantity) { }
-record ConsumeItemCompleteRequirement(Item item, int quantity) { }
 record TaskCompleteRequirement(Task task, int times) { }
-record QuestCompleteRequirement(Quests quests) { }
 
 // Rewards
 record ExperienceReward(int experience) { }
 record ItemReward(Item item, int quantity) { }
-
-enum Status {PENDING, UNLOCKED, IN_PROGRESS, COMPLETED, DONE, CANCELED}

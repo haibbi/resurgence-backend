@@ -46,4 +46,7 @@ public class TaskLog {
 		return Duration.between(Instant.now(), createdDate.plus(task.getDuration()));
 	}
 
+	public Task getTask() {
+		return task;
+	}
 }

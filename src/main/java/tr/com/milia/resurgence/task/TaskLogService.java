@@ -7,6 +7,7 @@ import tr.com.milia.resurgence.task.multiplayer.MultiPlayerTask;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,6 +39,10 @@ public class TaskLogService {
 		return repository.findFirstByTaskInAndCreatedByAndCreatedDateAfterOrderByCreatedDateDesc(
 			tasks, player, Instant.now().minus(task.duration())
 		).map(TaskLog::durationToLeft).orElse(Duration.ZERO);
+	}
+
+	public List<TaskLog> allPerformedTaskSince(Player player, Instant time) {
+		return this.repository.findAllByCreatedByAndCreatedDateAfter(player, time);
 	}
 
 	@EventListener(TaskStartedEvent.class)

@@ -29,7 +29,7 @@
     - Quest: Bu quest bazı questlerin tamamlanmasını ister.
 
 > Günlük görev sayfasında reset zamanını göster, her gece 00:00 da resetlenir deme
-> ![](https://lineofficial.blogimg.jp/en/imgs/c/f/cf2fa420.jpg)
+> ![](https://i.pinimg.com/originals/9f/70/37/9f7037a2ce95b8b0965746aa544a5ed1.jpg)
 
 > Belirli itemler yapılabilir görevler ve görev durumunu gösteriyor kaç slay kaldı diye
 ![](https://cdn.dribbble.com/users/148781/screenshots/1662481/dailyquests.gif)

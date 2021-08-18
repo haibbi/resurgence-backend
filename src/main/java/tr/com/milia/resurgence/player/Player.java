@@ -4,12 +4,14 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import tr.com.milia.resurgence.account.Account;
 import tr.com.milia.resurgence.family.Chief;
 import tr.com.milia.resurgence.family.Family;
+import tr.com.milia.resurgence.item.Item;
 import tr.com.milia.resurgence.item.PlayerItem;
 import tr.com.milia.resurgence.skill.PlayerSkill;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Player extends AbstractAggregateRoot<Player> {
@@ -178,6 +180,10 @@ public class Player extends AbstractAggregateRoot<Player> {
 
 	public Set<PlayerItem> getItems() {
 		return items == null ? Collections.emptySet() : Collections.unmodifiableSet(items);
+	}
+
+	public Map<Item, PlayerItem> getItemMap() {
+		return getItems().stream().collect(Collectors.toMap(PlayerItem::getItem, p -> p));
 	}
 
 	public Race getRace() {
