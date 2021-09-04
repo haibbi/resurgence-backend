@@ -19,4 +19,12 @@ public class InternationalizationConfiguration {
 		return messageSource;
 	}
 
+	@Bean
+	MessageSource enumMessageSource() {
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setDefaultEncoding("UTF-8");
+		messageSource.setBasename("enum/messages");
+		return messageSource;
+	}
+
 }

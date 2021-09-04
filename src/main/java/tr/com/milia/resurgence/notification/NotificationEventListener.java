@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,15 +40,13 @@ public class NotificationEventListener {
 									 AccountService accountService,
 									 PlayerService playerService,
 									 @Qualifier("defaultMessageSource") MessageSource messageSource,
+									 @Qualifier("enumMessageSource") MessageSource enumMessageSource,
 									 MessageService messageService) {
 		this.firebaseService = firebaseService;
 		this.accountService = accountService;
 		this.playerService = playerService;
 		this.messageSource = messageSource;
 		this.messageService = messageService;
-		ResourceBundleMessageSource enumMessageSource = new ResourceBundleMessageSource();
-		enumMessageSource.setDefaultEncoding("UTF-8");
-		enumMessageSource.setBasename("enum/messages");
 		this.enumMessageSource = enumMessageSource;
 	}
 

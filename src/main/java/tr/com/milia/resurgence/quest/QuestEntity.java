@@ -4,6 +4,7 @@ import tr.com.milia.resurgence.player.Player;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "quests")
@@ -22,7 +23,7 @@ public class QuestEntity {
 	@Enumerated(EnumType.STRING)
 	private QuestStatus status;
 
-	private Instant createdTime;
+	private Instant startTime;
 
 	public QuestEntity() {
 	}
@@ -31,7 +32,6 @@ public class QuestEntity {
 		this.player = player;
 		this.quest = quest;
 		this.status = QuestStatus.PENDING;
-		this.createdTime = Instant.now();
 	}
 
 	public Long getId() {
@@ -54,12 +54,20 @@ public class QuestEntity {
 		return quest.name();
 	}
 
+	int ordinal() {
+		return quest.ordinal();
+	}
+
+	Quests getQuestEnum() {
+		return this.quest;
+	}
+
 	QuestStatus getStatus() {
 		return status;
 	}
 
 	public boolean isCompleted() {
-		return !QuestStatus.COMPLETED_STATUS.contains(this.status);
+		return QuestStatus.COMPLETED_STATUS.contains(this.status);
 	}
 
 	public void complete() {
@@ -70,7 +78,14 @@ public class QuestEntity {
 		this.status = QuestStatus.CANCELED;
 	}
 
-	public Instant createdTime() {
-		return this.createdTime;
+	void markAsStarted() {
+		if (this.startTime == null) {
+			this.status = QuestStatus.IN_PROGRESS;
+			this.startTime = Instant.now();
+		}
+	}
+
+	public Optional<Instant> getStartTime() {
+		return Optional.ofNullable(startTime);
 	}
 }

@@ -1,7 +1,9 @@
 package tr.com.milia.resurgence.quest;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tr.com.milia.resurgence.item.PlayerItemService;
 import tr.com.milia.resurgence.player.Player;
@@ -9,6 +11,7 @@ import tr.com.milia.resurgence.task.Task;
 import tr.com.milia.resurgence.task.TaskLog;
 import tr.com.milia.resurgence.task.TaskLogService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,10 +39,20 @@ public class QuestService {
 
 	boolean isUnlocked(QuestEntity questEntity) {
 		final var player = questEntity.getPlayer();
+		if (questEntity.isCompleted()) return false;
 		return questEntity.getQuest().isUnlocked(player, completedQuests(player));
 	}
 
+	@Async
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	void updateDate(QuestEntity entity) {
+		entity.markAsStarted();
+		repository.save(entity);
+	}
+
 	boolean canComplete(QuestEntity questEntity) {
+		if (questEntity.isCompleted()) return false;
+
 		final var quest = questEntity.getQuest();
 		final var player = questEntity.getPlayer();
 		final var completedQuests = completedQuests(player);
@@ -47,10 +60,20 @@ public class QuestService {
 		return quest.canComplete(player, completedQuests, completedTasks);
 	}
 
+	CompleteNeeds needs(QuestEntity questEntity) {
+		if (questEntity.isCompleted()) return CompleteNeeds.EMPTY;
+
+		final var quest = questEntity.getQuest();
+		final var player = questEntity.getPlayer();
+		final var completedQuests = completedQuests(player);
+		final var completedTasks = completedTasks(player, questEntity);
+		return quest.completeNeeds(player, completedQuests, completedTasks);
+	}
+
 	@Transactional
 	QuestEntity complete(Long id, String playerName) {
 		var questEntity = repository.findByIdAndPlayer_Name(id, playerName).orElseThrow();
-		if (!questEntity.isCompleted()) {
+		if (questEntity.isCompleted()) {
 			throw new QuestAlreadyCompletedException();
 		}
 		if (!isUnlocked(questEntity)) {
@@ -83,7 +106,9 @@ public class QuestService {
 	}
 
 	private Map<Task, Long> completedTasks(Player player, QuestEntity questEntity) {
-		return taskLogService.allPerformedTaskSince(player, questEntity.createdTime()).stream()
+		final var startTime = questEntity.getStartTime();
+		if (startTime.isEmpty()) return Collections.emptyMap();
+		return taskLogService.allPerformedTaskSince(player, startTime.get()).stream()
 			.collect(Collectors.groupingBy(TaskLog::getTask, Collectors.counting()));
 	}
 

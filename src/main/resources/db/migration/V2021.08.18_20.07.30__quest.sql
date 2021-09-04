@@ -7,7 +7,7 @@ create table quests
         constraint player_quests_id_fk not null,
     quest        text not null,
     status       text,
-    created_time timestamp default now()
+    start_time timestamp
 );
 
 create index player_quests_idx on quests (player_id);
