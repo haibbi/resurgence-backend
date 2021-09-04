@@ -74,4 +74,9 @@ public class PlayerService {
 
 		player.setImage(uri);
 	}
+
+	@Transactional(readOnly = true)
+	public List<Player> allPlayer() {
+		return repository.findAll();
+	}
 }

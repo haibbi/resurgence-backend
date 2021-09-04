@@ -23,7 +23,7 @@ public enum Item implements LocaleEnum {
 	MONEY(1, emptyMap(), WORTHLESS, Set.of(Category.MONEY)),
 
 	// Melee
-	KNIFE(0, Map.of(SNEAK, 15), COMMON, Set.of(MELEE)),
+	KNIFE(50, Map.of(SNEAK, 15), COMMON, Set.of(MELEE)),
 
 	// Weapon
 	GLOCK(100, Map.of(SNEAK, 20), COMMON, Set.of(WEAPON)),

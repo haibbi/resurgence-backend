@@ -5,6 +5,7 @@ import tr.com.milia.resurgence.player.Player;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface TaskLogRepository extends JpaRepository<TaskLog, Long> {
@@ -13,5 +14,7 @@ public interface TaskLogRepository extends JpaRepository<TaskLog, Long> {
 
 	Optional<TaskLog> findFirstByTaskInAndCreatedByAndCreatedDateAfterOrderByCreatedDateDesc(
 		Collection<Task> task, Player createdBy, Instant createdDate);
+
+	List<TaskLog> findAllByCreatedByAndCreatedDateAfter(Player createdBy, Instant createdDate);
 
 }
